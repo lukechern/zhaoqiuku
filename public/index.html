@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>语音识别 Demo</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/microphone.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>语音识别助手</h1>
+            <p class="subtitle">按住麦克风说话，最长20秒</p>
+        </header>
+
+        <main class="main-content">
+            <div class="microphone-container">
+                <div class="sound-waves" id="soundWaves">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                </div>
+                
+                <div class="microphone-button" id="microphoneButton">
+                    <svg class="microphone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                </div>
+                
+                <div class="listening-indicator" id="listeningIndicator">
+                    <span>聆听中...</span>
+                </div>
+                
+                <div class="timer" id="timer">00:00</div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" id="playbackBtn" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                    回放
+                </button>
+                <button class="control-btn" id="clearBtn" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="M19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                    </svg>
+                    清除
+                </button>
+            </div>
+        </main>
+
+        <section class="results-section">
+            <h2>识别结果</h2>
+            <div class="results-container" id="resultsContainer">
+                <div class="placeholder">等待语音输入...</div>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/audio-recorder.js"></script>
+    <script src="js/ui-controller.js"></script>
+    <script src="js/api-client.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

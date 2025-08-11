@@ -1,0 +1,135 @@
+/* 麦克风按钮样式 */
+.microphone-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.microphone-button {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        0 10px 30px rgba(102, 126, 234, 0.3),
+        0 0 0 0 rgba(102, 126, 234, 0.4);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 10;
+}
+
+.microphone-button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+        0 15px 40px rgba(102, 126, 234, 0.4),
+        0 0 0 0 rgba(102, 126, 234, 0.4);
+}
+
+.microphone-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.microphone-button.recording {
+    animation: pulse-recording 1.5s ease-in-out infinite;
+    box-shadow: 
+        0 10px 30px rgba(245, 101, 101, 0.4),
+        0 0 0 10px rgba(245, 101, 101, 0.1),
+        0 0 0 20px rgba(245, 101, 101, 0.05);
+    background: linear-gradient(135deg, var(--error), #e53e3e);
+}
+
+.microphone-icon {
+    width: 48px;
+    height: 48px;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.listening-indicator {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.listening-indicator.active {
+    opacity: 1;
+    transform: translateY(0);
+    color: var(--error);
+}
+
+.timer {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 60px;
+    text-align: center;
+}
+
+.timer.recording {
+    color: var(--error);
+    animation: timer-pulse 1s ease-in-out infinite;
+}
+
+/* 动画效果 */
+@keyframes pulse-recording {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes timer-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    .microphone-button {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .microphone-icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .microphone-button {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .microphone-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .listening-indicator {
+        font-size: 0.8rem;
+    }
+    
+    .timer {
+        font-size: 1rem;
+    }
+}
