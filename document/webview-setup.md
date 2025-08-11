@@ -14,15 +14,29 @@
 在 `AndroidManifest.xml` 中添加必要权限：
 
 ```xml
-<!-- 麦克风权限 -->
+<!-- 麦克风权限 - 必需 -->
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+<!-- 音频设置权限 - 解决NotReadableError -->
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
 <!-- 网络权限 -->
 <uses-permission android:name="android.permission.INTERNET" />
 
+<!-- 网络状态权限 -->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+<!-- 硬件特性声明 - 重要 -->
+<uses-feature 
+    android:name="android.hardware.microphone" 
+    android:required="true" />
+
 <!-- 如果需要访问外部存储 -->
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+<!-- WebView相关权限 -->
+<uses-permission android:name="android.permission.WAKE_LOCK" />
 ```
 
 ### 2. WebView 配置 (Kotlin)
@@ -65,7 +79,7 @@ class MainActivity : AppCompatActivity() {
             allowFileAccess = true
             allowContentAccess = true
             
-            // 启用媒体播放
+            // 启用媒体播放 - 关键设置
             mediaPlaybackRequiresUserGesture = false
             
             // 混合内容模式
@@ -73,6 +87,20 @@ class MainActivity : AppCompatActivity() {
             
             // 用户代理（可选，用于服务端识别）
             userAgentString = "$userAgentString MyApp/1.0"
+            
+            // 启用硬件加速 - 重要
+            setRenderPriority(WebSettings.RenderPriority.HIGH)
+            
+            // 缓存设置
+            cacheMode = WebSettings.LOAD_DEFAULT
+            
+            // 启用地理位置（如果需要）
+            setGeolocationEnabled(true)
+        }
+        
+        // 启用WebView调试（开发时）
+        if (BuildConfig.DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true)
         }
         
         // 设置WebViewClient
@@ -93,6 +121,8 @@ class MainActivity : AppCompatActivity() {
             // 处理权限请求 - 最重要的部分
             override fun onPermissionRequest(request: PermissionRequest?) {
                 request?.let {
+                    Log.d("WebView", "权限请求: ${it.resources.joinToString()}")
+                    
                     // 检查请求的权限
                     val requestedResources = it.resources
                     val audioPermission = PermissionRequest.RESOURCE_AUDIO_CAPTURE
@@ -104,10 +134,14 @@ class MainActivity : AppCompatActivity() {
                                 Manifest.permission.RECORD_AUDIO
                             ) == PackageManager.PERMISSION_GRANTED
                         ) {
-                            // 授予WebView权限
-                            it.grant(arrayOf(audioPermission))
+                            // 在主线程中授予WebView权限
+                            runOnUiThread {
+                                Log.d("WebView", "授予音频权限")
+                                it.grant(arrayOf(audioPermission))
+                            }
                         } else {
                             // 请求应用权限
+                            Log.d("WebView", "请求应用音频权限")
                             ActivityCompat.requestPermissions(
                                 this@MainActivity,
                                 arrayOf(Manifest.permission.RECORD_AUDIO),
@@ -116,6 +150,9 @@ class MainActivity : AppCompatActivity() {
                             // 暂时拒绝WebView权限，等待用户授权后重新处理
                             it.deny()
                         }
+                    } else {
+                        Log.d("WebView", "拒绝未知权限请求")
+                        it.deny()
                     }
                 }
             }
@@ -289,12 +326,30 @@ webView.webChromeClient = object : WebChromeClient() {
 **原因**: 应用层面没有麦克风权限
 **解决**: 先获取应用权限，再处理WebView权限请求
 
-#### 5.3 录音格式不支持
+#### 5.3 NotReadableError - Could not start audio source
+
+**原因**: WebView无法访问音频硬件，常见于权限配置不完整
+**症状**: 
+- API存在但无法实际录音
+- 错误信息：`NotReadableError - Could not start audio source`
+
+**解决方案**:
+1. **确保应用权限**: 在AndroidManifest.xml中正确配置权限
+2. **WebView权限处理**: 实现完整的onPermissionRequest处理
+3. **硬件访问权限**: 添加以下配置到AndroidManifest.xml:
+   ```xml
+   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+   <uses-feature android:name="android.hardware.microphone" android:required="true" />
+   ```
+4. **WebView设置优化**: 启用硬件加速和媒体播放设置
+5. **权限请求时机**: 确保在WebView加载前已获得应用权限
+
+#### 5.4 录音格式不支持
 
 **原因**: WebView的MediaRecorder支持格式有限
 **解决**: 网页端已自动适配WebView环境，选择最兼容的格式
 
-#### 5.4 HTTPS要求
+#### 5.5 HTTPS要求
 
 **原因**: 现代浏览器要求HTTPS才能访问麦克风
 **解决**: 确保网页使用HTTPS协议，或在开发时使用localhost
@@ -355,4 +410,18 @@ adb logcat | grep -i permission
 
 ---
 
-按照以上配置，WebView应该能够正常处理麦克风权限请求并使用语音识别功能。如果仍有问题，请检查具体的错误日志。
+## 特别说明：NotReadableError 问题
+
+如果遇到 `NotReadableError - Could not start audio source` 错误，这是WebView中最常见的录音问题。请参考详细的故障排除指南：
+
+**[WebView录音问题故障排除指南](webview-troubleshooting.md)**
+
+该指南包含：
+- 完整的权限配置
+- 详细的代码实现
+- 逐步调试方法
+- 常见问题检查清单
+
+---
+
+按照以上配置，WebView应该能够正常处理麦克风权限请求并使用语音识别功能。如果仍有问题，请检查具体的错误日志并参考故障排除指南。
