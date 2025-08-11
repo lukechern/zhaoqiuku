@@ -1,7 +1,7 @@
 /* 音波动画效果 */
 .sound-waves {
     position: absolute;
-    top: 0;
+    top: 60px; /* 按钮半径 (120px/2 = 60px) */
     left: 50%;
     transform: translateX(-50%);
     width: 300px;
@@ -136,6 +136,7 @@
 /* 移动端音波优化 */
 @media (max-width: 768px) {
     .sound-waves {
+        top: 50px; /* 按钮半径 (100px/2 = 50px) */
         width: 250px;
         height: 100px; /* 与按钮高度一致 */
     }
@@ -149,6 +150,7 @@
 
 @media (max-width: 480px) {
     .sound-waves {
+        top: 45px; /* 按钮半径 (90px/2 = 45px) */
         width: 220px;
         height: 90px; /* 与按钮高度一致 */
     }

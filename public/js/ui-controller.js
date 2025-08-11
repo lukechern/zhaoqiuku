@@ -200,6 +200,7 @@ class UIController {
         }
         this.hideRecordingState();
         this.hideCancelState();
+        this.resetTimer(); // 取消时重置计时器
     }
 
     // 显示录音状态

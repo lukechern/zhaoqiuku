@@ -17,7 +17,30 @@
             <p class="subtitle">按住麦克风说话，最长20秒</p>
         </header>
 
+        <section class="results-section">
+            <h2>识别结果</h2>
+            <div class="results-container" id="resultsContainer">
+                <div class="placeholder">等待语音输入...</div>
+            </div>
+        </section>
+
         <main class="main-content">
+            <div class="controls">
+                <button class="control-btn" id="playbackBtn" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5,3 19,12 5,21"></polygon>
+                    </svg>
+                    回放
+                </button>
+                <button class="control-btn" id="clearBtn" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="M19,6v14a2,2 0 0,1-2-2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
+                    </svg>
+                    清除
+                </button>
+            </div>
+
             <div class="microphone-container">
                 <div class="sound-waves" id="soundWaves">
                     <div class="wave"></div>
@@ -46,30 +69,7 @@
 
                 <div class="timer" id="timer">00:00</div>
             </div>
-
-            <div class="controls">
-                <button class="control-btn" id="playbackBtn" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5,3 19,12 5,21"></polygon>
-                    </svg>
-                    回放
-                </button>
-                <button class="control-btn" id="clearBtn" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3,6 5,6 21,6"></polyline>
-                        <path d="M19,6v14a2,2 0 0,1-2,2H7a2,2 0 0,1-2-2V6m3,0V4a2,2 0 0,1,2-2h4a2,2 0 0,1,2,2v2"></path>
-                    </svg>
-                    清除
-                </button>
-            </div>
         </main>
-
-        <section class="results-section">
-            <h2>识别结果</h2>
-            <div class="results-container" id="resultsContainer">
-                <div class="placeholder">等待语音输入...</div>
-            </div>
-        </section>
     </div>
 
     <script src="js/audio-recorder.js"></script>
