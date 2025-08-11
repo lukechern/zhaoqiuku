@@ -1,11 +1,11 @@
 /* 音波动画效果 */
 .sound-waves {
     position: absolute;
-    top: 50%;
+    top: 0;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     width: 300px;
-    height: 300px;
+    height: 120px; /* 与按钮高度一致 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,7 +137,7 @@
 @media (max-width: 768px) {
     .sound-waves {
         width: 250px;
-        height: 250px;
+        height: 100px; /* 与按钮高度一致 */
     }
     
     .wave:nth-child(1) { width: 110px; height: 110px; }
@@ -150,7 +150,7 @@
 @media (max-width: 480px) {
     .sound-waves {
         width: 220px;
-        height: 220px;
+        height: 90px; /* 与按钮高度一致 */
     }
     
     .wave:nth-child(1) { width: 100px; height: 100px; }
