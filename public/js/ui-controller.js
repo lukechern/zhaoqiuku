@@ -5,6 +5,7 @@ class UIController {
             microphoneButton: document.getElementById('microphoneButton'),
             soundWaves: document.getElementById('soundWaves'),
             listeningIndicator: document.getElementById('listeningIndicator'),
+            cancelIndicator: document.getElementById('cancelIndicator'),
             timer: document.getElementById('timer'),
             playbackBtn: document.getElementById('playbackBtn'),
             clearBtn: document.getElementById('clearBtn'),
@@ -13,6 +14,11 @@ class UIController {
         
         this.timerInterval = null;
         this.startTime = null;
+        this.isRecording = false;
+        this.startTouchY = null;
+        this.currentTouchY = null;
+        this.cancelThreshold = 80; // 向上滑动80px取消
+        this.isCanceling = false;
     }
 
     // 初始化UI事件
@@ -28,33 +34,131 @@ class UIController {
         // 触摸事件
         button.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            this.handlePressStart();
+            this.handleTouchStart(e);
+        }, { passive: false });
+
+        button.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            this.handleTouchMove(e);
         }, { passive: false });
 
         button.addEventListener('touchend', (e) => {
             e.preventDefault();
-            this.handlePressEnd();
+            this.handleTouchEnd(e);
         }, { passive: false });
 
         button.addEventListener('touchcancel', (e) => {
             e.preventDefault();
-            this.handlePressEnd();
+            this.handleTouchEnd(e);
         }, { passive: false });
 
         // 鼠标事件（用于桌面测试）
         button.addEventListener('mousedown', (e) => {
             e.preventDefault();
-            this.handlePressStart();
+            this.handleMouseStart(e);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            this.handleMouseMove(e);
         });
 
         document.addEventListener('mouseup', (e) => {
-            this.handlePressEnd();
+            this.handleMouseEnd(e);
         });
 
         // 防止上下文菜单
         button.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         });
+    }
+
+    // 处理触摸开始
+    handleTouchStart(e) {
+        const touch = e.touches[0];
+        this.startTouchY = touch.clientY;
+        this.currentTouchY = touch.clientY;
+        this.isCanceling = false;
+        this.handlePressStart();
+    }
+
+    // 处理触摸移动
+    handleTouchMove(e) {
+        if (!this.isRecording) return;
+        
+        const touch = e.touches[0];
+        this.currentTouchY = touch.clientY;
+        
+        const deltaY = this.startTouchY - this.currentTouchY;
+        
+        if (deltaY > this.cancelThreshold) {
+            // 向上滑动超过阈值，显示取消状态
+            if (!this.isCanceling) {
+                this.isCanceling = true;
+                this.showCancelState();
+            }
+        } else {
+            // 回到正常录音状态
+            if (this.isCanceling) {
+                this.isCanceling = false;
+                this.hideCancelState();
+            }
+        }
+    }
+
+    // 处理触摸结束
+    handleTouchEnd(e) {
+        if (this.isCanceling) {
+            this.handleCancel();
+        } else {
+            this.handlePressEnd();
+        }
+        
+        this.startTouchY = null;
+        this.currentTouchY = null;
+        this.isCanceling = false;
+    }
+
+    // 处理鼠标开始（桌面测试）
+    handleMouseStart(e) {
+        this.startTouchY = e.clientY;
+        this.currentTouchY = e.clientY;
+        this.isCanceling = false;
+        this.handlePressStart();
+    }
+
+    // 处理鼠标移动（桌面测试）
+    handleMouseMove(e) {
+        if (!this.isRecording) return;
+        
+        this.currentTouchY = e.clientY;
+        const deltaY = this.startTouchY - this.currentTouchY;
+        
+        if (deltaY > this.cancelThreshold) {
+            if (!this.isCanceling) {
+                this.isCanceling = true;
+                this.showCancelState();
+            }
+        } else {
+            if (this.isCanceling) {
+                this.isCanceling = false;
+                this.hideCancelState();
+            }
+        }
+    }
+
+    // 处理鼠标结束（桌面测试）
+    handleMouseEnd(e) {
+        if (!this.isRecording) return;
+        
+        if (this.isCanceling) {
+            this.handleCancel();
+        } else {
+            this.handlePressEnd();
+        }
+        
+        this.startTouchY = null;
+        this.currentTouchY = null;
+        this.isCanceling = false;
     }
 
     // 设置按钮事件
@@ -74,6 +178,7 @@ class UIController {
 
     // 处理按下开始
     handlePressStart() {
+        this.isRecording = true;
         if (this.onRecordingStart) {
             this.onRecordingStart();
         }
@@ -81,9 +186,20 @@ class UIController {
 
     // 处理按下结束
     handlePressEnd() {
+        this.isRecording = false;
         if (this.onRecordingStop) {
             this.onRecordingStop();
         }
+    }
+
+    // 处理取消录音
+    handleCancel() {
+        this.isRecording = false;
+        if (this.onRecordingCancel) {
+            this.onRecordingCancel();
+        }
+        this.hideRecordingState();
+        this.hideCancelState();
     }
 
     // 显示录音状态
@@ -91,6 +207,7 @@ class UIController {
         this.elements.microphoneButton.classList.add('recording');
         this.elements.soundWaves.classList.add('active', 'recording');
         this.elements.listeningIndicator.classList.add('active');
+        this.elements.cancelIndicator.classList.add('active');
         this.elements.timer.classList.add('recording');
         
         this.startTimer();
@@ -101,9 +218,23 @@ class UIController {
         this.elements.microphoneButton.classList.remove('recording');
         this.elements.soundWaves.classList.remove('active', 'recording');
         this.elements.listeningIndicator.classList.remove('active');
+        this.elements.cancelIndicator.classList.remove('active', 'canceling');
         this.elements.timer.classList.remove('recording');
         
         this.stopTimer();
+    }
+
+    // 显示取消状态
+    showCancelState() {
+        this.elements.cancelIndicator.classList.add('canceling');
+        this.elements.listeningIndicator.querySelector('span').textContent = '松手取消录音';
+        this.vibrate([30, 30, 30]); // 震动提示
+    }
+
+    // 隐藏取消状态
+    hideCancelState() {
+        this.elements.cancelIndicator.classList.remove('canceling');
+        this.elements.listeningIndicator.querySelector('span').textContent = '聆听中...';
     }
 
     // 开始计时器
@@ -121,6 +252,10 @@ class UIController {
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
             this.timerInterval = null;
+        }
+        // 确保停止时保持最后的时间显示
+        if (this.startTime) {
+            this.updateTimer();
         }
     }
 

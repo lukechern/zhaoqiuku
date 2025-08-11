@@ -170,6 +170,21 @@ Vercel 会自动检测项目类型，无需额外配置。默认设置：
 - 引导用户在浏览器设置中允许麦克风权限
 - 确保使用 HTTPS 协议访问
 
+#### 1.1 Android WebView 权限问题
+
+**问题**: 在Android应用的WebView中无法获取麦克风权限
+**症状**: 
+- 权限请求提示不显示
+- 权限被静默拒绝
+- 录音功能无法启动
+
+**解决方案**: 
+1. **应用权限配置**: 在AndroidManifest.xml中添加麦克风权限
+2. **WebView配置**: 正确实现WebChromeClient的onPermissionRequest方法
+3. **权限处理流程**: 先获取应用权限，再授予WebView权限
+
+详细配置请参考: [WebView配置指南](webview-setup.md)
+
 #### 2. API 请求失败
 
 **问题**: Gemini API 返回错误
@@ -210,6 +225,27 @@ Vercel 会自动检测项目类型，无需额外配置。默认设置：
 #### 3. 查看 Vercel 日志
 
 在 Vercel Dashboard 的 Functions 标签页中查看服务器端日志。
+
+#### 4. WebView 调试
+
+**Chrome DevTools调试**:
+1. 在电脑上打开 `chrome://inspect`
+2. 连接Android设备并启用USB调试
+3. 在WebView页面中查看控制台输出
+
+**Android日志调试**:
+```bash
+# 查看WebView相关日志
+adb logcat | grep -i webview
+adb logcat | grep -i permission
+adb logcat | grep -i audio
+```
+
+**应用内调试**:
+```kotlin
+// 在Android代码中添加日志
+Log.d("WebView", "权限请求: ${request?.resources?.joinToString()}")
+```
 
 ## 性能优化建议
 

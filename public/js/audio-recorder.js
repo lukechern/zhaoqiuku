@@ -15,18 +15,59 @@ class AudioRecorder {
     // 初始化音频权限
     async initialize() {
         try {
-            this.audioStream = await navigator.mediaDevices.getUserMedia({ 
+            // 检查是否在WebView环境中
+            const isWebView = this.detectWebView();
+            console.log('WebView环境检测:', isWebView);
+
+            // 检查基础API支持
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('浏览器不支持音频录制功能');
+            }
+
+            // 尝试获取权限，WebView环境使用更宽松的配置
+            const constraints = isWebView ? {
+                audio: true  // WebView中使用简单配置
+            } : {
                 audio: {
                     echoCancellation: true,
                     noiseSuppression: true,
                     sampleRate: 44100
-                } 
-            });
+                }
+            };
+
+            this.audioStream = await navigator.mediaDevices.getUserMedia(constraints);
+            console.log('音频流获取成功');
             return true;
         } catch (error) {
             console.error('无法获取麦克风权限:', error);
-            throw new Error('请允许访问麦克风权限');
+            
+            // 根据错误类型提供不同的提示
+            if (error.name === 'NotAllowedError') {
+                throw new Error('麦克风权限被拒绝，请在应用设置中允许麦克风权限');
+            } else if (error.name === 'NotFoundError') {
+                throw new Error('未找到麦克风设备');
+            } else if (error.name === 'NotSupportedError') {
+                throw new Error('当前环境不支持音频录制');
+            } else {
+                throw new Error('获取麦克风权限失败: ' + error.message);
+            }
         }
+    }
+
+    // 检测是否在WebView环境中
+    detectWebView() {
+        const userAgent = navigator.userAgent;
+        
+        // 检测Android WebView
+        const isAndroidWebView = /Android.*wv\)|.*WebView.*Android/i.test(userAgent);
+        
+        // 检测其他WebView标识
+        const hasWebViewMarkers = /WebView|wv|WebKit.*Mobile/i.test(userAgent);
+        
+        // 检测是否缺少某些浏览器特有功能
+        const lacksFeatures = !window.chrome || !window.chrome.runtime;
+        
+        return isAndroidWebView || (hasWebViewMarkers && lacksFeatures);
     }
 
     // 开始录音
@@ -89,6 +130,39 @@ class AudioRecorder {
         }
     }
 
+    // 取消录音（不触发完成事件）
+    cancelRecording() {
+        if (!this.isRecording || !this.mediaRecorder) return;
+
+        this.isRecording = false;
+        
+        if (this.recordingTimer) {
+            clearTimeout(this.recordingTimer);
+            this.recordingTimer = null;
+        }
+
+        // 移除完成事件处理器，防止触发
+        const originalHandler = this.onRecordingComplete;
+        this.onRecordingComplete = null;
+
+        if (this.mediaRecorder.state !== 'inactive') {
+            this.mediaRecorder.stop();
+        }
+
+        // 清理数据
+        this.audioChunks = [];
+        if (this.audioUrl) {
+            URL.revokeObjectURL(this.audioUrl);
+            this.audioUrl = null;
+        }
+        this.audioBlob = null;
+
+        // 恢复事件处理器
+        setTimeout(() => {
+            this.onRecordingComplete = originalHandler;
+        }, 100);
+    }
+
     // 处理录音停止
     handleRecordingStop() {
         if (this.audioChunks.length === 0) return;
@@ -111,7 +185,17 @@ class AudioRecorder {
 
     // 获取支持的音频格式
     getSupportedMimeType() {
-        const types = [
+        // WebView环境优先使用更兼容的格式
+        const isWebView = this.detectWebView();
+        
+        const types = isWebView ? [
+            'audio/webm',           // WebView中最兼容
+            'audio/mp4',
+            'audio/3gpp',           // Android原生支持
+            'audio/wav',
+            'audio/webm;codecs=opus',
+            'audio/ogg;codecs=opus'
+        ] : [
             'audio/webm;codecs=opus',
             'audio/webm',
             'audio/mp4',
@@ -120,12 +204,15 @@ class AudioRecorder {
         ];
 
         for (const type of types) {
-            if (MediaRecorder.isTypeSupported(type)) {
+            if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(type)) {
+                console.log('选择音频格式:', type);
                 return type;
             }
         }
         
-        return 'audio/webm'; // 默认格式
+        // 如果都不支持，返回最基础的格式
+        console.warn('未找到支持的音频格式，使用默认格式');
+        return isWebView ? 'audio/webm' : 'audio/webm';
     }
 
     // 播放录音

@@ -44,14 +44,59 @@ class VoiceRecognitionApp {
             'fetch'
         ];
 
+        // 检测WebView环境
+        const isWebView = this.detectWebView();
+        console.log('运行环境:', isWebView ? 'WebView' : '普通浏览器');
+
         for (const feature of requiredFeatures) {
             if (!this.hasFeature(feature)) {
                 console.error(`浏览器不支持: ${feature}`);
+                
+                // 在WebView中提供更详细的错误信息
+                if (isWebView) {
+                    this.showWebViewInstructions();
+                }
                 return false;
             }
         }
 
+        // WebView环境下的额外检查
+        if (isWebView) {
+            this.setupWebViewOptimizations();
+        }
+
         return true;
+    }
+
+    // 检测WebView环境
+    detectWebView() {
+        const userAgent = navigator.userAgent;
+        return /Android.*wv\)|.*WebView.*Android|WebView|wv/i.test(userAgent) || 
+               (!window.chrome || !window.chrome.runtime);
+    }
+
+    // 显示WebView使用说明
+    showWebViewInstructions() {
+        this.uiController.showMessage(`
+            检测到您在应用内浏览器中使用此功能。
+            如果无法正常使用，请：
+            1. 确保应用已获得麦克风权限
+            2. 尝试在系统浏览器中打开
+            3. 联系应用开发者更新WebView配置
+        `, 'warning');
+    }
+
+    // WebView环境优化设置
+    setupWebViewOptimizations() {
+        // 禁用某些可能导致问题的功能
+        document.addEventListener('touchstart', function(e) {
+            // 防止WebView中的触摸延迟
+        }, { passive: true });
+
+        // 添加WebView特定的样式类
+        document.body.classList.add('webview-environment');
+        
+        console.log('WebView优化设置已应用');
     }
 
     // 检查功能是否存在
@@ -74,6 +119,7 @@ class VoiceRecognitionApp {
         // 录音事件
         this.uiController.onRecordingStart = () => this.handleRecordingStart();
         this.uiController.onRecordingStop = () => this.handleRecordingStop();
+        this.uiController.onRecordingCancel = () => this.handleRecordingCancel();
         
         // 控制按钮事件
         this.uiController.onPlayback = () => this.handlePlayback();
@@ -92,7 +138,16 @@ class VoiceRecognitionApp {
         try {
             // 初始化音频录制器（如果需要）
             if (!this.audioRecorder.audioStream) {
-                this.uiController.showMessage('正在请求麦克风权限...', 'info');
+                const isWebView = this.detectWebView();
+                
+                if (isWebView) {
+                    this.uiController.showMessage('WebView环境：正在请求麦克风权限...', 'info');
+                    // WebView环境下给更多时间
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                } else {
+                    this.uiController.showMessage('正在请求麦克风权限...', 'info');
+                }
+                
                 await this.audioRecorder.initialize();
             }
 
@@ -109,8 +164,19 @@ class VoiceRecognitionApp {
             console.error('开始录音失败:', error);
             this.uiController.hideRecordingState();
             
-            if (error.message.includes('权限')) {
-                this.uiController.showPermissionPrompt();
+            const isWebView = this.detectWebView();
+            
+            if (error.message.includes('权限') || error.name === 'NotAllowedError') {
+                if (isWebView) {
+                    this.uiController.showMessage(`
+                        WebView环境权限问题：
+                        1. 请确保应用已获得麦克风权限
+                        2. 尝试重启应用或清除缓存
+                        3. 如问题持续，请在系统浏览器中打开
+                    `, 'error');
+                } else {
+                    this.uiController.showPermissionPrompt();
+                }
             } else {
                 this.uiController.showError('开始录音失败: ' + error.message);
             }
@@ -131,6 +197,27 @@ class VoiceRecognitionApp {
         } catch (error) {
             console.error('停止录音失败:', error);
             this.uiController.showError('停止录音失败: ' + error.message);
+        }
+    }
+
+    // 处理录音取消
+    handleRecordingCancel() {
+        if (!this.audioRecorder.isRecording) return;
+
+        try {
+            // 停止录音但不触发完成事件
+            this.audioRecorder.cancelRecording();
+            this.uiController.hideRecordingState();
+            this.uiController.vibrate([50, 50]); // 取消震动反馈
+            
+            // 显示取消提示
+            this.uiController.showMessage('录音已取消', 'info');
+            
+            console.log('录音已取消');
+
+        } catch (error) {
+            console.error('取消录音失败:', error);
+            this.uiController.showError('取消录音失败: ' + error.message);
         }
     }
 

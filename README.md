@@ -11,6 +11,7 @@
 - 📱 **响应式设计**: 完美适配手机、平板和桌面设备
 - ⚡ **实时反馈**: 录音时长显示和状态提示
 - 🎵 **音频回放**: 支持录音内容回放功能
+- 📲 **WebView支持**: 完美支持Android应用内WebView环境
 
 ## 🚀 快速开始
 
@@ -180,6 +181,9 @@ const AUDIO_CONFIG = {
 
 **Q: 无法获取麦克风权限**
 - A: 确保使用 HTTPS 协议访问，在浏览器设置中允许麦克风权限
+
+**Q: Android WebView中无法使用**
+- A: 需要在Android应用中正确配置WebView权限，详见 [WebView配置指南](document/webview-setup.md)
 
 **Q: API 请求失败**
 - A: 检查 `GEMINI_API_KEY` 环境变量是否正确配置

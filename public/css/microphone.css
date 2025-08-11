@@ -40,10 +40,10 @@
 .microphone-button.recording {
     animation: pulse-recording 1.5s ease-in-out infinite;
     box-shadow: 
-        0 10px 30px rgba(245, 101, 101, 0.4),
-        0 0 0 10px rgba(245, 101, 101, 0.1),
-        0 0 0 20px rgba(245, 101, 101, 0.05);
-    background: linear-gradient(135deg, var(--error), #e53e3e);
+        0 10px 30px rgba(59, 130, 246, 0.4),
+        0 0 0 10px rgba(59, 130, 246, 0.1),
+        0 0 0 20px rgba(59, 130, 246, 0.05);
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
 }
 
 .microphone-icon {
@@ -65,7 +65,32 @@
 .listening-indicator.active {
     opacity: 1;
     transform: translateY(0);
-    color: var(--error);
+    color: #3b82f6;
+}
+
+.cancel-indicator {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    white-space: nowrap;
+}
+
+.cancel-indicator.active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    color: #f59e0b;
+}
+
+.cancel-indicator.canceling {
+    color: #ef4444;
+    font-weight: 600;
 }
 
 .timer {
@@ -78,7 +103,7 @@
 }
 
 .timer.recording {
-    color: var(--error);
+    color: #3b82f6;
     animation: timer-pulse 1s ease-in-out infinite;
 }
 

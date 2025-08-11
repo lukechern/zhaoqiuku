@@ -170,6 +170,25 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* WebView环境优化 */
+.webview-environment {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.webview-environment .microphone-button {
+    /* WebView中增强触摸反馈 */
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+.webview-environment .control-btn {
+    /* WebView中按钮优化 */
+    -webkit-appearance: none;
+    border-radius: 12px;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     .container {

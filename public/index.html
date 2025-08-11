@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="css/microphone.css">
     <link rel="stylesheet" href="css/animations.css">
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -24,7 +26,7 @@
                     <div class="wave"></div>
                     <div class="wave"></div>
                 </div>
-                
+
                 <div class="microphone-button" id="microphoneButton">
                     <svg class="microphone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
@@ -33,11 +35,15 @@
                         <line x1="8" y1="23" x2="16" y2="23"></line>
                     </svg>
                 </div>
-                
+
                 <div class="listening-indicator" id="listeningIndicator">
                     <span>聆听中...</span>
                 </div>
                 
+                <div class="cancel-indicator" id="cancelIndicator">
+                    <span>向上滑动取消录音</span>
+                </div>
+
                 <div class="timer" id="timer">00:00</div>
             </div>
 
@@ -71,4 +77,5 @@
     <script src="js/api-client.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>
