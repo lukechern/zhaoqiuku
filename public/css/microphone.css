@@ -5,6 +5,8 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    /* 确保容器有足够的空间容纳音波动画 */
+    padding: 100px 0;
 }
 
 .microphone-button {
