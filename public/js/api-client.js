@@ -22,6 +22,21 @@ class APIClient {
                 data: base64Data
             };
 
+            // 记录请求信息（不包含完整的base64数据，太长了）
+            const requestInfo = {
+                url: `${this.baseUrl}/transcribe`,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: {
+                    mimeType: mimeType,
+                    dataSize: `${(audioBlob.size / 1024).toFixed(2)}KB`,
+                    dataPreview: base64Data.substring(0, 100) + '...'
+                },
+                timestamp: new Date().toISOString()
+            };
+
             // 发送请求
             const response = await fetch(`${this.baseUrl}/transcribe`, {
                 method: 'POST',
@@ -37,7 +52,17 @@ class APIClient {
             }
 
             const result = await response.json();
-            return this.processApiResponse(result);
+            
+            // 记录响应信息
+            const responseInfo = {
+                status: response.status,
+                statusText: response.statusText,
+                headers: Object.fromEntries(response.headers.entries()),
+                body: result,
+                timestamp: new Date().toISOString()
+            };
+
+            return this.processApiResponse(result, requestInfo, responseInfo);
 
         } catch (error) {
             console.error('API请求失败:', error);
@@ -60,7 +85,7 @@ class APIClient {
     }
 
     // 处理API响应
-    processApiResponse(response) {
+    processApiResponse(response, requestInfo, responseInfo) {
         try {
             // 如果有解析好的JSON结果，优先使用
             if (response.parsed_json) {
@@ -70,7 +95,11 @@ class APIClient {
                     keywords: response.parsed_json.keywords || [],
                     confidence: response.parsed_json.confidence || null,
                     raw: response.raw,
-                    processed: true
+                    processed: true,
+                    debug: {
+                        request: requestInfo,
+                        response: responseInfo
+                    }
                 };
             }
 
@@ -86,7 +115,11 @@ class APIClient {
                             keywords: parsed.keywords || [],
                             confidence: parsed.confidence || null,
                             raw: response.raw,
-                            processed: true
+                            processed: true,
+                            debug: {
+                                request: requestInfo,
+                                response: responseInfo
+                            }
                         };
                     } catch (e) {
                         // JSON解析失败，返回原始文本
@@ -100,7 +133,11 @@ class APIClient {
                     keywords: [],
                     confidence: null,
                     raw: response.raw,
-                    processed: false
+                    processed: false,
+                    debug: {
+                        request: requestInfo,
+                        response: responseInfo
+                    }
                 };
             }
 
@@ -111,7 +148,11 @@ class APIClient {
                 keywords: [],
                 confidence: null,
                 raw: response,
-                processed: false
+                processed: false,
+                debug: {
+                    request: requestInfo,
+                    response: responseInfo
+                }
             };
 
         } catch (error) {
@@ -119,7 +160,11 @@ class APIClient {
             return {
                 success: false,
                 error: error.message,
-                raw: response
+                raw: response,
+                debug: {
+                    request: requestInfo,
+                    response: responseInfo
+                }
             };
         }
     }
@@ -129,23 +174,32 @@ class APIClient {
         if (!result.success) {
             return {
                 error: result.error || '处理失败',
-                raw: result.raw
+                raw: result.raw,
+                debug: result.debug
             };
         }
 
         const displayResult = {
+            // 主要结果
             transcript: result.transcript,
             keywords: result.keywords,
-            processed: result.processed
+            processed: result.processed,
+            
+            // 调试信息
+            debug: {
+                request: result.debug?.request || null,
+                response: result.debug?.response || null,
+                timestamp: new Date().toISOString(),
+                audio_processed: true
+            },
+            
+            // 原始数据
+            raw_response: result.raw
         };
 
         if (result.confidence !== null) {
             displayResult.confidence = result.confidence;
         }
-
-        // 添加一些元数据
-        displayResult.timestamp = new Date().toISOString();
-        displayResult.audio_processed = true;
 
         return displayResult;
     }

@@ -131,7 +131,7 @@ body {
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1rem;
-    height: 9rem; /* 增加1倍高度，约6行高度 */
+    height: 13.5rem; /* 再增加50%高度，约9行高度 */
     overflow-y: auto;
     line-height: 1.5;
 }
@@ -148,6 +148,20 @@ body {
     line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-word;
+}
+
+.results-json pre {
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 5px 0;
+    overflow-x: auto;
+    font-size: 0.8rem;
+}
+
+.results-json div {
+    margin: 5px 0;
 }
 
 .loading {

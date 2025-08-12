@@ -297,8 +297,68 @@ class UIController {
         if (typeof data === 'string') {
             container.innerHTML = `<div class="results-json">${this.escapeHtml(data)}</div>`;
         } else {
-            container.innerHTML = `<div class="results-json">${JSON.stringify(data, null, 2)}</div>`;
+            // 格式化显示，突出重要信息
+            const formattedData = this.formatDebugData(data);
+            container.innerHTML = `<div class="results-json">${formattedData}</div>`;
         }
+        
+        // 自动滚动到顶部
+        container.scrollTop = 0;
+    }
+    
+    // 格式化调试数据显示
+    formatDebugData(data) {
+        let html = '';
+        
+        // 显示主要结果
+        if (data.transcript) {
+            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 10px;">
+                📝 识别结果: ${this.escapeHtml(data.transcript)}
+            </div>`;
+        }
+        
+        if (data.keywords && data.keywords.length > 0) {
+            html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+                🏷️ 关键词: ${data.keywords.map(k => this.escapeHtml(k)).join(', ')}
+            </div>`;
+        }
+        
+        if (data.confidence !== undefined && data.confidence !== null) {
+            html += `<div style="color: var(--warning); margin-bottom: 10px;">
+                📊 置信度: ${data.confidence}
+            </div>`;
+        }
+        
+        // 显示请求信息
+        if (data.debug && data.debug.request) {
+            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+                📤 API 请求:
+            </div>`;
+            html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.request, null, 2)}</pre>`;
+        }
+        
+        // 显示响应信息
+        if (data.debug && data.debug.response) {
+            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+                📥 API 响应:
+            </div>`;
+            html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.response, null, 2)}</pre>`;
+        }
+        
+        // 显示原始响应
+        if (data.raw_response) {
+            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+                🔍 原始响应:
+            </div>`;
+            html += `<pre style="font-size: 0.8rem; color: var(--text-muted);">${JSON.stringify(data.raw_response, null, 2)}</pre>`;
+        }
+        
+        // 如果没有特殊格式，显示完整JSON
+        if (!html) {
+            html = `<pre style="font-size: 0.85rem;">${JSON.stringify(data, null, 2)}</pre>`;
+        }
+        
+        return html;
     }
 
     // 显示加载状态
