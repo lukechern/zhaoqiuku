@@ -1,0 +1,8 @@
+{
+    "webViewUrl": "https://zhaoqiuku.com/",
+    "userAgent": "ZhaoQiuKu/1.0",
+    "enableDebug": true,
+    "enableJavaScript": true,
+    "enableDomStorage": true,
+    "mediaPlaybackRequiresUserGesture": false
+}
