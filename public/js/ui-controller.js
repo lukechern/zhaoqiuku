@@ -10,7 +10,8 @@ class UIController {
             playbackBtn: document.getElementById('playbackBtn'),
             clearBtn: document.getElementById('clearBtn'),
             refreshBtn: document.getElementById('refreshBtn'),
-            resultsContainer: document.getElementById('resultsContainer')
+            resultsContainer: document.getElementById('resultsContainer'),
+            debugLevel: document.getElementById('debugLevel')
         };
         
         this.timerInterval = null;
@@ -26,6 +27,26 @@ class UIController {
     initialize() {
         this.setupTouchEvents();
         this.setupButtonEvents();
+        this.setupDebugControls();
+    }
+    
+    // 设置调试控制
+    setupDebugControls() {
+        if (this.elements.debugLevel) {
+            // 设置初始值
+            this.elements.debugLevel.value = window.debugConfig.config.currentLevel;
+            
+            // 监听变化
+            this.elements.debugLevel.addEventListener('change', (e) => {
+                const newLevel = e.target.value;
+                window.debugConfig.setLevel(newLevel);
+                
+                // 如果有结果显示，重新格式化显示
+                if (this.lastResultData) {
+                    this.showResults(this.lastResultData);
+                }
+            });
+        }
     }
 
     // 设置触摸事件
@@ -311,6 +332,9 @@ class UIController {
 
     // 显示结果
     showResults(data) {
+        // 保存最后的结果数据，用于调试级别切换时重新显示
+        this.lastResultData = data;
+        
         const container = this.elements.resultsContainer;
         
         if (typeof data === 'string') {
@@ -327,53 +351,68 @@ class UIController {
     
     // 格式化调试数据显示
     formatDebugData(data) {
+        const debugConfig = window.debugConfig.getCurrentConfig();
         let html = '';
         
-        // 显示主要结果
-        if (data.transcript) {
-            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 10px;">
+        // 显示当前调试级别
+        html += `<div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px; text-align: right;">
+            调试级别: ${window.debugConfig.getCurrentLevelName()}
+        </div>`;
+        
+        // 1. 显示主要结果（所有级别都显示）
+        if (debugConfig.showTranscript && data.transcript) {
+            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 15px; font-size: 1.1rem;">
                 📝 识别结果: ${this.escapeHtml(data.transcript)}
             </div>`;
         }
         
-        if (data.keywords && data.keywords.length > 0) {
-            html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
-                🏷️ 关键词: ${data.keywords.map(k => this.escapeHtml(k)).join(', ')}
-            </div>`;
+        // 2. 显示API响应的关键信息（调试模式及以上）
+        if (debugConfig.showApiResponse) {
+            if (data.keywords && data.keywords.length > 0) {
+                html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+                    🏷️ 关键词: ${data.keywords.map(k => this.escapeHtml(k)).join(', ')}
+                </div>`;
+            }
+            
+            if (data.confidence !== undefined && data.confidence !== null) {
+                html += `<div style="color: var(--warning); margin-bottom: 10px;">
+                    📊 置信度: ${data.confidence}
+                </div>`;
+            }
+            
+            // 显示解析后的API响应
+            if (data.raw_response) {
+                html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+                    📋 API 响应内容:
+                </div>`;
+                html += `<pre style="font-size: 0.85rem; color: var(--text-primary); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px;">${JSON.stringify(data.raw_response, null, 2)}</pre>`;
+            }
         }
         
-        if (data.confidence !== undefined && data.confidence !== null) {
-            html += `<div style="color: var(--warning); margin-bottom: 10px;">
-                📊 置信度: ${data.confidence}
-            </div>`;
-        }
-        
-        // 显示请求信息
-        if (data.debug && data.debug.request) {
+        // 3. 显示完整调试信息（完整调试模式）
+        if (debugConfig.showRequestInfo && data.debug && data.debug.request) {
             html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
-                📤 API 请求:
+                📤 API 请求详情:
             </div>`;
             html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.request, null, 2)}</pre>`;
         }
         
-        // 显示响应信息
-        if (data.debug && data.debug.response) {
+        if (debugConfig.showRequestInfo && data.debug && data.debug.response) {
             html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
-                📥 API 响应:
+                📥 API 响应详情:
             </div>`;
             html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.response, null, 2)}</pre>`;
         }
         
-        // 显示原始响应
-        if (data.raw_response) {
-            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
-                🔍 原始响应:
+        // 如果是正常模式但没有识别结果，显示简单提示
+        if (debugConfig.currentLevel === 'normal' && !data.transcript) {
+            html = `<div style="color: var(--text-muted); text-align: center; font-style: italic;">
+                未能识别语音内容，请重试
             </div>`;
-            html += `<pre style="font-size: 0.8rem; color: var(--text-muted);">${JSON.stringify(data.raw_response, null, 2)}</pre>`;
         }
         
-        // 如果没有特殊格式，显示完整JSON
-        if (!html) {
+        // 如果没有任何内容，显示完整JSON作为后备
+        if (!html.trim()) {
             html = `<pre style="font-size: 0.85rem;">${JSON.stringify(data, null, 2)}</pre>`;
         }
         

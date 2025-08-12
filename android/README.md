@@ -12,7 +12,13 @@
 
 ## 配置文件
 
+### WebView配置
 应用使用 `app/src/main/assets/webViewConfig.json` 配置文件来管理WebView设置：
+
+### 项目配置
+项目配置文件位于 `config/` 目录：
+- `config/promptConfig.js` - API提示词配置
+- `config/debugConfig.js` - 调试模式配置
 
 ```json
 {
@@ -33,6 +39,28 @@
 - `enableJavaScript`: 是否启用JavaScript
 - `enableDomStorage`: 是否启用DOM存储
 - `mediaPlaybackRequiresUserGesture`: 媒体播放是否需要用户手势
+
+## 调试模式
+
+应用支持3种调试级别，可在页面顶部切换：
+
+### 1. 正常模式 (normal)
+- 只显示语音识别的文本结果
+- 适合日常使用
+
+### 2. 调试模式 (debug)  
+- 显示语音识别文本
+- 显示API返回的JSON内容
+- 适合开发调试
+
+### 3. 完整调试 (full_debug)
+- 显示所有请求和响应信息
+- 包含完整的API交互详情
+- 适合深度调试和问题排查
+
+可以通过以下方式切换调试级别：
+- 页面顶部的下拉选择框
+- 浏览器控制台命令：`setDebugLevel("normal")`
 
 ## 构建和运行
 

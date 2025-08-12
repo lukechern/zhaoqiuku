@@ -5,9 +5,9 @@ export const PROMPTS = {
     1. 将某个物品存放到了某处
     2. 查找某个物品存放的位置
 
-    如果是第1种语义，则定义 action 为 “put”，并提取 物品关键词 赋值给 object，提取 存放位置关键词 赋值给 location
-    如果是第2种语义，则定义 action 为 “get”，并提取 物品关键词 赋值给 object
-    如果是非以上两种语义的其他任何情况，都定义 action 为 “unknown”， object 和 location 都为空
+    如果是第1种语义，则定义 action 为 "put"，并提取 物品关键词 赋值给 object，提取 存放位置关键词 赋值给 location
+    如果是第2种语义，则定义 action 为 "get"，并提取 物品关键词 赋值给 object
+    如果是非以上两种语义的其他任何情况，都定义 action 为 "unknown"， object 和 location 都为空
     
     判断完成之后，请只返回一个JSON对象，格式如下：
 {

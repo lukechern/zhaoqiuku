@@ -1,5 +1,5 @@
 // Vercel Serverless API - 音频转录服务
-import { PROMPTS } from './promptConfig.js';
+import { PROMPTS } from '../config/promptConfig.js';
 
 export default async function handler(req, res) {
     // 设置CORS头

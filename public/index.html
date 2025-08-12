@@ -25,6 +25,16 @@
         <header class="header">
             <h1>语音识别助手</h1>
             <p class="subtitle">按住麦克风说话，最长20秒</p>
+            
+            <!-- 调试级别控制 -->
+            <div class="debug-controls" id="debugControls">
+                <label for="debugLevel">调试级别:</label>
+                <select id="debugLevel" class="debug-select">
+                    <option value="normal">正常模式</option>
+                    <option value="debug">调试模式</option>
+                    <option value="full_debug" selected>完整调试</option>
+                </select>
+            </div>
         </header>
 
         <section class="results-section">
@@ -93,6 +103,7 @@
         // 动态加载JavaScript文件，防止缓存
         const jsTimestamp = Date.now();
         const scripts = [
+            'js/debug-config.js',
             'js/audio-recorder.js',
             'js/ui-controller.js', 
             'js/api-client.js',

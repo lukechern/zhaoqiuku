@@ -63,6 +63,40 @@ body {
     font-weight: 400;
 }
 
+.debug-controls {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.debug-controls label {
+    color: var(--text-secondary);
+}
+
+.debug-select {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.debug-select:hover {
+    border-color: var(--primary-color);
+}
+
+.debug-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
 .main-content {
     flex: 1;
     display: flex;
