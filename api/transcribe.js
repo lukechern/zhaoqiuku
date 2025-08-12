@@ -1,5 +1,5 @@
 // Vercel Serverless API - 音频转录服务
-import { PROMPTS } from '../config/promptConfig.js';
+import { PROMPTS, API_ENDPOINTS, API_CONFIG } from '../config/apiConfig.js';
 
 export default async function handler(req, res) {
     // 设置CORS头
@@ -27,9 +27,8 @@ export default async function handler(req, res) {
 
         // 检查音频大小（Base64解码后的大小）
         const byteLength = Math.floor(data.length * 3 / 4);
-        const maxBytes = 20 * 1024 * 1024; // 20MB
         
-        if (byteLength > maxBytes) {
+        if (byteLength > API_CONFIG.MAX_AUDIO_SIZE) {
             return res.status(413).json({ 
                 error: `音频文件过大 (${(byteLength / 1024 / 1024).toFixed(2)}MB)，请录制更短的音频` 
             });
@@ -61,9 +60,7 @@ export default async function handler(req, res) {
         };
 
         // 调用Gemini API
-        const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-        
-        const geminiResponse = await fetch(geminiUrl, {
+        const geminiResponse = await fetch(API_ENDPOINTS.GEMINI_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

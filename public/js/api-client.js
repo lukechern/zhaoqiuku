@@ -1,14 +1,14 @@
 // API客户端模块
 class APIClient {
     constructor() {
-        this.baseUrl = '/api';
+        this.config = window.apiConfig;
     }
 
     // 发送音频到Gemini API
     async transcribeAudio(audioBlob, mimeType) {
         try {
             // 检查音频大小
-            const maxSize = 20 * 1024 * 1024; // 20MB
+            const maxSize = this.config.getMaxAudioSize();
             if (audioBlob.size > maxSize) {
                 throw new Error(`音频文件过大 (${(audioBlob.size / 1024 / 1024).toFixed(2)}MB)，请录制更短的音频`);
             }
@@ -23,12 +23,13 @@ class APIClient {
             };
 
             // 记录请求信息（不包含完整的base64数据，太长了）
+            const requestUrl = this.config.getUrlWithTimestamp(this.config.getTranscribeUrl());
+            const requestHeaders = this.config.getDefaultHeaders();
+            
             const requestInfo = {
-                url: `${this.baseUrl}/transcribe`,
+                url: requestUrl,
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: requestHeaders,
                 body: {
                     mimeType: mimeType,
                     dataSize: `${(audioBlob.size / 1024).toFixed(2)}KB`,
@@ -38,14 +39,9 @@ class APIClient {
             };
 
             // 发送请求
-            const response = await fetch(`${this.baseUrl}/transcribe?_t=${Date.now()}`, {
+            const response = await fetch(requestUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
-                },
+                headers: requestHeaders,
                 body: JSON.stringify(requestData)
             });
 
@@ -210,14 +206,9 @@ class APIClient {
     // 测试API连接
     async testConnection() {
         try {
-            const response = await fetch(`${this.baseUrl}/health?_t=${Date.now()}`, {
+            const response = await fetch(this.config.getUrlWithTimestamp(this.config.getHealthUrl()), {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
-                }
+                headers: this.config.getDefaultHeaders()
             });
 
             return response.ok;
@@ -229,17 +220,11 @@ class APIClient {
 
     // 获取支持的音频格式
     getSupportedFormats() {
-        return [
-            'audio/webm',
-            'audio/webm;codecs=opus',
-            'audio/mp4',
-            'audio/ogg;codecs=opus',
-            'audio/wav'
-        ];
+        return this.config.config.SUPPORTED_MIME_TYPES;
     }
 
     // 验证音频格式
     isFormatSupported(mimeType) {
-        return this.getSupportedFormats().includes(mimeType);
+        return this.config.isMimeTypeSupported(mimeType);
     }
 }

@@ -17,8 +17,14 @@
 
 ### 项目配置
 项目配置文件位于 `config/` 目录：
-- `config/promptConfig.js` - API提示词配置
+- `config/apiConfig.js` - API配置（URL、提示词、请求设置）
 - `config/debugConfig.js` - 调试模式配置
+
+### API配置说明
+`config/apiConfig.js` 包含：
+- **API端点配置**: Gemini API的URL和模型设置
+- **提示词配置**: 语音识别的提示词模板
+- **请求配置**: 超时时间、重试次数、文件大小限制等
 
 ```json
 {

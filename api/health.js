@@ -1,4 +1,4 @@
-// Vercel Serverless API - 健康检查
+// Vercel Serverless API - 健康检查服务
 export default async function handler(req, res) {
     // 设置CORS头
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,15 +23,17 @@ export default async function handler(req, res) {
         return res.status(200).json({
             status: 'healthy',
             timestamp: new Date().toISOString(),
-            api_configured: hasApiKey,
-            version: '1.0.0'
+            service: 'zhaoqiuku-api',
+            version: '1.0.0',
+            environment: process.env.NODE_ENV || 'development',
+            apiKeyConfigured: hasApiKey
         });
 
     } catch (error) {
         console.error('健康检查失败:', error);
         return res.status(500).json({
             status: 'unhealthy',
-            error: error.message,
+            error: 'Internal server error',
             timestamp: new Date().toISOString()
         });
     }
