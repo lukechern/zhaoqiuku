@@ -125,11 +125,21 @@ class MainActivity : AppCompatActivity() {
             // 安全设置
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             
-            // 缓存设置
-            cacheMode = WebSettings.LOAD_DEFAULT
+            // 缓存设置 - 禁用缓存以获取最新内容
+            cacheMode = WebSettings.LOAD_NO_CACHE
             
             // 用户代理 - 使用配置文件
             userAgentString = "$userAgentString ${config.userAgent}"
+        }
+        
+        // 清除所有缓存
+        webView.clearCache(true)
+        webView.clearHistory()
+        webView.clearFormData()
+        
+        // 清除存储
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webView.clearMatches()
         }        
 
         // WebViewClient
@@ -264,8 +274,15 @@ class MainActivity : AppCompatActivity() {
             "https://zhaoqiuku.com/"
         }
         
-        Log.d("MainActivity", "加载网页: $url")
-        webView.loadUrl(url)
+        // 添加时间戳防止缓存
+        val urlWithTimestamp = if (url.contains("?")) {
+            "$url&_t=${System.currentTimeMillis()}"
+        } else {
+            "$url?_t=${System.currentTimeMillis()}"
+        }
+        
+        Log.d("MainActivity", "加载网页: $urlWithTimestamp")
+        webView.loadUrl(urlWithTimestamp)
     }
     
     private fun showPermissionDeniedDialog() {
@@ -289,5 +306,18 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         webView.destroy()
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // 每次恢复时清除缓存，确保获取最新内容
+        webView.clearCache(true)
+    }
+    
+    // 强制刷新方法
+    private fun forceRefresh() {
+        webView.clearCache(true)
+        webView.clearHistory()
+        webView.reload()
     }
 }

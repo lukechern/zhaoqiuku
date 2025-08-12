@@ -9,6 +9,7 @@ class UIController {
             timer: document.getElementById('timer'),
             playbackBtn: document.getElementById('playbackBtn'),
             clearBtn: document.getElementById('clearBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
             resultsContainer: document.getElementById('resultsContainer')
         };
         
@@ -174,6 +175,24 @@ class UIController {
                 this.onClear();
             }
         });
+
+        this.elements.refreshBtn.addEventListener('click', () => {
+            this.handleRefresh();
+        });
+    }
+    
+    // 处理刷新按钮点击
+    handleRefresh() {
+        // 添加一个简单的确认提示
+        if (confirm('确定要刷新页面吗？未保存的数据将丢失。')) {
+            // 强制刷新，绕过缓存
+            window.location.reload(true);
+            
+            // 如果上面的方法不起作用，尝试其他方法
+            setTimeout(() => {
+                window.location.href = window.location.href + '?_refresh=' + Date.now();
+            }, 100);
+        }
     }
 
     // 处理按下开始

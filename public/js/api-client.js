@@ -38,10 +38,13 @@ class APIClient {
             };
 
             // 发送请求
-            const response = await fetch(`${this.baseUrl}/transcribe`, {
+            const response = await fetch(`${this.baseUrl}/transcribe?_t=${Date.now()}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
                 },
                 body: JSON.stringify(requestData)
             });
@@ -207,10 +210,13 @@ class APIClient {
     // 测试API连接
     async testConnection() {
         try {
-            const response = await fetch(`${this.baseUrl}/health`, {
+            const response = await fetch(`${this.baseUrl}/health?_t=${Date.now()}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
                 }
             });
 
