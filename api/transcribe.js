@@ -1,4 +1,6 @@
 // Vercel Serverless API - 音频转录服务
+import { PROMPTS } from './promptConfig.js';
+
 export default async function handler(req, res) {
     // 设置CORS头
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -41,20 +43,11 @@ export default async function handler(req, res) {
         }
 
         // 构建Gemini API请求
-        const prompt = `请将这个中文音频完整转写为文本，并提取关键词。请只返回一个JSON对象，格式如下：
-{
-  "transcript": "完整的转写文本",
-  "keywords": ["关键词1", "关键词2", "关键词3"],
-  "confidence": 0.95
-}
-
-不要添加任何其他说明文字，只返回JSON对象。`;
-
         const requestBody = {
             contents: [
                 {
                     parts: [
-                        { text: prompt },
+                        { text: PROMPTS.AUDIO_TRANSCRIPTION },
                         {
                             inlineData: {
                                 mimeType: mimeType,
@@ -64,12 +57,7 @@ export default async function handler(req, res) {
                     ]
                 }
             ],
-            generationConfig: {
-                temperature: 0.1,
-                topK: 1,
-                topP: 0.8,
-                maxOutputTokens: 1024,
-            }
+            generationConfig: PROMPTS.GENERATION_CONFIG
         };
 
         // 调用Gemini API
