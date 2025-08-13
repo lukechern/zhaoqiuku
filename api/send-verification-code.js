@@ -90,11 +90,12 @@ export default async function handler(req, res) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                from: EMAIL_SENDER.FROM,
+                from: EMAIL_SENDER.FULL_FROM,
                 to: [email],
                 subject: template.subject,
                 html: emailHtml,
-                text: emailText
+                text: emailText,
+                reply_to: EMAIL_SENDER.FULL_FROM
             })
         });
 

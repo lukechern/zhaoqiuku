@@ -98,7 +98,9 @@ export async function verifyUserCode(email, code) {
 
         // 检查是否已经验证过
         if (user[USERS_TABLE.COLUMNS.IS_VERIFIED]) {
-            console.log('用户已经验证过:', email);
+            console.log('用户已经验证过，重新验证登录:', email);
+            // 对于已验证用户，我们仍然需要验证新的验证码
+            // 但不需要更新验证状态，直接返回用户信息
             return user;
         }
 

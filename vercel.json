@@ -14,6 +14,12 @@
     },
     "api/fix-all-users.js": {
       "maxDuration": 30
+    },
+    "api/unified-auth.js": {
+      "maxDuration": 30
+    },
+    "api/test-email-format.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
