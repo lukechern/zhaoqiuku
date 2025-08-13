@@ -33,7 +33,7 @@
                     <!-- 已登录状态 -->
                     <div class="user-info hidden" id="userInfo">
                         <span class="user-email" id="userEmail">用户邮箱</span>
-                        <button class="auth-link logout-btn" id="logoutBtn">登出</button>
+                        <button class="auth-link logout-btn" id="logoutBtn" onclick="handleGlobalLogout()">登出</button>
                     </div>
                 </div>
             </div>
@@ -50,6 +50,7 @@
                 </select>
                 <button onclick="checkMainPageState()" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">检查状态</button>
                 <button onclick="forceUpdateUserDisplay()" style="margin-left: 5px; padding: 5px 10px; font-size: 12px;">强制更新</button>
+                <button onclick="testLogoutButton()" style="margin-left: 5px; padding: 5px 10px; font-size: 12px;">测试登出</button>
             </div>
         </header>
 

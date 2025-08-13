@@ -134,6 +134,74 @@ function clearLoginState() {
     }
 }
 
+// 全局登出处理函数
+async function handleGlobalLogout() {
+    console.log('全局登出函数被调用');
+    
+    try {
+        // 显示确认对话框
+        const userEmail = window.authManager?.user?.email || '当前用户';
+        const confirmMessage = `确定要退出登录吗？\n\n当前登录用户：${userEmail}`;
+        
+        if (!confirm(confirmMessage)) {
+            console.log('用户取消登出');
+            return;
+        }
+
+        console.log('开始登出流程...');
+        
+        // 执行登出
+        if (window.authManager) {
+            const success = await window.authManager.logout();
+            
+            if (success) {
+                console.log('登出成功');
+                alert('已成功退出登录');
+                
+                // 强制更新用户显示状态
+                setTimeout(() => {
+                    if (window.forceUpdateUserDisplay) {
+                        window.forceUpdateUserDisplay();
+                    }
+                }, 100);
+                
+            } else {
+                console.error('登出失败');
+                alert('退出登录失败，请重试');
+            }
+        } else {
+            console.error('认证管理器不存在');
+            alert('系统错误，请刷新页面后重试');
+        }
+        
+    } catch (error) {
+        console.error('登出处理失败:', error);
+        alert('退出登录时发生错误：' + error.message);
+    }
+}
+
+// 测试登出按钮
+function testLogoutButton() {
+    console.log('=== 登出按钮测试 ===');
+    
+    const logoutBtn = document.getElementById('logoutBtn');
+    console.log('登出按钮:', {
+        exists: !!logoutBtn,
+        visible: logoutBtn ? !logoutBtn.classList.contains('hidden') : false,
+        display: logoutBtn ? getComputedStyle(logoutBtn).display : 'N/A',
+        clickable: logoutBtn ? getComputedStyle(logoutBtn).pointerEvents !== 'none' : false
+    });
+    
+    if (logoutBtn) {
+        console.log('手动触发登出按钮点击...');
+        logoutBtn.click();
+    } else {
+        console.error('登出按钮未找到');
+    }
+    
+    console.log('=== 测试完成 ===');
+}
+
 // 检查主页面状态
 function checkMainPageState() {
     console.log('=== 主页面状态检查 ===');
@@ -176,6 +244,8 @@ window.forceUpdateUserDisplay = forceUpdateUserDisplay;
 window.simulateLogin = simulateLogin;
 window.clearLoginState = clearLoginState;
 window.checkMainPageState = checkMainPageState;
+window.testLogoutButton = testLogoutButton;
+window.handleGlobalLogout = handleGlobalLogout;
 
 // 页面加载完成后自动运行一次调试
 document.addEventListener('DOMContentLoaded', () => {
@@ -207,3 +277,4 @@ console.log('- forceUpdateUserDisplay() - 强制更新显示');
 console.log('- simulateLogin() - 模拟登录');
 console.log('- clearLoginState() - 清除登录状态');
 console.log('- checkMainPageState() - 检查主页面状态');
+console.log('- testLogoutButton() - 测试登出按钮');

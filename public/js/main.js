@@ -29,10 +29,39 @@ class VoiceRecognitionApp {
             }
 
             console.log('用户状态元素已找到，绑定事件...');
+            console.log('元素状态:', {
+                authLinks: !!this.authLinks,
+                userInfo: !!this.userInfo,
+                userEmail: !!this.userEmail,
+                logoutBtn: !!this.logoutBtn
+            });
+
+            // 重新获取登出按钮（确保获取到最新的元素）
+            this.logoutBtn = document.getElementById('logoutBtn');
 
             // 绑定登出事件
             if (this.logoutBtn) {
-                this.logoutBtn.addEventListener('click', () => this.handleLogout());
+                console.log('绑定登出按钮事件:', this.logoutBtn);
+                
+                // 移除可能存在的旧事件监听器
+                this.logoutBtn.replaceWith(this.logoutBtn.cloneNode(true));
+                this.logoutBtn = document.getElementById('logoutBtn');
+                
+                this.logoutBtn.addEventListener('click', (e) => {
+                    console.log('登出按钮被点击');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.handleLogout();
+                });
+                
+                // 测试按钮是否可点击
+                console.log('登出按钮样式:', {
+                    display: getComputedStyle(this.logoutBtn).display,
+                    visibility: getComputedStyle(this.logoutBtn).visibility,
+                    pointerEvents: getComputedStyle(this.logoutBtn).pointerEvents
+                });
+            } else {
+                console.warn('登出按钮未找到');
             }
 
             // 监听认证状态变化
@@ -427,12 +456,61 @@ class VoiceRecognitionApp {
     // 处理登出
     async handleLogout() {
         try {
+            // 显示确认对话框
+            const userEmail = window.authManager?.user?.email || '当前用户';
+            const confirmMessage = `确定要退出登录吗？\n\n当前登录用户：${userEmail}`;
+            
+            if (!confirm(confirmMessage)) {
+                console.log('用户取消登出');
+                return;
+            }
+
+            console.log('开始登出流程...');
+            
+            // 显示加载状态（如果有UI控制器）
+            if (this.uiController && this.uiController.showMessage) {
+                this.uiController.showMessage('正在退出登录...', 'info');
+            }
+
+            // 执行登出
             const success = await window.authManager.logout();
+            
             if (success) {
                 console.log('登出成功');
+                
+                // 显示成功消息
+                if (this.uiController && this.uiController.showMessage) {
+                    this.uiController.showMessage('已成功退出登录', 'success');
+                } else {
+                    // 如果没有UI控制器，使用简单的alert
+                    alert('已成功退出登录');
+                }
+                
+                // 强制更新用户显示状态
+                setTimeout(() => {
+                    this.updateUserDisplay();
+                }, 100);
+                
+            } else {
+                console.error('登出失败');
+                
+                // 显示错误消息
+                if (this.uiController && this.uiController.showError) {
+                    this.uiController.showError('退出登录失败，请重试');
+                } else {
+                    alert('退出登录失败，请重试');
+                }
             }
+            
         } catch (error) {
-            console.error('登出失败:', error);
+            console.error('登出处理失败:', error);
+            
+            // 显示错误消息
+            if (this.uiController && this.uiController.showError) {
+                this.uiController.showError('退出登录时发生错误：' + error.message);
+            } else {
+                alert('退出登录时发生错误：' + error.message);
+            }
         }
     }
 }

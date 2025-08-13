@@ -370,6 +370,17 @@ body {
     border-color: var(--warning);
 }
 
+.logout-btn:active {
+    transform: translateY(1px);
+    background: #e74c3c;
+}
+
+/* 确保登出按钮可点击 */
+.logout-btn {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
 /* 响应式设计 */
 @media (max-width: 480px) {
     .header-top {
