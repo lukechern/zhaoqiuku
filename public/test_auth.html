@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证状态测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        .test-button:hover {
+            background: #0056CC;
+        }
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border-left: 4px solid #007AFF;
+        }
+        .user-display {
+            border: 2px solid #ddd;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .auth-links {
+            display: flex;
+            gap: 1rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-info.hidden {
+            display: none;
+        }
+        .user-email {
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            background: #e8f2ff;
+            border-radius: 6px;
+        }
+        .auth-link {
+            color: #007AFF;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #007AFF;
+            background: none;
+            cursor: pointer;
+        }
+        .logout-btn {
+            color: #FF3B30;
+            border-color: #FF3B30;
+        }
+    </style>
+</head>
+<body>
+    <h1>认证状态测试页面</h1>
+    
+    <div class="test-section">
+        <h2>用户状态显示测试</h2>
+        <div class="user-display">
+            <div class="auth-links" id="authLinks">
+                <a href="register.html" class="auth-link">注册</a>
+                <a href="login.html" class="auth-link">登录</a>
+            </div>
+            <div class="user-info hidden" id="userInfo">
+                <span class="user-email" id="userEmail">用户邮箱</span>
+                <button class="auth-link logout-btn" id="logoutBtn">登出</button>
+            </div>
+        </div>
+        <button class="test-button" onclick="checkAuthState()">检查认证状态</button>
+        <button class="test-button" onclick="updateDisplay()">更新显示</button>
+        <button class="test-button" onclick="simulateLogin()">模拟登录</button>
+        <button class="test-button" onclick="simulateLogout()">模拟登出</button>
+        <div id="authStatus" class="status"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>LocalStorage 内容</h2>
+        <button class="test-button" onclick="showLocalStorage()">显示存储内容</button>
+        <button class="test-button" onclick="clearLocalStorage()">清除存储</button>
+        <div id="storageContent" class="status"></div>
+    </div>
+
+    <script src="js/auth-manager.js"></script>
+    <script>
+        // 获取元素
+        const authLinks = document.getElementById('authLinks');
+        const userInfo = document.getElementById('userInfo');
+        const userEmail = document.getElementById('userEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // 绑定登出事件
+        logoutBtn.addEventListener('click', async () => {
+            if (window.authManager) {
+                await window.authManager.logout();
+                updateDisplay();
+            }
+        });
+
+        // 监听认证状态变化
+        window.addEventListener('authStateChange', (e) => {
+            console.log('认证状态变化事件:', e.detail);
+            updateDisplay();
+            showStatus(`认证状态变化: ${e.detail.type}`);
+        });
+
+        function checkAuthState() {
+            const status = window.authManager ? {
+                exists: true,
+                isAuthenticated: window.authManager.isAuthenticated,
+                user: window.authManager.user,
+                tokens: !!window.authManager.tokens
+            } : {
+                exists: false
+            };
+            
+            showStatus(`认证状态: ${JSON.stringify(status, null, 2)}`);
+        }
+
+        function updateDisplay() {
+            try {
+                if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
+                    // 显示用户信息
+                    authLinks.style.display = 'none';
+                    userInfo.classList.remove('hidden');
+                    userEmail.textContent = window.authManager.user.email;
+                    showStatus(`显示用户信息: ${window.authManager.user.email}`);
+                } else {
+                    // 显示登录链接
+                    authLinks.style.display = 'flex';
+                    userInfo.classList.add('hidden');
+                    showStatus('显示登录链接');
+                }
+            } catch (error) {
+                showStatus(`更新显示失败: ${error.message}`);
+            }
+        }
+
+        function simulateLogin() {
+            const mockAuthData = {
+                user: {
+                    id: 'test-user-id',
+                    email: 'test@example.com',
+                    status: 'active',
+                    isVerified: true
+                },
+                tokens: {
+                    accessToken: 'mock-access-token',
+                    refreshToken: 'mock-refresh-token',
+                    tokenType: 'Bearer'
+                }
+            };
+
+            if (window.authManager) {
+                window.authManager.saveAuthState(mockAuthData);
+                showStatus('模拟登录成功');
+            } else {
+                showStatus('认证管理器未初始化');
+            }
+        }
+
+        function simulateLogout() {
+            if (window.authManager) {
+                window.authManager.clearAuthState();
+                showStatus('模拟登出成功');
+            } else {
+                showStatus('认证管理器未初始化');
+            }
+        }
+
+        function showLocalStorage() {
+            const keys = [
+                'zhaoqiuku_access_token',
+                'zhaoqiuku_refresh_token',
+                'zhaoqiuku_user_info',
+                'zhaoqiuku_login_time'
+            ];
+
+            const content = keys.map(key => {
+                const value = localStorage.getItem(key);
+                return `${key}: ${value ? (key.includes('token') ? value.substring(0, 20) + '...' : value) : 'null'}`;
+            }).join('\n');
+
+            document.getElementById('storageContent').innerHTML = `<pre>${content}</pre>`;
+        }
+
+        function clearLocalStorage() {
+            const keys = [
+                'zhaoqiuku_access_token',
+                'zhaoqiuku_refresh_token',
+                'zhaoqiuku_user_info',
+                'zhaoqiuku_login_time'
+            ];
+
+            keys.forEach(key => localStorage.removeItem(key));
+            document.getElementById('storageContent').textContent = 'LocalStorage 已清除';
+            
+            if (window.authManager) {
+                window.authManager.clearAuthState();
+            }
+        }
+
+        function showStatus(message) {
+            document.getElementById('authStatus').innerHTML = `<pre>${message}</pre>`;
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                updateDisplay();
+                checkAuthState();
+            }, 200);
+        });
+    </script>
+</body>
+</html>

@@ -30,8 +30,8 @@ class VoiceRecognitionApp {
             this.handleAuthStateChange(e.detail);
         });
 
-        // 初始化用户状态显示
-        this.updateUserDisplay();
+        // 等待认证管理器初始化完成
+        this.waitForAuthManager();
     }
 
     // 初始化应用
@@ -330,17 +330,49 @@ class VoiceRecognitionApp {
     }
 }
 
+    // 等待认证管理器初始化
+    waitForAuthManager() {
+        const checkAuthManager = () => {
+            if (window.authManager) {
+                console.log('认证管理器已就绪，初始化用户状态显示');
+                this.updateUserDisplay();
+            } else {
+                console.log('等待认证管理器初始化...');
+                setTimeout(checkAuthManager, 50);
+            }
+        };
+        checkAuthManager();
+    }
+
     // 更新用户显示状态
     updateUserDisplay() {
-        if (window.authManager && window.authManager.isAuthenticated) {
-            // 显示用户信息
-            this.authLinks.style.display = 'none';
-            this.userInfo.classList.remove('hidden');
-            this.userEmail.textContent = window.authManager.user.email;
-        } else {
-            // 显示登录链接
-            this.authLinks.style.display = 'flex';
-            this.userInfo.classList.add('hidden');
+        try {
+            console.log('更新用户显示状态:', {
+                hasAuthManager: !!window.authManager,
+                isAuthenticated: window.authManager?.isAuthenticated,
+                user: window.authManager?.user?.email,
+                hasElements: !!(this.authLinks && this.userInfo && this.userEmail)
+            });
+
+            if (!this.authLinks || !this.userInfo || !this.userEmail) {
+                console.error('用户状态显示元素未找到');
+                return;
+            }
+
+            if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
+                // 显示用户信息，隐藏登录链接
+                this.authLinks.style.display = 'none';
+                this.userInfo.classList.remove('hidden');
+                this.userEmail.textContent = window.authManager.user.email;
+                console.log('显示用户信息:', window.authManager.user.email);
+            } else {
+                // 显示登录链接，隐藏用户信息
+                this.authLinks.style.display = 'flex';
+                this.userInfo.classList.add('hidden');
+                console.log('显示登录链接');
+            }
+        } catch (error) {
+            console.error('更新用户显示状态失败:', error);
         }
     }
 
@@ -354,6 +386,8 @@ class VoiceRecognitionApp {
             console.log('用户已登录:', detail.user.email);
         } else if (detail.type === 'logout') {
             console.log('用户已登出');
+        } else if (detail.type === 'restore') {
+            console.log('用户状态已恢复:', detail.user.email);
         }
     }
 
