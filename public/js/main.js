@@ -443,11 +443,30 @@ class VoiceRecognitionApp {
         console.log('认证状态变化:', detail);
         this.updateUserDisplay();
         
+        // 清除UI中的登录要求状态
+        if (this.uiController && this.uiController.clearLoginRequiredState) {
+            this.uiController.clearLoginRequiredState();
+        }
+        
         // 可以在这里添加其他认证状态变化的处理逻辑
         if (detail.type === 'login') {
             console.log('用户已登录:', detail.user.email);
+            // 显示欢迎消息
+            if (this.uiController && this.uiController.showMessage) {
+                this.uiController.showMessage(`欢迎回来，${detail.user.email}！`, 'success');
+                // 3秒后清除欢迎消息
+                setTimeout(() => {
+                    if (this.uiController && this.uiController.clearResults) {
+                        this.uiController.clearResults();
+                    }
+                }, 3000);
+            }
         } else if (detail.type === 'logout') {
             console.log('用户已登出');
+            // 清除结果显示
+            if (this.uiController && this.uiController.clearResults) {
+                this.uiController.clearResults();
+            }
         } else if (detail.type === 'restore') {
             console.log('用户状态已恢复:', detail.user.email);
         }

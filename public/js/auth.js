@@ -14,8 +14,31 @@ class UnifiedAuthManager {
         this.countdownTimer = null;
         this.countdownSeconds = 60;
         
+        // 获取返回URL参数
+        this.returnUrl = this.getReturnUrl();
+        
         this.initializeElements();
         this.bindEvents();
+    }
+
+    // 获取返回URL参数
+    getReturnUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnUrl = urlParams.get('return');
+        
+        if (returnUrl) {
+            try {
+                // 解码并验证URL
+                const decodedUrl = decodeURIComponent(returnUrl);
+                console.log('检测到返回URL:', decodedUrl);
+                return decodedUrl;
+            } catch (error) {
+                console.error('返回URL解码失败:', error);
+                return null;
+            }
+        }
+        
+        return null;
     }
 
     initializeElements() {
@@ -282,6 +305,13 @@ class UnifiedAuthManager {
                     this.successMessage.textContent = `欢迎回来，${result.user.email}`;
                 }
                 
+                // 根据是否有返回URL更新按钮文本
+                if (this.returnUrl) {
+                    this.goToAppBtn.textContent = '返回应用';
+                } else {
+                    this.goToAppBtn.textContent = '开始使用';
+                }
+                
                 this.switchStep('success');
                 this.clearCountdown();
             } else {
@@ -326,7 +356,13 @@ class UnifiedAuthManager {
 
     // 前往应用
     goToApp() {
-        window.location.href = 'index.html';
+        if (this.returnUrl) {
+            console.log('返回到原页面:', this.returnUrl);
+            window.location.href = this.returnUrl;
+        } else {
+            console.log('前往主页');
+            window.location.href = 'index.html';
+        }
     }
 }
 

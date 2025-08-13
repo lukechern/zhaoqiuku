@@ -218,10 +218,82 @@ class UIController {
 
     // 处理按下开始
     handlePressStart() {
+        // 检查用户是否已登录
+        if (!this.checkAuthenticationStatus()) {
+            return; // 如果未登录，不继续录音流程
+        }
+        
         this.isRecording = true;
         if (this.onRecordingStart) {
             this.onRecordingStart();
         }
+    }
+
+    // 检查用户认证状态
+    checkAuthenticationStatus() {
+        // 检查认证管理器是否存在且用户已登录
+        if (!window.authManager || !window.authManager.isAuthenticated) {
+            this.showLoginRequired();
+            return false;
+        }
+        
+        // 如果已登录，确保清除任何登录相关的样式
+        this.clearLoginRequiredState();
+        return true;
+    }
+
+    // 清除登录要求状态
+    clearLoginRequiredState() {
+        // 移除麦克风按钮的禁用样式
+        this.elements.microphoneButton.classList.remove('login-required');
+        
+        // 如果当前显示的是登录提示，清除它
+        const container = this.elements.resultsContainer;
+        if (container.querySelector('.login-required-message')) {
+            this.clearResults();
+        }
+    }
+
+    // 显示需要登录的提示并跳转
+    showLoginRequired() {
+        // 显示特殊的登录提示消息
+        const container = this.elements.resultsContainer;
+        container.innerHTML = `
+            <div class="login-required-message">
+                请先登录后再使用语音识别功能
+                <br><small>即将跳转到登录页面...</small>
+            </div>
+        `;
+        
+        // 给麦克风按钮添加禁用样式
+        this.elements.microphoneButton.classList.add('login-required');
+        
+        // 震动提示
+        this.vibrate([100, 50, 100]);
+        
+        // 延迟跳转到登录页面
+        setTimeout(() => {
+            // 保存当前页面URL，登录后可以返回
+            const currentUrl = window.location.href;
+            const returnUrl = encodeURIComponent(currentUrl);
+            
+            // 跳转到登录页面，带上返回URL参数
+            window.location.href = `auth.html?return=${returnUrl}`;
+        }, 2000); // 2秒后跳转，让用户看到提示消息
+        
+        // 添加倒计时显示
+        let countdown = 2;
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                const message = container.querySelector('.login-required-message small');
+                if (message) {
+                    message.textContent = `${countdown} 秒后跳转到登录页面...`;
+                }
+            } else {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
     }
 
     // 处理按下结束
