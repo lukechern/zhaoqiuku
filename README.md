@@ -22,7 +22,11 @@ zhaoqiuku/
 ├── config/                     # 配置文件
 │   ├── apiConfig.js           # API配置（URL、提示词等）
 │   ├── debugConfig.js         # 调试级别配置
-│   └── emailConfig.js         # 邮件配置（发件人、模板等）
+│   ├── emailConfig.js         # 邮件配置（发件人、模板等）
+│   ├── databaseConfig.js      # 数据库配置（Supabase连接等）
+│   └── emailConfigTest.js     # 邮件配置测试工具
+├── utils/                      # 工具函数
+│   └── database.js            # 数据库操作工具
 ├── public/                     # 前端资源
 │   ├── js/
 │   │   ├── api-config.js      # 前端API配置
@@ -120,8 +124,44 @@ const CURRENT_DEBUG_LEVEL = 'full_debug';
 1. 设置环境变量：
    - `GEMINI_API_KEY` - Google Gemini API密钥
    - `RESEND_API_KEY` - Resend邮件服务API密钥
+   - `SUPABASE_URL` - Supabase项目URL
+   - `SUPABASE_ANON_KEY` - Supabase匿名访问密钥
 2. 部署到Vercel平台
 3. 配置域名（可选）
+
+### 数据库配置
+项目使用 [Supabase](https://supabase.com/) 作为数据库：
+
+#### 1. 创建 Supabase 项目
+1. 注册 Supabase 账号
+2. 创建新项目
+3. 获取项目 URL 和 API Key
+
+#### 2. 创建数据表
+在 Supabase 控制台的 SQL Editor 中执行以下 SQL：
+
+```sql
+CREATE TABLE IF NOT EXISTS users (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    verification_code VARCHAR(10),
+    code_expires_at TIMESTAMP WITH TIME ZONE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    registered_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    status VARCHAR(20) DEFAULT 'pending'
+);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_verification_code ON users(verification_code);
+CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+```
+
+#### 3. 配置环境变量
+在 Vercel 中设置：
+- `SUPABASE_URL` - 项目设置中的 Project URL
+- `SUPABASE_ANON_KEY` - 项目设置中的 anon public key
 
 ### 邮件服务配置
 项目使用 [Resend](https://resend.com/) 作为邮件服务提供商：
@@ -163,7 +203,9 @@ showApiConfig()             // 显示API配置信息
 ### 👤 用户系统
 - 邮箱注册功能
 - 6位数字验证码验证
-- 用户状态管理（开发中）
+- Supabase 数据库存储
+- 用户状态管理
+- 验证码过期处理
 
 ### 🔧 调试功能
 - 多级调试模式
@@ -176,6 +218,7 @@ showApiConfig()             // 显示API配置信息
 - **后端**: Node.js, Vercel Serverless Functions
 - **AI服务**: Google Gemini API
 - **邮件服务**: Resend API
+- **数据库**: Supabase (PostgreSQL)
 - **移动端**: Android WebView, Kotlin
 - **音频处理**: Web Audio API, MediaRecorder API
 

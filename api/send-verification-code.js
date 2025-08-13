@@ -6,9 +6,7 @@
  */
 
 import { EMAIL_SENDER, EMAIL_TEMPLATES, EMAIL_CONFIG } from '../config/emailConfig.js';
-
-// 验证码存储（生产环境应使用数据库或Redis）
-const verificationCodes = new Map();
+import { upsertUserVerificationCode, cleanupExpiredCodes } from '../utils/database.js';
 
 // 生成验证码
 function generateVerificationCode() {
@@ -62,21 +60,22 @@ export default async function handler(req, res) {
         // 生成验证码
         const verificationCode = generateVerificationCode();
         
-        // 存储验证码
-        const codeData = {
-            code: verificationCode,
-            email: email,
-            timestamp: Date.now(),
-            expires: Date.now() + EMAIL_CONFIG.VERIFICATION.EXPIRES_IN
-        };
-        verificationCodes.set(email, codeData);
-
-        // 清理过期的验证码
-        for (const [key, value] of verificationCodes.entries()) {
-            if (Date.now() > value.expires) {
-                verificationCodes.delete(key);
-            }
+        // 计算过期时间
+        const expiresAt = new Date(Date.now() + EMAIL_CONFIG.VERIFICATION.EXPIRES_IN);
+        
+        // 保存到数据库
+        try {
+            await upsertUserVerificationCode(email, verificationCode, expiresAt);
+            console.log('验证码已保存到数据库:', { email, code: verificationCode, expiresAt });
+        } catch (dbError) {
+            console.error('数据库操作失败:', dbError);
+            return res.status(500).json({ error: '数据库操作失败，请稍后重试' });
         }
+
+        // 清理过期的验证码（异步执行，不影响主流程）
+        cleanupExpiredCodes().catch(error => {
+            console.error('清理过期验证码失败:', error);
+        });
 
         // 获取邮件模板
         const template = EMAIL_TEMPLATES.VERIFICATION_CODE;

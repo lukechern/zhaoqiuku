@@ -1,0 +1,34 @@
+{
+  "name": "zhaoqiuku-voice-assistant",
+  "version": "1.0.0",
+  "description": "语音识别助手 - 支持物品存放和查找的语音指令识别",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "test": "node --experimental-modules test/test-database.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "voice-recognition",
+    "speech-to-text",
+    "gemini-api",
+    "supabase",
+    "vercel",
+    "javascript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/zhaoqiuku.git"
+  }
+}

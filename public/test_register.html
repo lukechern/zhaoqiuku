@@ -83,14 +83,22 @@
     </div>
 
     <div class="test-section">
-        <h2>3. 邮件配置测试</h2>
+        <h2>3. 数据库连接测试</h2>
+        <button class="test-button" onclick="testDatabaseConnection()">测试数据库连接</button>
+        <button class="test-button" onclick="checkDatabaseTable()">检查数据表</button>
+        <button class="test-button" onclick="getDatabaseStats()">获取统计信息</button>
+        <div id="databaseResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. 邮件配置测试</h2>
         <button class="test-button" onclick="testEmailConfig()">测试邮件配置</button>
         <button class="test-button" onclick="previewEmailTemplate()">预览邮件模板</button>
         <div id="configResult"></div>
     </div>
 
     <div class="test-section">
-        <h2>4. 快速链接</h2>
+        <h2>5. 快速链接</h2>
         <button class="test-button" onclick="window.open('register.html', '_blank')">打开注册页面</button>
         <button class="test-button" onclick="window.open('index.html', '_blank')">打开主页面</button>
     </div>
@@ -210,6 +218,119 @@
 注意: 实际发送的邮件会包含完整的HTML样式和格式`;
             
             showResult(resultDiv, message, 'success');
+        }
+
+        async function testDatabaseConnection() {
+            const resultDiv = document.getElementById('databaseResult');
+            
+            try {
+                showResult(resultDiv, '正在测试数据库连接...', '');
+                
+                const response = await fetch('/api/init-database', {
+                    method: 'GET'
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    const message = `✅ 数据库连接成功！
+
+连接状态:
+- URL: ${result.database.url}
+- API Key: ${result.database.apiKey}
+- 连接状态: ${result.database.connected ? '正常' : '异常'}
+
+用户统计:
+- 总用户数: ${result.stats.totalUsers}
+- 已验证用户: ${result.stats.verifiedUsers}
+- 待验证用户: ${result.stats.pendingUsers}
+
+表结构: ${result.tableStructure.tableName}
+字段: ${result.tableStructure.columns.join(', ')}`;
+                    
+                    showResult(resultDiv, message, 'success');
+                } else {
+                    showResult(resultDiv, `❌ 数据库连接失败:\n${result.error || result.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ 数据库测试失败:\n${error.message}`, 'error');
+            }
+        }
+
+        async function checkDatabaseTable() {
+            const resultDiv = document.getElementById('databaseResult');
+            
+            try {
+                showResult(resultDiv, '正在检查数据表...', '');
+                
+                const response = await fetch('/api/init-database', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    const message = `📋 数据表检查结果:
+
+表状态: ${result.tableExists ? '✅ 已存在' : '❌ 不存在'}
+说明: ${result.message}
+
+${result.tableExists ? 
+    '可以正常使用注册功能' : 
+    '需要在 Supabase 控制台创建表'}
+
+${!result.tableExists ? `
+创建表的 SQL 语句:
+${result.sqlQuery}
+
+操作步骤:
+1. 登录 Supabase 控制台
+2. 进入 SQL Editor
+3. 执行上述 SQL 语句
+4. 刷新此页面重新测试` : ''}`;
+                    
+                    showResult(resultDiv, message, result.tableExists ? 'success' : 'error');
+                } else {
+                    showResult(resultDiv, `❌ 检查数据表失败:\n${result.error || result.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ 数据表检查失败:\n${error.message}`, 'error');
+            }
+        }
+
+        async function getDatabaseStats() {
+            const resultDiv = document.getElementById('databaseResult');
+            
+            try {
+                showResult(resultDiv, '正在获取统计信息...', '');
+                
+                const response = await fetch('/api/init-database', {
+                    method: 'GET'
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    const message = `📊 数据库统计信息:
+
+用户数据:
+- 总注册用户: ${result.stats.totalUsers}
+- 已验证用户: ${result.stats.verifiedUsers}
+- 待验证用户: ${result.stats.pendingUsers}
+- 验证率: ${result.stats.totalUsers > 0 ? 
+    Math.round((result.stats.verifiedUsers / result.stats.totalUsers) * 100) : 0}%
+
+数据库状态:
+- 连接状态: ${result.database.connected ? '正常' : '异常'}
+- 配置状态: ${result.database.url === '已配置' && result.database.apiKey === '已配置' ? '完整' : '不完整'}`;
+                    
+                    showResult(resultDiv, message, 'success');
+                } else {
+                    showResult(resultDiv, `❌ 获取统计信息失败:\n${result.error || result.message}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ 统计信息获取失败:\n${error.message}`, 'error');
+            }
         }
     </script>
 </body>

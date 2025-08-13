@@ -6,9 +6,7 @@
  */
 
 import { EMAIL_CONFIG } from '../config/emailConfig.js';
-
-// 验证码存储（与发送验证码API共享，生产环境应使用数据库或Redis）
-const verificationCodes = new Map();
+import { verifyUserCode, findUserByEmail } from '../utils/database.js';
 
 // 验证邮箱格式
 function validateEmail(email) {
@@ -55,34 +53,18 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: `验证码必须是${EMAIL_CONFIG.VERIFICATION.CODE_LENGTH}位数字` });
         }
 
-        // 查找验证码
-        const storedCodeData = verificationCodes.get(email);
-        
-        if (!storedCodeData) {
-            return res.status(400).json({ error: '验证码不存在或已过期，请重新获取' });
+        // 从数据库验证验证码
+        let verifiedUser;
+        try {
+            verifiedUser = await verifyUserCode(email, code);
+        } catch (dbError) {
+            console.error('数据库验证失败:', dbError);
+            return res.status(500).json({ error: '数据库操作失败，请稍后重试' });
         }
 
-        // 检查验证码是否过期
-        if (Date.now() > storedCodeData.expires) {
-            verificationCodes.delete(email);
-            return res.status(400).json({ error: '验证码已过期，请重新获取' });
+        if (!verifiedUser) {
+            return res.status(400).json({ error: '验证码错误、已过期或不存在，请重新获取' });
         }
-
-        // 验证验证码
-        if (storedCodeData.code !== code) {
-            return res.status(400).json({ error: '验证码错误，请重新输入' });
-        }
-
-        // 验证成功，删除验证码
-        verificationCodes.delete(email);
-
-        // TODO: 这里应该将用户信息保存到数据库
-        // 例如：
-        // await saveUserToDatabase({
-        //     email: email,
-        //     registeredAt: new Date(),
-        //     status: 'active'
-        // });
 
         console.log(`用户注册成功: ${email}`);
 
@@ -90,8 +72,11 @@ export default async function handler(req, res) {
             success: true, 
             message: '验证成功，注册完成',
             user: {
-                email: email,
-                registeredAt: new Date().toISOString()
+                id: verifiedUser.id,
+                email: verifiedUser.email,
+                registeredAt: verifiedUser.registered_at,
+                isVerified: verifiedUser.is_verified,
+                status: verifiedUser.status
             }
         });
 
