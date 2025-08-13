@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>用户登录 - 语音识别助手</title>
+    
+    <!-- 防缓存设置 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <script>
+        // 动态添加版本号防止CSS缓存
+        const timestamp = Date.now();
+        document.write('<link rel="stylesheet" href="css/main.css?v=' + timestamp + '">');
+        document.write('<link rel="stylesheet" href="css/register.css?v=' + timestamp + '">');
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>用户登录</h1>
+            <p class="subtitle">登录功能正在开发中</p>
+        </header>
+
+        <main class="register-content">
+            <div class="register-form">
+                <div class="success-message">
+                    <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    <h2>功能开发中</h2>
+                    <p>登录功能即将上线，敬请期待</p>
+                </div>
+                <button class="register-btn" onclick="window.location.href='register.html'">前往注册</button>
+            </div>
+        </main>
+
+        <footer class="register-footer">
+            <p>还没有账号？<a href="register.html">立即注册</a></p>
+            <p><a href="index.html">返回首页</a></p>
+        </footer>
+    </div>
+</body>
+
+</html>

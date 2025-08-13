@@ -297,3 +297,52 @@ body {
         font-size: 0.9rem;
     }
 }
+/* 用户
+认证链接样式 */
+.header-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.user-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.auth-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.auth-link:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.auth-link:active {
+    transform: translateY(1px);
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .header-top {
+        justify-content: center;
+    }
+    
+    .user-actions {
+        gap: 0.5rem;
+    }
+    
+    .auth-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}

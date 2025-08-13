@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>用户注册 - 语音识别助手</title>
+    
+    <!-- 防缓存设置 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <script>
+        // 动态添加版本号防止CSS缓存
+        const timestamp = Date.now();
+        document.write('<link rel="stylesheet" href="css/main.css?v=' + timestamp + '">');
+        document.write('<link rel="stylesheet" href="css/register.css?v=' + timestamp + '">');
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>用户注册</h1>
+            <p class="subtitle">请输入您的邮箱地址完成注册</p>
+        </header>
+
+        <main class="register-content">
+            <div class="register-form" id="registerForm">
+                <!-- 步骤1: 输入邮箱 -->
+                <div class="step" id="emailStep">
+                    <div class="form-group">
+                        <label for="email">邮箱地址</label>
+                        <input type="email" id="email" placeholder="请输入您的邮箱地址" required>
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                    <button class="register-btn" id="sendCodeBtn">发送验证码</button>
+                </div>
+
+                <!-- 步骤2: 输入验证码 -->
+                <div class="step hidden" id="verifyStep">
+                    <div class="form-group">
+                        <label for="verifyCode">验证码</label>
+                        <input type="text" id="verifyCode" placeholder="请输入6位验证码" maxlength="6" required>
+                        <div class="error-message" id="verifyError"></div>
+                        <div class="help-text">
+                            验证码已发送至 <span id="emailDisplay"></span>
+                        </div>
+                    </div>
+                    <div class="verify-actions">
+                        <button class="register-btn secondary" id="resendBtn" disabled>
+                            <span id="resendText">重新发送</span>
+                            <span id="countdown" class="hidden">(60s)</span>
+                        </button>
+                        <button class="register-btn" id="verifyBtn">验证并注册</button>
+                    </div>
+                </div>
+
+                <!-- 步骤3: 注册成功 -->
+                <div class="step hidden" id="successStep">
+                    <div class="success-message">
+                        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                        </svg>
+                        <h2>注册成功！</h2>
+                        <p>欢迎使用语音识别助手</p>
+                    </div>
+                    <button class="register-btn" id="goToAppBtn">开始使用</button>
+                </div>
+            </div>
+
+            <!-- 加载状态 -->
+            <div class="loading hidden" id="loading">
+                <div class="spinner"></div>
+                <p id="loadingText">正在发送验证码...</p>
+            </div>
+        </main>
+
+        <footer class="register-footer">
+            <p>已有账号？<a href="login.html">立即登录</a></p>
+            <p><a href="index.html">返回首页</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // 动态加载JavaScript文件，防止缓存
+        const jsTimestamp = Date.now();
+        const scripts = [
+            'js/api-config.js',
+            'js/register.js'
+        ];
+        
+        scripts.forEach(src => {
+            document.write('<script src="' + src + '?v=' + jsTimestamp + '"><\/script>');
+        });
+    </script>
+</body>
+
+</html>

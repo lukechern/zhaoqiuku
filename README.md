@@ -16,7 +16,9 @@ zhaoqiuku/
 │   └── README.md
 ├── api/                        # Vercel API端点
 │   ├── transcribe.js          # 语音转录API
-│   └── health.js              # 健康检查API
+│   ├── health.js              # 健康检查API
+│   ├── send-verification-code.js  # 发送邮箱验证码API
+│   └── verify-code.js         # 验证验证码API
 ├── config/                     # 配置文件
 │   ├── apiConfig.js           # API配置（URL、提示词等）
 │   └── debugConfig.js         # 调试级别配置
@@ -27,10 +29,17 @@ zhaoqiuku/
 │   │   ├── api-client.js      # API客户端
 │   │   ├── ui-controller.js   # UI控制器
 │   │   ├── audio-recorder.js  # 音频录制
+│   │   ├── register.js        # 注册页面逻辑
 │   │   └── main.js           # 主程序
-│   ├── css/                   # 样式文件
-│   └── index.html            # 主页面
-└── README.md                  # 项目说明
+│   ├── css/
+│   │   ├── main.css          # 主样式
+│   │   ├── register.css      # 注册页面样式
+│   │   └── ...               # 其他样式文件
+│   ├── index.html            # 主页面
+│   ├── register.html         # 注册页面
+│   └── login.html            # 登录页面（占位符）
+├── vercel.json               # Vercel配置
+└── README.md                 # 项目说明
 ```
 
 ## 快速配置
@@ -87,9 +96,17 @@ const CURRENT_DEBUG_LEVEL = 'full_debug';
 ## 部署说明
 
 ### Vercel部署
-1. 设置环境变量 `GEMINI_API_KEY`
+1. 设置环境变量：
+   - `GEMINI_API_KEY` - Google Gemini API密钥
+   - `RESEND_API_KEY` - Resend邮件服务API密钥
 2. 部署到Vercel平台
 3. 配置域名（可选）
+
+### 邮件服务配置
+项目使用 [Resend](https://resend.com/) 作为邮件服务提供商：
+1. 注册 Resend 账号
+2. 获取 API Key
+3. 在 Vercel 环境变量中设置 `RESEND_API_KEY`
 
 ### Android应用
 1. 在Android Studio中打开 `android/` 目录
@@ -115,11 +132,29 @@ showApiConfig()             // 显示API配置信息
 2. 连接Android设备
 3. 选择WebView页面进行调试
 
+## 功能特性
+
+### 🎤 语音识别
+- 支持中文语音识别
+- 物品存放和查找指令识别
+- 实时音频录制和处理
+
+### 👤 用户系统
+- 邮箱注册功能
+- 6位数字验证码验证
+- 用户状态管理（开发中）
+
+### 🔧 调试功能
+- 多级调试模式
+- 实时API请求监控
+- 完整的错误日志
+
 ## 技术栈
 
 - **前端**: HTML5, CSS3, JavaScript (ES6+)
 - **后端**: Node.js, Vercel Serverless Functions
 - **AI服务**: Google Gemini API
+- **邮件服务**: Resend API
 - **移动端**: Android WebView, Kotlin
 - **音频处理**: Web Audio API, MediaRecorder API
 

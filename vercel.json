@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "api/send-verification-code.js": {
+      "maxDuration": 30
+    },
+    "api/verify-code.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}
