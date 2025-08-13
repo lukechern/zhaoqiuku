@@ -18,15 +18,24 @@ zhaoqiuku/
 │   ├── transcribe.js          # 语音转录API
 │   ├── health.js              # 健康检查API
 │   ├── send-verification-code.js  # 发送邮箱验证码API
-│   └── verify-code.js         # 验证验证码API
+│   ├── verify-code.js         # 验证验证码API
+│   ├── login.js               # 用户登录API
+│   ├── logout.js              # 用户登出API
+│   ├── refresh-token.js       # Token刷新API
+│   ├── init-database.js       # 数据库初始化API
+│   └── user/
+│       └── profile.js         # 用户信息API
 ├── config/                     # 配置文件
 │   ├── apiConfig.js           # API配置（URL、提示词等）
 │   ├── debugConfig.js         # 调试级别配置
 │   ├── emailConfig.js         # 邮件配置（发件人、模板等）
 │   ├── databaseConfig.js      # 数据库配置（Supabase连接等）
+│   ├── authConfig.js          # 认证配置（JWT、Cookie等）
 │   └── emailConfigTest.js     # 邮件配置测试工具
 ├── utils/                      # 工具函数
-│   └── database.js            # 数据库操作工具
+│   ├── database.js            # 数据库操作工具
+│   ├── jwt.js                 # JWT Token 工具
+│   └── auth.js                # 认证工具函数
 ├── public/                     # 前端资源
 │   ├── js/
 │   │   ├── api-config.js      # 前端API配置
@@ -35,6 +44,8 @@ zhaoqiuku/
 │   │   ├── ui-controller.js   # UI控制器
 │   │   ├── audio-recorder.js  # 音频录制
 │   │   ├── register.js        # 注册页面逻辑
+│   │   ├── login.js           # 登录页面逻辑
+│   │   ├── auth-manager.js    # 前端认证管理器
 │   │   └── main.js           # 主程序
 │   ├── css/
 │   │   ├── main.css          # 主样式
@@ -126,6 +137,7 @@ const CURRENT_DEBUG_LEVEL = 'full_debug';
    - `RESEND_API_KEY` - Resend邮件服务API密钥
    - `SUPABASE_URL` - Supabase项目URL
    - `SUPABASE_ANON_KEY` - Supabase匿名访问密钥
+   - `JWT_SECRET` - JWT签名密钥（至少32位随机字符串）
 2. 部署到Vercel平台
 3. 配置域名（可选）
 
@@ -203,9 +215,12 @@ showApiConfig()             // 显示API配置信息
 ### 👤 用户系统
 - 邮箱注册功能
 - 6位数字验证码验证
+- JWT Token 认证
+- 用户登录/登出
+- 自动Token刷新
+- LocalStorage 状态持久化
 - Supabase 数据库存储
-- 用户状态管理
-- 验证码过期处理
+- 适配 Android WebView
 
 ### 🔧 调试功能
 - 多级调试模式

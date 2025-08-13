@@ -245,6 +245,13 @@ class RegisterManager {
 
             if (response.ok) {
                 this.hideLoading();
+                
+                // 保存认证状态（如果返回了认证信息）
+                if (result.auth && window.authManager) {
+                    window.authManager.saveAuthState(result);
+                    console.log('注册成功，已自动登录');
+                }
+                
                 this.switchStep('success');
                 this.clearCountdown();
             } else {

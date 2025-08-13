@@ -7,6 +7,31 @@ class VoiceRecognitionApp {
         
         this.isInitialized = false;
         this.isProcessing = false;
+        
+        // 用户状态管理
+        this.initializeUserState();
+    }
+
+    // 初始化用户状态
+    initializeUserState() {
+        // 获取用户状态元素
+        this.authLinks = document.getElementById('authLinks');
+        this.userInfo = document.getElementById('userInfo');
+        this.userEmail = document.getElementById('userEmail');
+        this.logoutBtn = document.getElementById('logoutBtn');
+
+        // 绑定登出事件
+        if (this.logoutBtn) {
+            this.logoutBtn.addEventListener('click', () => this.handleLogout());
+        }
+
+        // 监听认证状态变化
+        window.addEventListener('authStateChange', (e) => {
+            this.handleAuthStateChange(e.detail);
+        });
+
+        // 初始化用户状态显示
+        this.updateUserDisplay();
     }
 
     // 初始化应用
@@ -301,6 +326,46 @@ class VoiceRecognitionApp {
             console.log('应用已销毁');
         } catch (error) {
             console.error('销毁应用失败:', error);
+        }
+    }
+}
+
+    // 更新用户显示状态
+    updateUserDisplay() {
+        if (window.authManager && window.authManager.isAuthenticated) {
+            // 显示用户信息
+            this.authLinks.style.display = 'none';
+            this.userInfo.classList.remove('hidden');
+            this.userEmail.textContent = window.authManager.user.email;
+        } else {
+            // 显示登录链接
+            this.authLinks.style.display = 'flex';
+            this.userInfo.classList.add('hidden');
+        }
+    }
+
+    // 处理认证状态变化
+    handleAuthStateChange(detail) {
+        console.log('认证状态变化:', detail);
+        this.updateUserDisplay();
+        
+        // 可以在这里添加其他认证状态变化的处理逻辑
+        if (detail.type === 'login') {
+            console.log('用户已登录:', detail.user.email);
+        } else if (detail.type === 'logout') {
+            console.log('用户已登出');
+        }
+    }
+
+    // 处理登出
+    async handleLogout() {
+        try {
+            const success = await window.authManager.logout();
+            if (success) {
+                console.log('登出成功');
+            }
+        } catch (error) {
+            console.error('登出失败:', error);
         }
     }
 }

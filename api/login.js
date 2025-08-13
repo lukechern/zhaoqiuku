@@ -1,12 +1,11 @@
 /*
  * ========================================
- * ✅ 验证邮箱验证码 API
+ * 🔐 用户登录 API
  * ========================================
- * 验证用户输入的6位验证码是否正确
+ * 处理用户登录请求，生成 JWT Token
  */
 
-import { EMAIL_CONFIG } from '../config/emailConfig.js';
-import { verifyUserCode, findUserByEmail } from '../utils/database.js';
+import { findUserByEmail } from '../utils/database.js';
 import { generateAuthTokens } from '../utils/jwt.js';
 import { setAuthCookies, generateClientAuthState } from '../utils/auth.js';
 
@@ -14,13 +13,6 @@ import { setAuthCookies, generateClientAuthState } from '../utils/auth.js';
 function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-}
-
-// 验证验证码格式
-function validateCode(code) {
-    const length = EMAIL_CONFIG.VERIFICATION.CODE_LENGTH;
-    const regex = new RegExp(`^\\d{${length}}$`);
-    return regex.test(code);
 }
 
 export default async function handler(req, res) {
@@ -40,38 +32,55 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { email, code } = req.body;
+        const { email } = req.body;
 
         // 验证输入
-        if (!email || !code) {
-            return res.status(400).json({ error: '邮箱地址和验证码不能为空' });
+        if (!email) {
+            return res.status(400).json({ error: '邮箱地址不能为空' });
         }
 
         if (!validateEmail(email)) {
             return res.status(400).json({ error: '邮箱地址格式不正确' });
         }
 
-        if (!validateCode(code)) {
-            return res.status(400).json({ error: `验证码必须是${EMAIL_CONFIG.VERIFICATION.CODE_LENGTH}位数字` });
-        }
-
-        // 从数据库验证验证码
-        let verifiedUser;
+        // 查找用户
+        let user;
         try {
-            verifiedUser = await verifyUserCode(email, code);
+            user = await findUserByEmail(email);
         } catch (dbError) {
-            console.error('数据库验证失败:', dbError);
+            console.error('数据库查询失败:', dbError);
             return res.status(500).json({ error: '数据库操作失败，请稍后重试' });
         }
 
-        if (!verifiedUser) {
-            return res.status(400).json({ error: '验证码错误、已过期或不存在，请重新获取' });
+        if (!user) {
+            return res.status(404).json({ 
+                error: '用户不存在',
+                code: 'USER_NOT_FOUND',
+                message: '该邮箱地址尚未注册，请先注册'
+            });
+        }
+
+        // 检查用户状态
+        if (!user.is_verified) {
+            return res.status(400).json({ 
+                error: '用户未验证',
+                code: 'USER_NOT_VERIFIED',
+                message: '请先完成邮箱验证'
+            });
+        }
+
+        if (user.status !== 'active') {
+            return res.status(400).json({ 
+                error: '用户状态异常',
+                code: 'USER_INACTIVE',
+                message: '账户已被禁用，请联系客服'
+            });
         }
 
         // 生成 JWT Token
         let authTokens;
         try {
-            authTokens = await generateAuthTokens(verifiedUser);
+            authTokens = await generateAuthTokens(user);
         } catch (tokenError) {
             console.error('生成认证令牌失败:', tokenError);
             return res.status(500).json({ error: '认证令牌生成失败，请稍后重试' });
@@ -83,14 +92,13 @@ export default async function handler(req, res) {
         // 生成前端认证状态
         const clientAuthState = generateClientAuthState(authTokens);
 
-        console.log(`用户注册并登录成功: ${email}`);
+        console.log(`用户登录成功: ${email}`);
 
-        return res.status(200).json({ 
-            success: true, 
-            message: '验证成功，注册完成',
+        return res.status(200).json({
+            success: true,
+            message: '登录成功',
             user: authTokens.user,
             auth: clientAuthState,
-            // 为了兼容性，保留原有字段
             tokens: {
                 accessToken: authTokens.accessToken,
                 refreshToken: authTokens.refreshToken,
@@ -100,7 +108,7 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error('验证验证码错误:', error);
+        console.error('用户登录错误:', error);
         return res.status(500).json({ error: '服务器内部错误' });
     }
 }

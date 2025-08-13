@@ -307,7 +307,33 @@ body {
 
 .user-actions {
     display: flex;
+    align-items: center;
     gap: 1rem;
+}
+
+.auth-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-info.hidden {
+    display: none;
+}
+
+.user-email {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .auth-link {
@@ -319,6 +345,8 @@ body {
     font-weight: 500;
     transition: all 0.3s ease;
     border: 1px solid transparent;
+    background: none;
+    cursor: pointer;
 }
 
 .auth-link:hover {
@@ -329,6 +357,17 @@ body {
 
 .auth-link:active {
     transform: translateY(1px);
+}
+
+.logout-btn {
+    color: var(--warning);
+    border-color: var(--warning);
+}
+
+.logout-btn:hover {
+    color: var(--text-primary);
+    background: var(--warning);
+    border-color: var(--warning);
 }
 
 /* 响应式设计 */

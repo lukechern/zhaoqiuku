@@ -24,9 +24,17 @@
     <div class="container">
         <header class="header">
             <div class="header-top">
-                <div class="user-actions">
-                    <a href="register.html" class="auth-link">注册</a>
-                    <a href="login.html" class="auth-link">登录</a>
+                <div class="user-actions" id="userActions">
+                    <!-- 未登录状态 -->
+                    <div class="auth-links" id="authLinks">
+                        <a href="register.html" class="auth-link">注册</a>
+                        <a href="login.html" class="auth-link">登录</a>
+                    </div>
+                    <!-- 已登录状态 -->
+                    <div class="user-info hidden" id="userInfo">
+                        <span class="user-email" id="userEmail">用户邮箱</span>
+                        <button class="auth-link logout-btn" id="logoutBtn">登出</button>
+                    </div>
                 </div>
             </div>
             <h1>语音识别助手</h1>
@@ -111,6 +119,7 @@
         const scripts = [
             'js/debug-config.js',
             'js/api-config.js',
+            'js/auth-manager.js',
             'js/audio-recorder.js',
             'js/ui-controller.js', 
             'js/api-client.js',
