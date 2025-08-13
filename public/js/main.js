@@ -14,24 +14,42 @@ class VoiceRecognitionApp {
 
     // 初始化用户状态
     initializeUserState() {
-        // 获取用户状态元素
-        this.authLinks = document.getElementById('authLinks');
-        this.userInfo = document.getElementById('userInfo');
-        this.userEmail = document.getElementById('userEmail');
-        this.logoutBtn = document.getElementById('logoutBtn');
+        // 延迟初始化，确保DOM元素已加载
+        const initUserStateElements = () => {
+            // 获取用户状态元素
+            this.authLinks = document.getElementById('authLinks');
+            this.userInfo = document.getElementById('userInfo');
+            this.userEmail = document.getElementById('userEmail');
+            this.logoutBtn = document.getElementById('logoutBtn');
 
-        // 绑定登出事件
-        if (this.logoutBtn) {
-            this.logoutBtn.addEventListener('click', () => this.handleLogout());
+            if (!this.authLinks || !this.userInfo || !this.userEmail) {
+                console.log('用户状态元素未找到，延迟重试...');
+                setTimeout(initUserStateElements, 100);
+                return;
+            }
+
+            console.log('用户状态元素已找到，绑定事件...');
+
+            // 绑定登出事件
+            if (this.logoutBtn) {
+                this.logoutBtn.addEventListener('click', () => this.handleLogout());
+            }
+
+            // 监听认证状态变化
+            window.addEventListener('authStateChange', (e) => {
+                this.handleAuthStateChange(e.detail);
+            });
+
+            // 等待认证管理器初始化完成
+            this.waitForAuthManager();
+        };
+
+        // 如果DOM已加载完成，立即初始化；否则等待
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initUserStateElements);
+        } else {
+            initUserStateElements();
         }
-
-        // 监听认证状态变化
-        window.addEventListener('authStateChange', (e) => {
-            this.handleAuthStateChange(e.detail);
-        });
-
-        // 等待认证管理器初始化完成
-        this.waitForAuthManager();
     }
 
     // 初始化应用
@@ -332,15 +350,30 @@ class VoiceRecognitionApp {
 
     // 等待认证管理器初始化
     waitForAuthManager() {
+        let attempts = 0;
+        const maxAttempts = 100; // 最多等待5秒
+
         const checkAuthManager = () => {
+            attempts++;
+            
             if (window.authManager) {
                 console.log('认证管理器已就绪，初始化用户状态显示');
+                console.log('认证状态:', {
+                    isAuthenticated: window.authManager.isAuthenticated,
+                    user: window.authManager.user?.email,
+                    hasTokens: !!window.authManager.tokens
+                });
                 this.updateUserDisplay();
-            } else {
-                console.log('等待认证管理器初始化...');
+            } else if (attempts < maxAttempts) {
+                console.log(`等待认证管理器初始化... (${attempts}/${maxAttempts})`);
                 setTimeout(checkAuthManager, 50);
+            } else {
+                console.error('认证管理器初始化超时');
+                // 即使没有认证管理器，也要显示默认状态
+                this.updateUserDisplay();
             }
         };
+        
         checkAuthManager();
     }
 
@@ -410,6 +443,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     try {
         await app.initialize();
+        
+        // 应用初始化完成后，再次检查用户状态
+        setTimeout(() => {
+            console.log('应用初始化完成，最终检查用户状态...');
+            if (window.authManager) {
+                app.updateUserDisplay();
+            }
+        }, 200);
+        
     } catch (error) {
         console.error('应用启动失败:', error);
     }

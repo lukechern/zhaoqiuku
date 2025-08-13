@@ -80,10 +80,15 @@ class AuthManager {
                 this.user = JSON.parse(userInfo);
                 this.isAuthenticated = true;
 
-                // 触发认证状态恢复事件
+                console.log('从localStorage恢复认证状态:', this.user.email);
+                
+                // 立即触发认证状态恢复事件
+                this.dispatchAuthEvent('restore', { user: this.user });
+                
+                // 延迟再次触发，确保所有监听器都能接收到
                 setTimeout(() => {
                     this.dispatchAuthEvent('restore', { user: this.user });
-                }, 10);
+                }, 100);
 
                 // 检查 Token 是否需要刷新
                 if (this.shouldRefreshToken(accessToken)) {
@@ -378,17 +383,18 @@ class AuthManager {
     }
 }
 
-// 确保在DOM加载完成后创建全局认证管理器实例
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.authManager = new AuthManager();
-        console.log('认证管理器已在DOM加载完成后创建');
-    });
-} else {
-    // DOM已经加载完成
-    window.authManager = new AuthManager();
-    console.log('认证管理器已创建');
-}
+// 立即创建全局认证管理器实例
+window.authManager = new AuthManager();
+console.log('认证管理器已创建');
+
+// 确保在页面完全加载后再次检查状态
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM加载完成，检查认证状态...');
+    if (window.authManager && window.authManager.isAuthenticated) {
+        console.log('检测到已登录状态，触发状态恢复事件');
+        window.authManager.dispatchAuthEvent('restore', { user: window.authManager.user });
+    }
+});
 
 // 导出认证管理器类
 if (typeof module !== 'undefined' && module.exports) {
