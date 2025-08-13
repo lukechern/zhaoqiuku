@@ -5,6 +5,15 @@
     },
     "api/verify-code.js": {
       "maxDuration": 30
+    },
+    "api/debug-user.js": {
+      "maxDuration": 30
+    },
+    "api/fix-user-status.js": {
+      "maxDuration": 30
+    },
+    "api/fix-all-users.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [

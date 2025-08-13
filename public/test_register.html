@@ -98,13 +98,22 @@
     </div>
 
     <div class="test-section">
-        <h2>5. 认证状态测试</h2>
+        <h2>5. 用户状态调试</h2>
+        <input type="email" id="debugEmail" placeholder="输入要调试的邮箱" value="test@example.com">
+        <button class="test-button" onclick="debugUserStatus()">调试用户状态</button>
+        <button class="test-button" onclick="fixUserStatus()">修复用户状态</button>
+        <button class="test-button" onclick="fixAllUsers()">批量修复所有用户</button>
+        <div id="debugResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. 认证状态测试</h2>
         <button class="test-button" onclick="window.open('test_auth.html', '_blank')">打开认证测试页面</button>
         <div id="authTestResult"></div>
     </div>
 
     <div class="test-section">
-        <h2>6. 快速链接</h2>
+        <h2>7. 快速链接</h2>
         <button class="test-button" onclick="window.open('register.html', '_blank')">打开注册页面</button>
         <button class="test-button" onclick="window.open('index.html', '_blank')">打开主页面</button>
     </div>
@@ -332,6 +341,158 @@ ${result.sqlQuery}
 注意: 实际发送的邮件会包含完整的HTML样式和格式`;
 
             showResult(resultDiv, message, 'success');
+        }
+
+        async function debugUserStatus() {
+            const email = document.getElementById('debugEmail').value;
+            const resultDiv = document.getElementById('debugResult');
+
+            if (!email) {
+                showResult(resultDiv, '请输入邮箱地址', 'error');
+                return;
+            }
+
+            try {
+                showResult(resultDiv, '正在查询用户状态...', '');
+
+                const response = await fetch('/api/debug-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const message = `🔍 用户状态调试结果:
+
+基本信息:
+- 邮箱: ${result.user.email}
+- ID: ${result.user.id}
+- 注册时间: ${new Date(result.user.registeredAt).toLocaleString()}
+- 更新时间: ${new Date(result.user.updatedAt).toLocaleString()}
+
+状态信息:
+- 当前状态: ${result.user.status}
+- 是否已验证: ${result.user.isVerified ? '是' : '否'}
+- 有验证码: ${result.user.hasVerificationCode ? '是' : '否'}
+- 验证码过期时间: ${result.user.codeExpiresAt ? new Date(result.user.codeExpiresAt).toLocaleString() : '无'}
+
+调试信息:
+- 状态原始值: "${result.debug.rawStatus}"
+- 状态类型: ${result.debug.statusType}
+- 是否为active: ${result.debug.isActive}
+- 是否为pending: ${result.debug.isPending}
+
+状态比较:
+- active: ${result.debug.statusComparison.active}
+- pending: ${result.debug.statusComparison.pending}
+- inactive: ${result.debug.statusComparison.inactive}
+
+${!result.debug.isActive ? '⚠️ 用户状态不是active，这可能导致登录失败' : '✅ 用户状态正常'}`;
+
+                    showResult(resultDiv, message, result.debug.isActive ? 'success' : 'error');
+                } else {
+                    showResult(resultDiv, `❌ 查询失败：${result.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ 网络错误：${error.message}`, 'error');
+            }
+        }
+
+        async function fixUserStatus() {
+            const email = document.getElementById('debugEmail').value;
+            const resultDiv = document.getElementById('debugResult');
+
+            if (!email) {
+                showResult(resultDiv, '请输入邮箱地址', 'error');
+                return;
+            }
+
+            try {
+                showResult(resultDiv, '正在修复用户状态...', '');
+
+                const response = await fetch('/api/fix-user-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const message = `🔧 用户状态修复结果:
+
+${result.message}
+
+用户信息:
+- 邮箱: ${result.user.email}
+- 当前状态: ${result.user.status}
+- 是否已验证: ${result.user.isVerified ? '是' : '否'}
+- 更新时间: ${new Date(result.user.updatedAt).toLocaleString()}
+
+${result.changes ? `状态变更:
+- 修复前: ${result.changes.oldStatus}
+- 修复后: ${result.changes.newStatus}` : ''}
+
+✅ 现在可以尝试重新登录了！`;
+
+                    showResult(resultDiv, message, 'success');
+                } else {
+                    showResult(resultDiv, `❌ 修复失败：${result.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ 网络错误：${error.message}`, 'error');
+            }
+        }
+
+        async function fixAllUsers() {
+            const resultDiv = document.getElementById('debugResult');
+
+            if (!confirm('确定要批量修复所有已验证但状态不正确的用户吗？')) {
+                return;
+            }
+
+            try {
+                showResult(resultDiv, '正在批量修复用户状态...', '');
+
+                const response = await fetch('/api/fix-all-users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    let message = `🔧 批量修复结果:
+
+${result.message}
+修复用户数量: ${result.fixedCount}
+
+`;
+
+                    if (result.users && result.users.length > 0) {
+                        message += '修复的用户列表:\n';
+                        result.users.forEach((user, index) => {
+                            message += `${index + 1}. ${user.email}: ${user.oldStatus} → ${user.newStatus}\n`;
+                        });
+                    }
+
+                    message += '\n✅ 所有用户状态已修复，现在可以正常登录了！';
+
+                    showResult(resultDiv, message, 'success');
+                } else {
+                    showResult(resultDiv, `❌ 批量修复失败：${result.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ 网络错误：${error.message}`, 'error');
+            }
         }
 
         function showResult(element, message, type) {

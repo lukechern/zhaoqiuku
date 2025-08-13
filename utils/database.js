@@ -21,14 +21,28 @@ export async function upsertUserVerificationCode(email, verificationCode, expire
     try {
         const supabase = await createSupabaseClient();
 
+        // 首先检查用户是否已存在
+        const { data: existingUser } = await supabase
+            .from(USERS_TABLE.TABLE_NAME)
+            .select('*')
+            .eq(USERS_TABLE.COLUMNS.EMAIL, email)
+            .single();
+
+        // 准备更新数据
+        const updateData = {
+            [USERS_TABLE.COLUMNS.EMAIL]: email,
+            [USERS_TABLE.COLUMNS.VERIFICATION_CODE]: verificationCode,
+            [USERS_TABLE.COLUMNS.CODE_EXPIRES_AT]: expiresAt.toISOString()
+        };
+
+        // 只有新用户才设置为pending状态，已验证用户保持原状态
+        if (!existingUser || !existingUser[USERS_TABLE.COLUMNS.IS_VERIFIED]) {
+            updateData[USERS_TABLE.COLUMNS.STATUS] = 'pending';
+        }
+
         const { data, error } = await supabase
             .from(USERS_TABLE.TABLE_NAME)
-            .upsert({
-                [USERS_TABLE.COLUMNS.EMAIL]: email,
-                [USERS_TABLE.COLUMNS.VERIFICATION_CODE]: verificationCode,
-                [USERS_TABLE.COLUMNS.CODE_EXPIRES_AT]: expiresAt.toISOString(),
-                [USERS_TABLE.COLUMNS.STATUS]: 'pending'
-            }, {
+            .upsert(updateData, {
                 onConflict: USERS_TABLE.COLUMNS.EMAIL
             })
             .select()
