@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         const user = await findUserByEmail(email);
 
         if (!user) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 error: '用户不存在',
                 email: email
             });
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('调试用户状态错误:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             error: '服务器内部错误',
             details: error.message
         });
