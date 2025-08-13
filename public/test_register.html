@@ -83,7 +83,14 @@
     </div>
 
     <div class="test-section">
-        <h2>3. 快速链接</h2>
+        <h2>3. 邮件配置测试</h2>
+        <button class="test-button" onclick="testEmailConfig()">测试邮件配置</button>
+        <button class="test-button" onclick="previewEmailTemplate()">预览邮件模板</button>
+        <div id="configResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. 快速链接</h2>
         <button class="test-button" onclick="window.open('register.html', '_blank')">打开注册页面</button>
         <button class="test-button" onclick="window.open('index.html', '_blank')">打开主页面</button>
     </div>
@@ -157,6 +164,52 @@
         function showResult(element, message, type) {
             element.innerHTML = `<pre>${message}</pre>`;
             element.className = `result ${type}`;
+        }
+
+        async function testEmailConfig() {
+            const resultDiv = document.getElementById('configResult');
+            
+            try {
+                showResult(resultDiv, '正在测试邮件配置...', '');
+                
+                const response = await fetch('/api/send-verification-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: 'config-test@example.com' })
+                });
+
+                if (response.ok) {
+                    showResult(resultDiv, '✅ 邮件配置正常\n- Resend API 连接成功\n- 邮件模板加载正常\n- 验证码生成正常', 'success');
+                } else {
+                    const result = await response.json();
+                    showResult(resultDiv, `⚠️ 邮件配置可能有问题:\n${result.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ 邮件配置测试失败:\n${error.message}`, 'error');
+            }
+        }
+
+        function previewEmailTemplate() {
+            const resultDiv = document.getElementById('configResult');
+            const testCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            const message = `📧 邮件模板预览
+            
+测试验证码: ${testCode}
+测试邮箱: test@example.com
+
+邮件配置:
+- 发件人: 语音识别助手 <noreply@resend.dev>
+- 主题: 语音识别助手 - 邮箱验证码
+- 验证码长度: 6位数字
+- 有效期: 10分钟
+- 模板: HTML + 纯文本双格式
+
+注意: 实际发送的邮件会包含完整的HTML样式和格式`;
+            
+            showResult(resultDiv, message, 'success');
         }
     </script>
 </body>

@@ -5,95 +5,23 @@
  * 使用 Resend API 发送6位验证码到用户邮箱
  */
 
+import { EMAIL_SENDER, EMAIL_TEMPLATES, EMAIL_CONFIG } from '../config/emailConfig.js';
+
 // 验证码存储（生产环境应使用数据库或Redis）
 const verificationCodes = new Map();
 
-// 生成6位随机验证码
+// 生成验证码
 function generateVerificationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    const length = EMAIL_CONFIG.VERIFICATION.CODE_LENGTH;
+    const min = Math.pow(10, length - 1);
+    const max = Math.pow(10, length) - 1;
+    return Math.floor(min + Math.random() * (max - min + 1)).toString();
 }
 
 // 验证邮箱格式
 function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-}
-
-// 邮件模板
-function getEmailTemplate(code) {
-    return {
-        subject: '语音识别助手 - 邮箱验证码',
-        html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { text-align: center; margin-bottom: 30px; }
-                .code-box { 
-                    background: #f8f9fa; 
-                    border: 2px solid #007AFF; 
-                    border-radius: 8px; 
-                    padding: 20px; 
-                    text-align: center; 
-                    margin: 20px 0; 
-                }
-                .code { 
-                    font-size: 32px; 
-                    font-weight: bold; 
-                    color: #007AFF; 
-                    letter-spacing: 4px; 
-                }
-                .footer { color: #666; font-size: 14px; margin-top: 30px; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>语音识别助手</h1>
-                    <h2>邮箱验证码</h2>
-                </div>
-                
-                <p>您好！</p>
-                <p>感谢您注册语音识别助手。请使用以下验证码完成注册：</p>
-                
-                <div class="code-box">
-                    <div class="code">${code}</div>
-                </div>
-                
-                <p><strong>注意事项：</strong></p>
-                <ul>
-                    <li>验证码有效期为10分钟</li>
-                    <li>请勿将验证码告诉他人</li>
-                    <li>如果您没有申请此验证码，请忽略此邮件</li>
-                </ul>
-                
-                <div class="footer">
-                    <p>此邮件由系统自动发送，请勿回复。</p>
-                    <p>© 2025 语音识别助手</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        `,
-        text: `
-        语音识别助手 - 邮箱验证码
-        
-        您好！
-        
-        感谢您注册语音识别助手。您的验证码是：${code}
-        
-        注意事项：
-        - 验证码有效期为10分钟
-        - 请勿将验证码告诉他人
-        - 如果您没有申请此验证码，请忽略此邮件
-        
-        此邮件由系统自动发送，请勿回复。
-        © 2025 语音识别助手
-        `
-    };
 }
 
 export default async function handler(req, res) {
@@ -134,12 +62,12 @@ export default async function handler(req, res) {
         // 生成验证码
         const verificationCode = generateVerificationCode();
         
-        // 存储验证码（10分钟有效期）
+        // 存储验证码
         const codeData = {
             code: verificationCode,
             email: email,
             timestamp: Date.now(),
-            expires: Date.now() + 10 * 60 * 1000 // 10分钟
+            expires: Date.now() + EMAIL_CONFIG.VERIFICATION.EXPIRES_IN
         };
         verificationCodes.set(email, codeData);
 
@@ -151,21 +79,23 @@ export default async function handler(req, res) {
         }
 
         // 获取邮件模板
-        const emailTemplate = getEmailTemplate(verificationCode);
+        const template = EMAIL_TEMPLATES.VERIFICATION_CODE;
+        const emailHtml = template.getHtml(verificationCode, email);
+        const emailText = template.getText(verificationCode, email);
 
         // 发送邮件
-        const response = await fetch('https://api.resend.com/emails', {
+        const response = await fetch(EMAIL_CONFIG.RESEND.API_URL, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${resendApiKey}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                from: 'noreply@resend.dev', // 使用Resend的默认发送域名
+                from: EMAIL_SENDER.FROM,
                 to: [email],
-                subject: emailTemplate.subject,
-                html: emailTemplate.html,
-                text: emailTemplate.text
+                subject: template.subject,
+                html: emailHtml,
+                text: emailText
             })
         });
 

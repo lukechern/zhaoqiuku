@@ -5,6 +5,8 @@
  * 验证用户输入的6位验证码是否正确
  */
 
+import { EMAIL_CONFIG } from '../config/emailConfig.js';
+
 // 验证码存储（与发送验证码API共享，生产环境应使用数据库或Redis）
 const verificationCodes = new Map();
 
@@ -16,7 +18,9 @@ function validateEmail(email) {
 
 // 验证验证码格式
 function validateCode(code) {
-    return /^\d{6}$/.test(code);
+    const length = EMAIL_CONFIG.VERIFICATION.CODE_LENGTH;
+    const regex = new RegExp(`^\\d{${length}}$`);
+    return regex.test(code);
 }
 
 export default async function handler(req, res) {
@@ -48,7 +52,7 @@ export default async function handler(req, res) {
         }
 
         if (!validateCode(code)) {
-            return res.status(400).json({ error: '验证码必须是6位数字' });
+            return res.status(400).json({ error: `验证码必须是${EMAIL_CONFIG.VERIFICATION.CODE_LENGTH}位数字` });
         }
 
         // 查找验证码

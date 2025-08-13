@@ -21,7 +21,8 @@ zhaoqiuku/
 │   └── verify-code.js         # 验证验证码API
 ├── config/                     # 配置文件
 │   ├── apiConfig.js           # API配置（URL、提示词等）
-│   └── debugConfig.js         # 调试级别配置
+│   ├── debugConfig.js         # 调试级别配置
+│   └── emailConfig.js         # 邮件配置（发件人、模板等）
 ├── public/                     # 前端资源
 │   ├── js/
 │   │   ├── api-config.js      # 前端API配置
@@ -54,6 +55,26 @@ export const API_ENDPOINTS = {
         BASE_URL: 'https://generativelanguage.googleapis.com/v1beta',
         MODEL: 'gemini-2.5-flash',  // 修改模型版本
         ENDPOINT: 'generateContent'
+    }
+};
+```
+
+### 📧 邮件配置
+修改 `config/emailConfig.js` 中的邮件设置：
+
+```javascript
+// 发件人配置
+export const EMAIL_SENDER = {
+    FROM: 'noreply@yourdomain.com',  // 修改为你的域名
+    NAME: '语音识别助手',
+};
+
+// 邮件模板可以自定义HTML和文本内容
+export const EMAIL_TEMPLATES = {
+    VERIFICATION_CODE: {
+        subject: '语音识别助手 - 邮箱验证码',
+        getHtml: (code, email) => `...`,  // 自定义HTML模板
+        getText: (code, email) => `...`   // 自定义文本模板
     }
 };
 ```
