@@ -82,6 +82,25 @@ export default async function handler(req, res) {
         const emailHtml = template.getHtml(verificationCode, email);
         const emailText = template.getText(verificationCode, email);
 
+        // 准备邮件发送数据
+        const emailData = {
+            from: EMAIL_SENDER.FULL_FROM,
+            to: [email],
+            subject: template.subject,
+            html: emailHtml,
+            text: emailText,
+            reply_to: EMAIL_SENDER.FULL_FROM
+        };
+
+        console.log('准备发送邮件:', {
+            from: emailData.from,
+            to: emailData.to,
+            subject: emailData.subject,
+            apiUrl: EMAIL_CONFIG.RESEND.API_URL,
+            apiKeyLength: resendApiKey.length,
+            apiKeyPrefix: resendApiKey.substring(0, 8) + '...'
+        });
+
         // 发送邮件
         const response = await fetch(EMAIL_CONFIG.RESEND.API_URL, {
             method: 'POST',
@@ -89,20 +108,36 @@ export default async function handler(req, res) {
                 'Authorization': `Bearer ${resendApiKey}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                from: EMAIL_SENDER.FULL_FROM,
-                to: [email],
-                subject: template.subject,
-                html: emailHtml,
-                text: emailText,
-                reply_to: EMAIL_SENDER.FULL_FROM
-            })
+            body: JSON.stringify(emailData)
         });
+
+        console.log('Resend API 响应状态:', response.status);
 
         if (!response.ok) {
             const errorData = await response.text();
-            console.error('Resend API 错误:', errorData);
-            return res.status(500).json({ error: '发送邮件失败，请稍后重试' });
+            console.error('Resend API 错误响应:', errorData);
+            
+            // 尝试解析错误信息
+            let parsedError;
+            try {
+                parsedError = JSON.parse(errorData);
+            } catch (e) {
+                parsedError = { message: errorData };
+            }
+
+            console.error('解析后的错误信息:', parsedError);
+            return res.status(500).json({ 
+                error: '发送邮件失败，请稍后重试',
+                debug: {
+                    resendStatus: response.status,
+                    resendError: parsedError,
+                    emailData: {
+                        from: emailData.from,
+                        to: emailData.to,
+                        subject: emailData.subject
+                    }
+                }
+            });
         }
 
         const result = await response.json();

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件发送调试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 1rem;
+        }
+        button:hover {
+            background: #0056CC;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 邮件发送调试工具</h1>
+        
+        <div class="form-group">
+            <label for="email">测试邮箱地址：</label>
+            <input type="email" id="email" placeholder="输入要测试的邮箱地址" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="api">选择 API：</label>
+            <select id="api">
+                <option value="send-verification-code">单独的发送验证码 API</option>
+                <option value="unified-auth">统一认证 API</option>
+            </select>
+        </div>
+        
+        <button onclick="testEmailSending()" id="testBtn">发送测试邮件</button>
+        <button onclick="testSimpleEmail()" id="simpleBtn">简单邮件测试</button>
+        <button onclick="checkResendConfig()" id="resendBtn">检查 Resend 配置</button>
+        <button onclick="checkEmailConfig()" id="configBtn">检查邮件配置</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function testEmailSending() {
+            const email = document.getElementById('email').value;
+            const api = document.getElementById('api').value;
+            const resultDiv = document.getElementById('result');
+            const testBtn = document.getElementById('testBtn');
+            
+            if (!email) {
+                showResult('请输入邮箱地址', 'error');
+                return;
+            }
+            
+            testBtn.disabled = true;
+            testBtn.textContent = '发送中...';
+            
+            try {
+                let url, body;
+                
+                if (api === 'send-verification-code') {
+                    url = '/api/send-verification-code';
+                    body = { email };
+                } else {
+                    url = '/api/unified-auth';
+                    body = { action: 'send_code', email };
+                }
+                
+                console.log('发送请求:', { url, body });
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body)
+                });
+                
+                const result = await response.json();
+                
+                console.log('响应状态:', response.status);
+                console.log('响应数据:', result);
+                
+                if (response.ok) {
+                    showResult(`✅ 邮件发送成功！\n\n响应数据:\n${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResult(`❌ 邮件发送失败！\n\n状态码: ${response.status}\n错误信息: ${result.error || '未知错误'}\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                console.error('请求错误:', error);
+                showResult(`❌ 网络请求失败！\n\n错误信息: ${error.message}\n\n请检查:\n1. 网络连接是否正常\n2. API 服务是否运行\n3. 浏览器控制台是否有更多错误信息`, 'error');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = '发送测试邮件';
+            }
+        }
+        
+        async function testSimpleEmail() {
+            const email = document.getElementById('email').value;
+            const resultDiv = document.getElementById('result');
+            const simpleBtn = document.getElementById('simpleBtn');
+            
+            if (!email) {
+                showResult('请输入邮箱地址', 'error');
+                return;
+            }
+            
+            simpleBtn.disabled = true;
+            simpleBtn.textContent = '发送中...';
+            
+            try {
+                console.log('发送简单测试邮件:', { email });
+                
+                const response = await fetch('/api/test-email-simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        email: email,
+                        testType: 'default'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                console.log('简单测试响应状态:', response.status);
+                console.log('简单测试响应数据:', result);
+                
+                if (response.ok) {
+                    showResult(`✅ 简单邮件测试成功！\n\n测试验证码: ${result.testCode}\n邮件ID: ${result.emailId}\n\n完整响应:\n${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResult(`❌ 简单邮件测试失败！\n\n状态码: ${response.status}\n错误信息: ${result.error || '未知错误'}\n\n调试信息:\n${JSON.stringify(result.debug || {}, null, 2)}\n\nResend 错误:\n${JSON.stringify(result.resendError || {}, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                console.error('简单测试请求错误:', error);
+                showResult(`❌ 简单邮件测试请求失败！\n\n错误信息: ${error.message}`, 'error');
+            } finally {
+                simpleBtn.disabled = false;
+                simpleBtn.textContent = '简单邮件测试';
+            }
+        }
+        
+        async function checkResendConfig() {
+            const resultDiv = document.getElementById('result');
+            const resendBtn = document.getElementById('resendBtn');
+            
+            resendBtn.disabled = true;
+            resendBtn.textContent = '检查中...';
+            
+            try {
+                const response = await fetch('/api/test-resend-config');
+                const result = await response.json();
+                
+                console.log('Resend 配置检查结果:', result);
+                
+                let configInfo = '🔍 Resend API 配置检查结果:\n\n';
+                
+                if (result.hasApiKey) {
+                    configInfo += `✅ API 密钥: 已设置 (${result.apiKeyPrefix})\n`;
+                    configInfo += `📏 密钥长度: ${result.apiKeyLength} 字符\n\n`;
+                } else {
+                    configInfo += `❌ API 密钥: 未设置\n\n`;
+                }
+                
+                if (result.testEmail) {
+                    if (result.testEmail.success) {
+                        configInfo += `✅ 测试邮件发送: 成功\n`;
+                        configInfo += `📧 邮件ID: ${result.testEmail.result?.id || '未知'}\n\n`;
+                    } else {
+                        configInfo += `❌ 测试邮件发送: 失败 (状态码: ${result.testEmail.status})\n`;
+                        configInfo += `错误信息: ${result.testEmail.error || '未知错误'}\n\n`;
+                    }
+                }
+                
+                if (result.domains) {
+                    configInfo += `📋 已配置域名:\n`;
+                    if (result.domains.data && result.domains.data.length > 0) {
+                        result.domains.data.forEach(domain => {
+                            configInfo += `  - ${domain.name} (状态: ${domain.status})\n`;
+                        });
+                    } else {
+                        configInfo += `  无自定义域名，使用默认域名\n`;
+                    }
+                    configInfo += '\n';
+                }
+                
+                if (result.recommendations) {
+                    configInfo += '💡 建议:\n';
+                    result.recommendations.forEach((rec, index) => {
+                        configInfo += `${rec}\n`;
+                    });
+                }
+                
+                showResult(configInfo, result.hasApiKey ? 'success' : 'error');
+                
+            } catch (error) {
+                console.error('检查 Resend 配置错误:', error);
+                showResult(`❌ 检查 Resend 配置失败！\n\n错误信息: ${error.message}`, 'error');
+            } finally {
+                resendBtn.disabled = false;
+                resendBtn.textContent = '检查 Resend 配置';
+            }
+        }
+
+        async function checkEmailConfig() {
+            const resultDiv = document.getElementById('result');
+            const configBtn = document.getElementById('configBtn');
+            
+            configBtn.disabled = true;
+            configBtn.textContent = '检查中...';
+            
+            try {
+                // 检查邮件配置
+                const configResponse = await fetch('/config/emailConfig.js');
+                const configText = await configResponse.text();
+                
+                // 提取关键配置信息
+                const fromMatch = configText.match(/FROM:\s*['"`]([^'"`]+)['"`]/);
+                const nameMatch = configText.match(/NAME:\s*['"`]([^'"`]+)['"`]/);
+                
+                let configInfo = '📋 邮件配置信息:\n\n';
+                configInfo += `发件人邮箱: ${fromMatch ? fromMatch[1] : '未找到'}\n`;
+                configInfo += `发件人名称: ${nameMatch ? nameMatch[1] : '未找到'}\n`;
+                configInfo += `完整发件人格式: ${nameMatch && fromMatch ? `${nameMatch[1]} <${fromMatch[1]}>` : '未完整'}\n\n`;
+                
+                // 检查环境变量（通过发送一个测试请求）
+                const testResponse = await fetch('/api/send-verification-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: 'test@example.com' })
+                });
+                
+                const testResult = await testResponse.json();
+                
+                if (testResult.error && testResult.error.includes('服务配置错误')) {
+                    configInfo += '❌ RESEND_API_KEY 环境变量未设置或无效\n';
+                } else {
+                    configInfo += '✅ RESEND_API_KEY 环境变量已设置\n';
+                }
+                
+                configInfo += '\n🔍 建议检查项目:\n';
+                configInfo += '1. Vercel 环境变量中是否正确设置了 RESEND_API_KEY\n';
+                configInfo += '2. Resend 账户是否有效且有发送额度\n';
+                configInfo += '3. 发件人邮箱域名是否已在 Resend 中验证\n';
+                configInfo += '4. 邮件是否被收件人的垃圾邮件过滤器拦截\n';
+                
+                showResult(configInfo, 'success');
+                
+            } catch (error) {
+                console.error('检查配置错误:', error);
+                showResult(`❌ 检查配置失败！\n\n错误信息: ${error.message}`, 'error');
+            } finally {
+                configBtn.disabled = false;
+                configBtn.textContent = '检查邮件配置';
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${type}`;
+        }
+        
+        // 页面加载时自动检查配置
+        window.addEventListener('load', () => {
+            checkEmailConfig();
+        });
+    </script>
+</body>
+</html>

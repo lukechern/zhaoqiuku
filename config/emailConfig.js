@@ -10,7 +10,8 @@
 // ==========================================
 export const EMAIL_SENDER = {
     // 发件人邮箱地址（使用Resend的默认域名或自定义域名）
-    FROM: 'reg@mail.zhaoqiuku.com',
+    // 临时使用 Resend 默认域名进行测试，确认邮件发送功能正常
+    FROM: 'onboarding@resend.dev', // 'reg@mail.zhaoqiuku.com',
 
     // 发件人名称
     NAME: '找秋裤-AI寻物助手',
