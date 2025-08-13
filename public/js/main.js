@@ -366,17 +366,6 @@ class VoiceRecognitionApp {
         }
     }
 
-    // 应用销毁
-    destroy() {
-        try {
-            this.audioRecorder.cleanup();
-            console.log('应用已销毁');
-        } catch (error) {
-            console.error('销毁应用失败:', error);
-        }
-    }
-}
-
     // 等待认证管理器初始化
     waitForAuthManager() {
         let attempts = 0;
@@ -530,6 +519,16 @@ class VoiceRecognitionApp {
             } else {
                 alert('退出登录时发生错误：' + error.message);
             }
+        }
+    }
+
+    // 应用销毁
+    destroy() {
+        try {
+            this.audioRecorder.cleanup();
+            console.log('应用已销毁');
+        } catch (error) {
+            console.error('销毁应用失败:', error);
         }
     }
 }

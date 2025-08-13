@@ -129,8 +129,18 @@
             'js/main.js'
         ];
         
-        scripts.forEach(src => {
-            document.write('<script src="' + src + '?v=' + jsTimestamp + '"><\/script>');
+        // 强制清除缓存并加载脚本
+        scripts.forEach((src, index) => {
+            const script = document.createElement('script');
+            script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
+            script.async = false; // 确保按顺序加载
+            script.onerror = function() {
+                console.error('Failed to load script:', src);
+            };
+            script.onload = function() {
+                console.log('Loaded script:', src);
+            };
+            document.head.appendChild(script);
         });
     </script>
 </body>
