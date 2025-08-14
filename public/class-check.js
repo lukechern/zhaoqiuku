@@ -1,7 +1,8 @@
 // 检查必需的类是否存在
 console.log('🔍 检查必需的类...');
 
-setTimeout(() => {
+// 添加一个函数来检查模块是否已加载
+function checkModules() {
     console.log('=== 类存在性检查 ===');
     console.log('AudioRecorder:', typeof AudioRecorder !== 'undefined' ? '✅ 存在' : '❌ 不存在');
     console.log('UIController:', typeof UIController !== 'undefined' ? '✅ 存在' : '❌ 不存在');
@@ -12,6 +13,50 @@ setTimeout(() => {
     console.log('window.authManager:', typeof window.authManager !== 'undefined' ? '✅ 存在' : '❌ 不存在');
     console.log('window.debugConfig:', typeof window.debugConfig !== 'undefined' ? '✅ 存在' : '❌ 不存在');
     console.log('window.app:', typeof window.app !== 'undefined' ? '✅ 存在' : '❌ 不存在');
+    
+    // 返回检查结果
+    return {
+        AudioRecorder: typeof AudioRecorder !== 'undefined',
+        UIController: typeof UIController !== 'undefined',
+        APIClient: typeof APIClient !== 'undefined',
+        VoiceRecognitionApp: typeof VoiceRecognitionApp !== 'undefined',
+        app: typeof window.app !== 'undefined'
+    };
+}
+
+// 等待模块加载完成的函数
+function waitForModules() {
+    return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+            const results = checkModules();
+            // 如果所有必需的类都存在，或者应用已经创建，则停止检查
+            if ((results.AudioRecorder && results.UIController && results.APIClient && results.VoiceRecognitionApp) || 
+                results.app) {
+                clearInterval(checkInterval);
+                resolve(true);
+            }
+        }, 500); // 每500ms检查一次
+        
+        // 设置最长等待时间，避免无限等待
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            resolve(false);
+        }, 10000); // 最多等待10秒
+    });
+}
+
+// 主检查函数
+async function mainCheck() {
+    console.log('⏳ 等待模块加载完成...');
+    const modulesLoaded = await waitForModules();
+    
+    if (!modulesLoaded) {
+        console.log('⚠️ 模块加载超时，继续执行检查...');
+    } else {
+        console.log('✅ 模块加载完成');
+    }
+    
+    const results = checkModules();
     
     // 尝试手动创建应用
     if (typeof VoiceRecognitionApp !== 'undefined' && !window.app) {
@@ -39,8 +84,10 @@ setTimeout(() => {
         console.log('\n⚠️ 某些类缺失，创建简化版本...');
         createSimplifiedApp();
     }
-    
-}, 2000); // 等待2秒确保所有脚本加载完成
+}
+
+// 延迟执行主检查函数
+setTimeout(mainCheck, 2000);
 
 function createSimplifiedApp() {
     console.log('🔧 创建简化应用...');
