@@ -477,7 +477,7 @@ export class UIController {
         let html = '';
 
         // 显示当前调试级别（仅在非normal模式下显示）
-        if (debugConfig.currentLevel !== 'normal') {
+        if (window.debugConfig.config.currentLevel !== 'normal') {
             html += `<div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px; text-align: right;">
                 调试级别: ${window.debugConfig.getCurrentLevelName()}
             </div>`;
@@ -489,17 +489,17 @@ export class UIController {
             const resultColor = business.success ? 'var(--success)' : 'var(--error)';
 
             // 显示用户提问和AI回复的对话格式（合并在同一个div中，减少间距和内边距）
-            html += `<div style="margin-bottom: 5px; padding: 5px; border-radius: 8px; background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1);">
-                <div style="color: var(--primary-color); font-weight: bold; font-size: 1rem; line-height: 0.8;">
+            html += `<div style="margin-bottom: 5px; padding: 5px; border-radius: 8px; background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1);font-weight: bold; font-size: 1rem;">
+                <div style="color: var(--primary-color); line-height: 0.8;">
                     📝 用户说: ${this.escapeHtml(data.transcript)}
                 </div>
-                <div style="color: ${resultColor}; font-weight: bold; font-size: 1rem; line-height: 0.8;">
+                <div style="color: ${resultColor}; line-height: 0.8;">
                     📝 AI回复：${this.escapeHtml(business.message)}
                 </div>
             </div>`;
         } else if (debugConfig.showTranscript && data.transcript) {
             // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果
-            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;">
+            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; line-height: 0.8;">
                 📝 识别结果: ${this.escapeHtml(data.transcript)}
             </div>`;
         }
