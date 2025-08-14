@@ -13,7 +13,8 @@ const API_ENDPOINTS = {
     BASE_URL: '/api',
     
     // 具体端点
-    TRANSCRIBE: '/transcribe',
+    TRANSCRIBE: '/process-audio',  // 使用新的完整流程API
+    TRANSCRIBE_LEGACY: '/transcribe',  // 保留旧的转录API
     HEALTH: '/health',
     
     // 完整URL
@@ -23,6 +24,10 @@ const API_ENDPOINTS = {
     
     get HEALTH_URL() {
         return `${this.BASE_URL}${this.HEALTH}`;
+    },
+    
+    get TRANSCRIBE_LEGACY_URL() {
+        return `${this.BASE_URL}${this.TRANSCRIBE_LEGACY}`;
     }
 };
 
@@ -67,6 +72,11 @@ class FrontendApiConfig {
     // 获取转录API URL
     getTranscribeUrl() {
         return this.endpoints.TRANSCRIBE_URL;
+    }
+    
+    // 获取传统转录API URL（无需认证）
+    getTranscribeLegacyUrl() {
+        return this.endpoints.TRANSCRIBE_LEGACY_URL;
     }
     
     // 获取健康检查URL

@@ -481,6 +481,43 @@ export class UIController {
             </div>`;
         }
         
+        // 显示业务处理结果（如果有）
+        if (data.business_result) {
+            const business = data.business_result;
+            const resultColor = business.success ? 'var(--success)' : 'var(--error)';
+            const resultIcon = business.success ? '✅' : '❌';
+            
+            html += `<div style="color: ${resultColor}; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; padding: 10px; border: 1px solid ${resultColor}; border-radius: 8px; background: rgba(${business.success ? '76, 175, 80' : '244, 67, 54'}, 0.1);">
+                ${resultIcon} ${this.escapeHtml(business.message)}
+            </div>`;
+            
+            // 显示操作详情
+            if (debugConfig.showApiResponse) {
+                if (data.action) {
+                    const actionNames = {
+                        'put': '存放物品',
+                        'get': '查找物品', 
+                        'unknown': '未知操作'
+                    };
+                    html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+                        🎯 操作类型: ${actionNames[data.action] || data.action}
+                    </div>`;
+                }
+                
+                if (data.object) {
+                    html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+                        📦 物品名称: ${this.escapeHtml(data.object)}
+                    </div>`;
+                }
+                
+                if (data.location) {
+                    html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+                        📍 存放位置: ${this.escapeHtml(data.location)}
+                    </div>`;
+                }
+            }
+        }
+        
         // 2. 显示API响应的关键信息（调试模式及以上）
         if (debugConfig.showApiResponse) {
             if (data.keywords && data.keywords.length > 0) {
