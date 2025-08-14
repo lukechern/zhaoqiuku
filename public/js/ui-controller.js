@@ -490,12 +490,8 @@ export class UIController {
 
             // 显示用户提问和AI回复的对话格式（使用CSS类减少内联样式）
             html += `<div class="user-ai-dialog">
-                <span class="user-say">
-                    📝 用户说: ${this.escapeHtml(data.transcript)}
-                </span>
-                <span class="ai-reply">
-                    📝 AI回复：${this.escapeHtml(business.message)}
-                </span>
+                <span class="user-say">😄 用户说: ${this.escapeHtml(data.transcript)}</span>
+                <span class="ai-reply">🤖 AI回复：${this.escapeHtml(business.message)}</span>
             </div>`;
         } else if (debugConfig.showTranscript && data.transcript) {
             // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果
