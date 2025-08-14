@@ -1,5 +1,5 @@
 // UI控制模块
-class UIController {
+export class UIController {
     constructor() {
         this.elements = {
             microphoneButton: document.getElementById('microphoneButton'),
