@@ -527,118 +527,121 @@ export class UIController {
                     </div>`;
             }
         }
-    }
 
-    // 2. 显示API响应的关键信息（调试模式及以上）
-    if(debugConfig.showApiResponse) {
-        if (data.keywords && data.keywords.length > 0) {
-            html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+        // 2. 显示API响应的关键信息（调试模式及以上）
+        if(debugConfig.showApiResponse) {
+            if (data.keywords && data.keywords.length > 0) {
+                html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
                     🏷️ 关键词: ${data.keywords.map(k => this.escapeHtml(k)).join(', ')}
                 </div>`;
-        }
+            }
 
-        if (data.confidence !== undefined && data.confidence !== null) {
-            html += `<div style="color: var(--warning); margin-bottom: 10px;">
+            if (data.confidence !== undefined && data.confidence !== null) {
+                html += `<div style="color: var(--warning); margin-bottom: 10px;">
                     📊 置信度: ${data.confidence}
                 </div>`;
+            }
+
+            // 显示解析后的API响应
+            if (data.raw_response) {
+                // 使用传统方式检查，避免可选链操作符导致的兼容性问题
+                let rawResponse = data.raw_response;
+                if (rawResponse !== undefined && rawResponse !== null) {
+                    html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+                        📋 API 响应内容:
+                    </div>`;
+                    html += `<pre style="font-size: 0.85rem; color: var(--text-primary); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px;">${JSON.stringify(rawResponse, null, 2)}</pre>`;
+                }
+            }
         }
 
-        // 显示解析后的API响应
-        if (data.raw_response) {
+        // 3. 显示完整调试信息（完整调试模式）
+        if(debugConfig.showRequestInfo && data.debug && data.debug.request) {
             html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
-                    📋 API 响应内容:
-                </div>`;
-            html += `<pre style="font-size: 0.85rem; color: var(--text-primary); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px;">${JSON.stringify(data.raw_response, null, 2)}</pre>`;
-        }
-    }
-
-    // 3. 显示完整调试信息（完整调试模式）
-    if(debugConfig.showRequestInfo && data.debug && data.debug.request) {
-    html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
                 📤 API 请求详情:
             </div>`;
-    html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.request, null, 2)}</pre>`;
-}
+            html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.request, null, 2)}</pre>`;
+        }
 
-if (debugConfig.showRequestInfo && data.debug && data.debug.response) {
-    html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+        if (debugConfig.showRequestInfo && data.debug && data.debug.response) {
+            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
                 📥 API 响应详情:
             </div>`;
-    html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.response, null, 2)}</pre>`;
-}
+            html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.response, null, 2)}</pre>`;
+        }
 
-// 如果是正常模式但没有识别结果，显示简单提示
-if (debugConfig.currentLevel === 'normal' && !data.transcript) {
-    html = `<div style="color: var(--text-muted); text-align: center; font-style: italic;">
+        // 如果是正常模式但没有识别结果，显示简单提示
+        if (debugConfig.currentLevel === 'normal' && !data.transcript) {
+            html = `<div style="color: var(--text-muted); text-align: center; font-style: italic;">
                 未能识别语音内容，请重试
             </div>`;
-}
+        }
 
-// 如果没有任何内容，显示完整JSON作为后备
-if (!html.trim()) {
-    html = `<pre style="font-size: 0.85rem;">${JSON.stringify(data, null, 2)}</pre>`;
-}
+        // 如果没有任何内容，显示完整JSON作为后备
+        if (!html.trim()) {
+            html = `<pre style="font-size: 0.85rem;">${JSON.stringify(data, null, 2)}</pre>`;
+        }
 
-return html;
+        return html;
     }
 
-// 显示加载状态
-showLoading(message = '处理中...') {
-    this.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
-}
+    // 显示加载状态
+    showLoading(message = '处理中...') {
+        this.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
+    }
 
-// 显示错误
-showError(error) {
-    const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
-    this.elements.resultsContainer.innerHTML = `
+    // 显示错误
+    showError(error) {
+        const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
+        this.elements.resultsContainer.innerHTML = `
             <div style="color: var(--error); text-align: center;">
                 <strong>错误:</strong> ${this.escapeHtml(errorMessage)}
             </div>
         `;
-}
+    }
 
-// 清除结果
-clearResults() {
-    this.elements.resultsContainer.innerHTML = '<div class="placeholder">等待语音输入...</div>';
-}
+    // 清除结果
+    clearResults() {
+        this.elements.resultsContainer.innerHTML = '<div class="placeholder">等待语音输入...</div>';
+    }
 
-// 显示提示消息
-showMessage(message, type = 'info') {
-    const colors = {
-        info: 'var(--primary-color)',
-        success: 'var(--success)',
-        warning: 'var(--warning)',
-        error: 'var(--error)'
-    };
+    // 显示提示消息
+    showMessage(message, type = 'info') {
+        const colors = {
+            info: 'var(--primary-color)',
+            success: 'var(--success)',
+            warning: 'var(--warning)',
+            error: 'var(--error)'
+        };
 
-    this.elements.resultsContainer.innerHTML = `
+        this.elements.resultsContainer.innerHTML = `
             <div style="color: ${colors[type]}; text-align: center;">
                 ${this.escapeHtml(message)}
             </div>
         `;
-}
-
-// HTML转义
-escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// 显示权限请求提示
-showPermissionPrompt() {
-    this.showMessage('请允许访问麦克风权限以使用语音功能', 'warning');
-}
-
-// 显示不支持提示
-showUnsupportedPrompt() {
-    this.showError('您的浏览器不支持语音录制功能，请使用现代浏览器');
-}
-
-// 添加震动反馈（如果支持）
-vibrate(pattern = [100]) {
-    if ('vibrate' in navigator) {
-        navigator.vibrate(pattern);
     }
-}
+
+    // HTML转义
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // 显示权限请求提示
+    showPermissionPrompt() {
+        this.showMessage('请允许访问麦克风权限以使用语音功能', 'warning');
+    }
+
+    // 显示不支持提示
+    showUnsupportedPrompt() {
+        this.showError('您的浏览器不支持语音录制功能，请使用现代浏览器');
+    }
+
+    // 添加震动反馈（如果支持）
+    vibrate(pattern = [100]) {
+        if ('vibrate' in navigator) {
+            navigator.vibrate(pattern);
+        }
+    }
 }
