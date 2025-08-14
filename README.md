@@ -1,4 +1,4 @@
-# 找球库 - 语音识别助手
+# 找球库 - AI语音寻物助手
 
 一个基于WebView的语音识别应用，支持物品存放和查找的语音指令识别。
 
@@ -90,13 +90,13 @@ export const API_ENDPOINTS = {
 // 发件人配置
 export const EMAIL_SENDER = {
     FROM: 'noreply@yourdomain.com',  // 修改为你的域名
-    NAME: '语音识别助手',
+    NAME: 'AI语音寻物助手',
 };
 
 // 邮件模板可以自定义HTML和文本内容
 export const EMAIL_TEMPLATES = {
     VERIFICATION_CODE: {
-        subject: '语音识别助手 - 邮箱验证码',
+        subject: 'AI语音寻物助手 - 邮箱验证码',
         getHtml: (code, email) => `...`,  // 自定义HTML模板
         getText: (code, email) => `...`   // 自定义文本模板
     }

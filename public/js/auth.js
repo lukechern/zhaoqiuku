@@ -299,7 +299,7 @@ class UnifiedAuthManager {
                 // 显示成功信息
                 if (result.userType === 'new') {
                     this.successTitle.textContent = '注册成功！';
-                    this.successMessage.textContent = '欢迎加入语音识别助手';
+                    this.successMessage.textContent = '欢迎加入AI语音寻物助手';
                 } else {
                     this.successTitle.textContent = '登录成功！';
                     this.successMessage.textContent = `欢迎回来，${result.user.email}`;

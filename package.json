@@ -1,7 +1,7 @@
 {
   "name": "zhaoqiuku-voice-assistant",
   "version": "1.0.0",
-  "description": "语音识别助手 - 支持物品存放和查找的语音指令识别",
+  "description": "AI语音寻物助手 - 支持物品存放和查找的语音指令识别",
   "type": "module",
   "scripts": {
     "dev": "vercel dev",

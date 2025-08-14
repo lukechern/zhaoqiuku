@@ -13,7 +13,7 @@ export const EMAIL_SENDER = {
     FROM: 'reg@mail.zhaoqiuku.com',
 
     // 发件人名称
-    NAME: '找秋裤-AI寻物助手',
+    NAME: '找秋裤-AI语音寻物助手',
 
     // 完整的发件人格式
     get FULL_FROM() {
@@ -28,7 +28,7 @@ export const EMAIL_TEMPLATES = {
     // 验证码邮件模板
     VERIFICATION_CODE: {
         // 邮件主题
-        subject: '找秋裤-AI寻物助手 - 邮箱验证码',
+        subject: '找秋裤-AI语音寻物助手 - 邮箱验证码',
 
         // HTML模板函数
         getHtml: (code, email) => `
@@ -156,7 +156,7 @@ export const EMAIL_TEMPLATES = {
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>🎤 找秋裤-AI寻物助手</h1>
+                    <h1>🎤 找秋裤-AI语音寻物助手</h1>
                     <p>邮箱验证码</p>
                 </div>
                 
@@ -165,7 +165,7 @@ export const EMAIL_TEMPLATES = {
                         您好！
                     </div>
                     
-                    <p>感谢您注册<span class="highlight">找秋裤-AI寻物助手</span>。为了确保账户安全，请使用以下验证码完成注册：</p>
+                    <p>感谢您注册<span class="highlight">找秋裤-AI语音寻物助手</span>。为了确保账户安全，请使用以下验证码完成注册：</p>
                     
                     <div class="code-section">
                         <div class="code-label">您的验证码是：</div>
@@ -196,7 +196,7 @@ export const EMAIL_TEMPLATES = {
                 
                 <div class="footer">
                     <p>此邮件由系统自动发送，请勿回复。</p>
-                    <p>© 2025 找秋裤-AI寻物助手 - 让语音交互更简单</p>
+                    <p>© 2025 找秋裤-AI语音寻物助手 - 让语音交互更简单</p>
                 </div>
             </div>
         </body>
@@ -205,11 +205,11 @@ export const EMAIL_TEMPLATES = {
 
         // 纯文本模板函数
         getText: (code, email) => `
-找秋裤-AI寻物助手 - 邮箱验证码
+找秋裤-AI语音寻物助手 - 邮箱验证码
 
 您好！
 
-感谢您注册找秋裤-AI寻物助手。您的验证码是：
+感谢您注册找秋裤-AI语音寻物助手。您的验证码是：
 
 ${code}
 
@@ -225,13 +225,13 @@ ${code}
 - 如有疑问，请联系客服
 
 此邮件由系统自动发送，请勿回复。
-© 2025 找秋裤-AI寻物助手 - 让语音交互更简单
+© 2025 找秋裤-AI语音寻物助手 - 让语音交互更简单
         `
     },
 
     // 欢迎邮件模板（可选，用于注册成功后）
     WELCOME: {
-        subject: '欢迎使用找秋裤-AI寻物助手！',
+        subject: '欢迎使用找秋裤-AI语音寻物助手！',
 
         getHtml: (email) => `
         <!DOCTYPE html>
@@ -280,11 +280,11 @@ ${code}
             <div class="container">
                 <div class="header">
                     <h1>🎉 注册成功！</h1>
-                    <p>欢迎加入找秋裤-AI寻物助手</p>
+                    <p>欢迎加入找秋裤-AI语音寻物助手</p>
                 </div>
                 
                 <div class="content">
-                    <p>恭喜您成功注册找秋裤-AI寻物助手！</p>
+                    <p>恭喜您成功注册找秋裤-AI语音寻物助手！</p>
                     <p>现在您可以开始使用我们的语音识别功能了。</p>
                     
                     <h3>🚀 快速开始：</h3>
@@ -297,7 +297,7 @@ ${code}
                 </div>
                 
                 <div class="footer">
-                    <p>© 2025 找秋裤-AI寻物助手</p>
+                    <p>© 2025 找秋裤-AI语音寻物助手</p>
                 </div>
             </div>
         </body>
@@ -305,9 +305,9 @@ ${code}
         `,
 
         getText: (email) => `
-欢迎使用找秋裤-AI寻物助手！
+欢迎使用找秋裤-AI语音寻物助手！
 
-恭喜您成功注册找秋裤-AI寻物助手！
+恭喜您成功注册找秋裤-AI语音寻物助手！
 
 现在您可以开始使用我们的语音识别功能了。
 
@@ -317,7 +317,7 @@ ${code}
 - 说出您要存放或查找的物品
 - 查看识别结果
 
-© 2025 找秋裤-AI寻物助手
+© 2025 找秋裤-AI语音寻物助手
         `
     }
 };

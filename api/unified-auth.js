@@ -68,9 +68,9 @@ async function handleSendCode(email, res) {
         // 根据用户类型自定义邮件内容
         let customSubject = template.subject;
         if (userType === 'new') {
-            customSubject = '语音识别助手 - 欢迎注册验证码';
+            customSubject = 'AI语音寻物助手 - 欢迎注册验证码';
         } else {
-            customSubject = '语音识别助手 - 登录验证码';
+            customSubject = 'AI语音寻物助手 - 登录验证码';
         }
 
         // 发送邮件
