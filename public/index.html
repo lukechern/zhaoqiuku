@@ -141,13 +141,7 @@
             'js/auth-manager.js',
             'js/state-sync.js',
             'js/auth-debug.js',
-            'js/audio-recorder.js',
-            'js/ui-controller.js',
-            'js/api-client.js',
-            'js/UserStateManager.js',
-            'js/AppInitializer.js',
-            'js/EventHandler.js',
-            'js/App.js',
+            // 模块脚本将通过main.js加载
             'js/main.js',
             'debug-microphone.js',  // 临时调试脚本
             'simple-diagnosis.js',  // 简单诊断工具
@@ -157,14 +151,7 @@
 
         // 需要作为模块加载的脚本
         const moduleScripts = new Set([
-            'js/main.js',
-            'js/audio-recorder.js',
-            'js/api-client.js',
-            'js/ui-controller.js',
-            'js/App.js',
-            'js/UserStateManager.js',
-            'js/AppInitializer.js',
-            'js/EventHandler.js'
+            'js/main.js'
         ]);
 
         // 强制清除缓存并加载脚本
