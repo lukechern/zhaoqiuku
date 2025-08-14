@@ -75,6 +75,12 @@ class DebugConfigManager {
         if (this.config.levels[level]) {
             this.config.currentLevel = level;
             console.log(`调试级别已设置为: ${this.config.levels[level].name}`);
+            
+            // 触发事件通知UI更新
+            window.dispatchEvent(new CustomEvent('debugLevelChanged', {
+                detail: { level, config: this.config.levels[level] }
+            }));
+            
             return true;
         }
         console.error(`无效的调试级别: ${level}`);
@@ -112,9 +118,14 @@ window.showDebugLevels = () => {
 };
 
 // 初始化时显示当前调试级别
-console.log(`当前调试级别: ${window.debugConfig.getCurrentLevelName()}`);
-console.log('可用命令:');
-console.log('- setDebugLevel("normal") - 设置为正常模式');
-console.log('- setDebugLevel("debug") - 设置为调试模式');  
-console.log('- setDebugLevel("full_debug") - 设置为完整调试');
-console.log('- showDebugLevels() - 显示所有调试级别');
+console.log(`🔧 当前调试级别: ${window.debugConfig.getCurrentLevelName()}`);
+console.log('');
+console.log('📋 调试级别控制方法:');
+console.log('1. 永久设置: 修改 config/debugConfig.js 中的 CURRENT_DEBUG_LEVEL');
+console.log('2. 临时设置: 使用以下控制台命令');
+console.log('   - setDebugLevel("normal") - 设置为正常模式');
+console.log('   - setDebugLevel("debug") - 设置为调试模式');  
+console.log('   - setDebugLevel("full_debug") - 设置为完整调试');
+console.log('   - showDebugLevels() - 显示所有调试级别');
+console.log('');
+console.log('💡 提示: 前台调试控制已禁用，只能通过上述方式设置调试级别');

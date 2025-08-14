@@ -43,23 +43,24 @@ export class UIController {
         this.setupDebugControls();
     }
 
-    // 设置调试控制
+    // 设置调试控制 - 前台控制已禁用，只能通过配置文件或控制台设置
     setupDebugControls() {
-        if (this.elements.debugLevel) {
-            // 设置初始值
-            this.elements.debugLevel.value = window.debugConfig.config.currentLevel;
-
-            // 监听变化
-            this.elements.debugLevel.addEventListener('change', (e) => {
-                const newLevel = e.target.value;
-                window.debugConfig.setLevel(newLevel);
-
-                // 如果有结果显示，重新格式化显示
-                if (this.lastResultData) {
-                    this.showResults(this.lastResultData);
-                }
-            });
-        }
+        // 前台调试控制已隐藏，调试级别只能通过以下方式设置：
+        // 1. 修改 config/debugConfig.js 中的 CURRENT_DEBUG_LEVEL
+        // 2. 在控制台使用 setDebugLevel("level") 命令
+        
+        // 监听调试级别变化事件（来自控制台设置）
+        window.addEventListener('debugLevelChanged', () => {
+            // 如果有结果显示，重新格式化显示
+            if (this.lastResultData) {
+                this.showResults(this.lastResultData);
+            }
+        });
+        
+        console.log('🔧 调试控制提示:');
+        console.log('- 修改 config/debugConfig.js 中的 CURRENT_DEBUG_LEVEL 来永久设置调试级别');
+        console.log('- 使用 setDebugLevel("normal"|"debug"|"full_debug") 来临时设置调试级别');
+        console.log('- 使用 showDebugLevels() 查看所有可用的调试级别');
     }
 
     // 设置触摸事件
