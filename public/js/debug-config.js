@@ -13,7 +13,7 @@
 // 'debug'      - 调试模式：显示文本 + API响应JSON
 // 'full_debug' - 完整调试：显示所有请求和响应详情
 // ==========================================
-const CURRENT_DEBUG_LEVEL = 'full_debug';
+const CURRENT_DEBUG_LEVEL = 'normal';
 
 const DEBUG_LEVELS = {
     NORMAL: 'normal',           // 正常模式
