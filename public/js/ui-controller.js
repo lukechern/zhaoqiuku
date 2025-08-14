@@ -266,23 +266,29 @@ export class UIController {
 
     // 检查用户认证状态
     checkAuthenticationStatus() {
+        // 检查token是否存在
+        const token = localStorage.getItem('zhaoqiuku_access_token');
+        const hasAuthManager = !!window.authManager;
+        const isAuthenticated = window.authManager?.isAuthenticated;
+        
         console.log('检查认证状态:', {
-            hasAuthManager: !!window.authManager,
-            isAuthenticated: window.authManager?.isAuthenticated,
+            hasToken: !!token,
+            hasAuthManager: hasAuthManager,
+            isAuthenticated: isAuthenticated,
             user: window.authManager?.user?.email
         });
         
-        // 检查认证管理器是否存在且用户已登录
-        if (!window.authManager || !window.authManager.isAuthenticated) {
-            console.log('用户未登录，显示登录提示');
-            this.showLoginRequired();
-            return false;
+        // 如果有token或者认证管理器显示已登录，则允许录音
+        if (token || (hasAuthManager && isAuthenticated)) {
+            console.log('用户已登录，允许录音');
+            // 如果已登录，确保清除任何登录相关的样式
+            this.clearLoginRequiredState();
+            return true;
         }
         
-        console.log('用户已登录，允许录音');
-        // 如果已登录，确保清除任何登录相关的样式
-        this.clearLoginRequiredState();
-        return true;
+        console.log('用户未登录，显示登录提示');
+        this.showLoginRequired();
+        return false;
     }
 
     // 清除登录要求状态

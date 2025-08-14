@@ -22,9 +22,15 @@ export class APIClient {
                 data: base64Data
             };
 
-            // 获取认证令牌
-            const token = localStorage.getItem('authToken');
+            // 获取认证令牌（使用正确的存储key）
+            const token = localStorage.getItem('zhaoqiuku_access_token');
             let useNewApi = !!token; // 如果有token就使用新API，否则使用旧API
+            
+            console.log('🔍 Token检查:', {
+                tokenExists: !!token,
+                tokenPreview: token ? token.substring(0, 20) + '...' : 'null',
+                willUseNewApi: useNewApi
+            });
             
             // 记录请求信息（不包含完整的base64数据，太长了）
             const requestUrl = this.config.getUrlWithTimestamp(

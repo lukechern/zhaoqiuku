@@ -151,10 +151,30 @@ function clearLoginState() {
 
 
 
+// 检查当前token状态
+function checkTokenStatus() {
+    console.log('=== Token状态检查 ===');
+
+    const token = localStorage.getItem('zhaoqiuku_access_token');
+    const refreshToken = localStorage.getItem('zhaoqiuku_refresh_token');
+    const userInfo = localStorage.getItem('zhaoqiuku_user_info');
+
+    console.log('Access Token:', token ? `存在 (${token.substring(0, 20)}...)` : '不存在');
+    console.log('Refresh Token:', refreshToken ? `存在 (${refreshToken.substring(0, 20)}...)` : '不存在');
+    console.log('User Info:', userInfo ? JSON.parse(userInfo) : '不存在');
+
+    // 检查API客户端会如何处理
+    const willUseNewApi = !!token;
+    console.log('API选择:', willUseNewApi ? '新版完整流程API' : '传统转录API');
+
+    console.log('=== 检查结束 ===');
+}
+
 // 显示可用的调试命令
 function showConsoleCommands() {
     console.log('输入以下命令进行调试:');
     console.log('- debugAuthState() - 检查认证状态');
+    console.log('- checkTokenStatus() - 检查Token状态');
     console.log('- forceUpdateUserDisplay() - 强制更新显示');
     console.log('- simulateLogin() - 模拟登录');
     console.log('- clearLoginState() - 清除登录状态');
@@ -169,6 +189,7 @@ if (document.readyState === 'loading') {
 
 // 导出到全局作用域
 window.debugAuthState = debugAuthState;
+window.checkTokenStatus = checkTokenStatus;
 window.forceUpdateUserDisplay = forceUpdateUserDisplay;
 window.simulateLogin = simulateLogin;
 window.clearLoginState = clearLoginState;
@@ -176,6 +197,7 @@ window.showConsoleCommands = showConsoleCommands;
 
 console.log('认证调试工具已加载，可在控制台使用以下函数:');
 console.log('- debugAuthState() - 检查认证状态');
+console.log('- checkTokenStatus() - 检查Token状态');
 console.log('- forceUpdateUserDisplay() - 强制更新显示');
 console.log('- simulateLogin() - 模拟登录');
 console.log('- clearLoginState() - 清除登录状态');
