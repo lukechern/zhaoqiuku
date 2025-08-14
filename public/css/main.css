@@ -166,15 +166,17 @@ body {
     cursor: not-allowed;
 }
 
+/* 刷新按钮使用与其他按钮相同的样式 */
 #refreshBtn {
+    background: var(--surface-light);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+#refreshBtn:hover:not(:disabled) {
     background: var(--primary-color);
     color: var(--text-primary);
     border-color: var(--primary-color);
-}
-
-#refreshBtn:hover {
-    background: var(--primary-dark);
-    border-color: var(--primary-dark);
     transform: translateY(-1px);
 }
 
@@ -393,7 +395,6 @@ body {
     padding: 0.5rem 1rem;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .auth-link {
