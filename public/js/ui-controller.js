@@ -488,18 +488,18 @@ export class UIController {
             const business = data.business_result;
             const resultColor = business.success ? 'var(--success)' : 'var(--error)';
 
-            // 显示用户提问和AI回复的对话格式（合并在同一个div中，减少间距和内边距）
-            html += `<div style="border-radius: 8px; background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1);font-weight: bold; font-size: 1rem;">
-                <p style="color: var(--primary-color); line-height: 0.8;">
+            // 显示用户提问和AI回复的对话格式（使用CSS类减少内联样式）
+            html += `<div class="user-ai-dialog">
+                <span class="user-say">
                     📝 用户说: ${this.escapeHtml(data.transcript)}
-                </p>
-                <p style="color: ${resultColor}; line-height: 0.8;">
+                </span>
+                <span class="ai-reply">
                     📝 AI回复：${this.escapeHtml(business.message)}
-                </p>
+                </span>
             </div>`;
         } else if (debugConfig.showTranscript && data.transcript) {
             // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果
-            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; line-height: 0.8;">
+            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;">
                 📝 识别结果: ${this.escapeHtml(data.transcript)}
             </div>`;
         }
