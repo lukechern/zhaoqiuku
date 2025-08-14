@@ -382,6 +382,9 @@ class VoiceRecognitionApp {
                     hasTokens: !!window.authManager.tokens
                 });
                 this.updateUserDisplay();
+                
+                // 设置定期检查，确保状态同步
+                this.startPeriodicStateCheck();
             } else if (attempts < maxAttempts) {
                 console.log(`等待认证管理器初始化... (${attempts}/${maxAttempts})`);
                 setTimeout(checkAuthManager, 50);
@@ -395,6 +398,27 @@ class VoiceRecognitionApp {
         checkAuthManager();
     }
 
+    // 启动定期状态检查
+    startPeriodicStateCheck() {
+        // 每5秒检查一次状态是否同步
+        setInterval(() => {
+            if (window.authManager && this.authLinks && this.userInfo) {
+                const isAuthenticated = window.authManager.isAuthenticated;
+                const authLinksVisible = this.authLinks.style.display !== 'none';
+                const userInfoHidden = this.userInfo.classList.contains('hidden');
+                
+                // 检查状态是否不一致
+                const stateInconsistent = (isAuthenticated && authLinksVisible) || 
+                                        (!isAuthenticated && !userInfoHidden);
+                
+                if (stateInconsistent) {
+                    console.log('检测到状态不一致，自动修复...');
+                    this.updateUserDisplay();
+                }
+            }
+        }, 5000);
+    }
+
     // 更新用户显示状态
     updateUserDisplay() {
         try {
@@ -405,22 +429,52 @@ class VoiceRecognitionApp {
                 hasElements: !!(this.authLinks && this.userInfo && this.userEmail)
             });
 
+            // 重新获取DOM元素，防止元素引用失效
+            this.authLinks = document.getElementById('authLinks');
+            this.userInfo = document.getElementById('userInfo');
+            this.userEmail = document.getElementById('userEmail');
+
             if (!this.authLinks || !this.userInfo || !this.userEmail) {
-                console.error('用户状态显示元素未找到');
+                console.error('用户状态显示元素未找到，尝试重新获取...');
+                // 延迟重试
+                setTimeout(() => {
+                    this.updateUserDisplay();
+                }, 100);
                 return;
             }
 
             if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
                 // 显示用户信息，隐藏登录链接
                 this.authLinks.style.display = 'none';
+                this.authLinks.classList.add('hidden'); // 双重保险
                 this.userInfo.classList.remove('hidden');
+                this.userInfo.style.display = 'flex'; // 确保显示
                 this.userEmail.textContent = window.authManager.user.email;
                 console.log('显示用户信息:', window.authManager.user.email);
+                
+                // 验证更新结果
+                console.log('更新后状态验证:', {
+                    authLinksDisplay: this.authLinks.style.display,
+                    authLinksHidden: this.authLinks.classList.contains('hidden'),
+                    userInfoDisplay: this.userInfo.style.display,
+                    userInfoHidden: this.userInfo.classList.contains('hidden'),
+                    userEmailText: this.userEmail.textContent
+                });
             } else {
                 // 显示登录链接，隐藏用户信息
                 this.authLinks.style.display = 'flex';
+                this.authLinks.classList.remove('hidden'); // 双重保险
                 this.userInfo.classList.add('hidden');
+                this.userInfo.style.display = 'none'; // 确保隐藏
                 console.log('显示登录链接');
+                
+                // 验证更新结果
+                console.log('更新后状态验证:', {
+                    authLinksDisplay: this.authLinks.style.display,
+                    authLinksHidden: this.authLinks.classList.contains('hidden'),
+                    userInfoDisplay: this.userInfo.style.display,
+                    userInfoHidden: this.userInfo.classList.contains('hidden')
+                });
             }
         } catch (error) {
             console.error('更新用户显示状态失败:', error);
@@ -430,7 +484,14 @@ class VoiceRecognitionApp {
     // 处理认证状态变化
     handleAuthStateChange(detail) {
         console.log('认证状态变化:', detail);
+        
+        // 立即更新用户显示
         this.updateUserDisplay();
+        
+        // 延迟再次更新，确保DOM更新完成
+        setTimeout(() => {
+            this.updateUserDisplay();
+        }, 50);
         
         // 清除UI中的登录要求状态
         if (this.uiController && this.uiController.clearLoginRequiredState) {
@@ -458,6 +519,13 @@ class VoiceRecognitionApp {
             }
         } else if (detail.type === 'restore') {
             console.log('用户状态已恢复:', detail.user.email);
+            // 对于状态恢复，多次尝试更新显示
+            setTimeout(() => {
+                this.updateUserDisplay();
+            }, 100);
+            setTimeout(() => {
+                this.updateUserDisplay();
+            }, 300);
         }
     }
 
@@ -537,16 +605,33 @@ class VoiceRecognitionApp {
 document.addEventListener('DOMContentLoaded', async () => {
     const app = new VoiceRecognitionApp();
     
+    // 将app实例保存到全局，方便调试
+    window.app = app;
+    
     try {
         await app.initialize();
         
-        // 应用初始化完成后，再次检查用户状态
+        // 应用初始化完成后，多次检查用户状态
+        setTimeout(() => {
+            console.log('应用初始化完成，第一次检查用户状态...');
+            if (window.authManager) {
+                app.updateUserDisplay();
+            }
+        }, 100);
+        
+        setTimeout(() => {
+            console.log('应用初始化完成，第二次检查用户状态...');
+            if (window.authManager) {
+                app.updateUserDisplay();
+            }
+        }, 500);
+        
         setTimeout(() => {
             console.log('应用初始化完成，最终检查用户状态...');
             if (window.authManager) {
                 app.updateUserDisplay();
             }
-        }, 200);
+        }, 1000);
         
     } catch (error) {
         console.error('应用启动失败:', error);
@@ -565,4 +650,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('unhandledrejection', (event) => {
         console.error('未处理的Promise拒绝:', event.reason);
     });
+});
+
+// 页面完全加载后的最终检查
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        console.log('页面完全加载，执行最终用户状态检查...');
+        if (window.app && window.authManager) {
+            window.app.updateUserDisplay();
+        }
+    }, 200);
 });

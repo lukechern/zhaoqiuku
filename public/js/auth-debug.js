@@ -69,30 +69,52 @@ function forceUpdateUserDisplay() {
         return;
     }
     
+    // 检查认证管理器状态
+    console.log('认证管理器状态:', {
+        exists: !!window.authManager,
+        isAuthenticated: window.authManager?.isAuthenticated,
+        hasUser: !!window.authManager?.user,
+        userEmail: window.authManager?.user?.email
+    });
+    
     if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
-        // 显示用户信息
+        // 显示用户信息，隐藏登录链接
         authLinks.style.display = 'none';
+        authLinks.classList.add('hidden'); // 双重保险
         userInfo.classList.remove('hidden');
+        userInfo.style.display = 'flex'; // 确保显示
         userEmail.textContent = window.authManager.user.email;
         console.log('已显示用户信息:', window.authManager.user.email);
         
         // 验证更新结果
         console.log('更新后状态:', {
             authLinksDisplay: authLinks.style.display,
+            authLinksHidden: authLinks.classList.contains('hidden'),
+            userInfoDisplay: userInfo.style.display,
             userInfoHidden: userInfo.classList.contains('hidden'),
             userEmailText: userEmail.textContent
         });
     } else {
-        // 显示登录链接
+        // 显示登录链接，隐藏用户信息
         authLinks.style.display = 'flex';
+        authLinks.classList.remove('hidden'); // 双重保险
         userInfo.classList.add('hidden');
+        userInfo.style.display = 'none'; // 确保隐藏
         console.log('已显示登录链接');
         
         // 验证更新结果
         console.log('更新后状态:', {
             authLinksDisplay: authLinks.style.display,
+            authLinksHidden: authLinks.classList.contains('hidden'),
+            userInfoDisplay: userInfo.style.display,
             userInfoHidden: userInfo.classList.contains('hidden')
         });
+    }
+    
+    // 如果有应用实例，也调用其更新方法
+    if (window.app && typeof window.app.updateUserDisplay === 'function') {
+        console.log('调用应用实例的更新方法...');
+        window.app.updateUserDisplay();
     }
 }
 

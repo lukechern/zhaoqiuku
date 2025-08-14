@@ -85,10 +85,18 @@ class AuthManager {
                 // 立即触发认证状态恢复事件
                 this.dispatchAuthEvent('restore', { user: this.user });
                 
-                // 延迟再次触发，确保所有监听器都能接收到
+                // 多次延迟触发，确保所有监听器都能接收到
                 setTimeout(() => {
                     this.dispatchAuthEvent('restore', { user: this.user });
-                }, 100);
+                }, 50);
+                
+                setTimeout(() => {
+                    this.dispatchAuthEvent('restore', { user: this.user });
+                }, 200);
+                
+                setTimeout(() => {
+                    this.dispatchAuthEvent('restore', { user: this.user });
+                }, 500);
 
                 // 检查 Token 是否需要刷新
                 if (this.shouldRefreshToken(accessToken)) {
@@ -405,6 +413,22 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('检测到已登录状态，触发状态恢复事件');
         window.authManager.dispatchAuthEvent('restore', { user: window.authManager.user });
     }
+});
+
+// 页面完全加载后的额外检查
+window.addEventListener('load', () => {
+    console.log('页面完全加载，最终检查认证状态...');
+    setTimeout(() => {
+        if (window.authManager && window.authManager.isAuthenticated) {
+            console.log('页面加载完成后检测到已登录状态，强制触发状态更新');
+            window.authManager.dispatchAuthEvent('restore', { user: window.authManager.user });
+            
+            // 如果有强制更新函数，也调用它
+            if (typeof window.forceUpdateUserDisplay === 'function') {
+                window.forceUpdateUserDisplay();
+            }
+        }
+    }, 100);
 });
 
 // 导出认证管理器类

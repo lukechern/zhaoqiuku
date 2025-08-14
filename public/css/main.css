@@ -323,7 +323,24 @@ body {
 }
 
 .user-info.hidden {
-    display: none;
+    display: none !important;
+}
+
+/* 确保认证状态显示正确 */
+.auth-links[style*="display: none"] {
+    display: none !important;
+}
+
+.user-info[style*="display: flex"] {
+    display: flex !important;
+}
+
+.user-info[style*="display: none"] {
+    display: none !important;
+}
+
+.auth-links[style*="display: flex"] {
+    display: flex !important;
 }
 
 .user-email {
