@@ -85,18 +85,10 @@ class AuthManager {
                 // 立即触发认证状态恢复事件
                 this.dispatchAuthEvent('restore', { user: this.user });
                 
-                // 多次延迟触发，确保所有监听器都能接收到
+                // 延迟触发一次，确保DOM完全加载
                 setTimeout(() => {
                     this.dispatchAuthEvent('restore', { user: this.user });
-                }, 50);
-                
-                setTimeout(() => {
-                    this.dispatchAuthEvent('restore', { user: this.user });
-                }, 200);
-                
-                setTimeout(() => {
-                    this.dispatchAuthEvent('restore', { user: this.user });
-                }, 500);
+                }, 100);
 
                 // 检查 Token 是否需要刷新
                 if (this.shouldRefreshToken(accessToken)) {

@@ -400,8 +400,10 @@ class VoiceRecognitionApp {
 
     // 启动定期状态检查
     startPeriodicStateCheck() {
-        // 每5秒检查一次状态是否同步
-        setInterval(() => {
+        let consecutiveCorrectChecks = 0;
+        const maxCorrectChecks = 3; // 连续3次检查正确后，减少检查频率
+        
+        const checkInterval = setInterval(() => {
             if (window.authManager && this.authLinks && this.userInfo) {
                 const isAuthenticated = window.authManager.isAuthenticated;
                 const authLinksVisible = this.authLinks.style.display !== 'none';
@@ -414,9 +416,32 @@ class VoiceRecognitionApp {
                 if (stateInconsistent) {
                     console.log('检测到状态不一致，自动修复...');
                     this.updateUserDisplay();
+                    consecutiveCorrectChecks = 0; // 重置计数
+                } else {
+                    consecutiveCorrectChecks++;
+                    
+                    // 如果连续多次检查都正确，说明状态稳定，可以减少检查频率
+                    if (consecutiveCorrectChecks >= maxCorrectChecks) {
+                        console.log('状态已稳定，减少检查频率');
+                        clearInterval(checkInterval);
+                        
+                        // 改为每30秒检查一次
+                        setInterval(() => {
+                            if (window.authManager && this.authLinks && this.userInfo) {
+                                const isAuth = window.authManager.isAuthenticated;
+                                const linksVisible = this.authLinks.style.display !== 'none';
+                                const infoHidden = this.userInfo.classList.contains('hidden');
+                                
+                                if ((isAuth && linksVisible) || (!isAuth && !infoHidden)) {
+                                    console.log('长期检查发现状态不一致，修复...');
+                                    this.updateUserDisplay();
+                                }
+                            }
+                        }, 30000);
+                    }
                 }
             }
-        }, 5000);
+        }, 3000); // 改为每3秒检查一次
     }
 
     // 更新用户显示状态

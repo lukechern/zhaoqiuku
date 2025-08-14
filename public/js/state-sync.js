@@ -8,8 +8,9 @@
 class StateSyncManager {
     constructor() {
         this.syncAttempts = 0;
-        this.maxSyncAttempts = 10;
+        this.maxSyncAttempts = 5; // 减少最大尝试次数
         this.syncInterval = null;
+        this.isSynced = false; // 添加同步状态标记
 
         this.init();
     }
@@ -41,19 +42,28 @@ class StateSyncManager {
             clearInterval(this.syncInterval);
         }
 
+        // 立即执行一次检查
+        this.performSync();
+
+        // 如果已经同步成功，就不需要继续定时检查
+        if (this.isSynced) {
+            console.log('首次检查已同步，无需继续检查');
+            return;
+        }
+
         // 每500ms检查一次，直到同步成功或达到最大尝试次数
         this.syncInterval = setInterval(() => {
             this.performSync();
         }, 500);
 
-        // 10秒后停止自动同步检查
+        // 3秒后停止自动同步检查（减少到3秒）
         setTimeout(() => {
             if (this.syncInterval) {
                 clearInterval(this.syncInterval);
                 this.syncInterval = null;
                 console.log('自动状态同步检查已停止');
             }
-        }, 10000);
+        }, 3000);
     }
 
     performSync() {
@@ -98,8 +108,10 @@ class StateSyncManager {
         if (needsSync) {
             console.log('检测到状态不一致，执行同步...');
             this.syncUserDisplay(isAuthenticated, authLinks, userInfo, userEmail);
+            this.isSynced = true; // 标记为已同步
         } else {
             console.log('状态已同步');
+            this.isSynced = true; // 标记为已同步
             // 状态已同步，停止检查
             if (this.syncInterval) {
                 clearInterval(this.syncInterval);
@@ -152,6 +164,7 @@ class StateSyncManager {
     forcSync() {
         console.log('手动触发状态同步...');
         this.syncAttempts = 0;
+        this.isSynced = false; // 重置同步状态
         this.performSync();
     }
 }
