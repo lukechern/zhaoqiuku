@@ -149,51 +149,7 @@ function clearLoginState() {
     forceUpdateUserDisplay();
 }
 
-// 检查主页面状态
-function checkMainPageState() {
-    console.log('=== 主页面状态检查 ===');
-    
-    // 检查必要的全局对象
-    const checks = {
-        'window.authManager': !!window.authManager,
-        'window.app': !!window.app,
-        'window.stateSyncManager': !!window.stateSyncManager
-    };
-    
-    Object.entries(checks).forEach(([name, exists]) => {
-        console.log(`${name}: ${exists ? '✅' : '❌'}`);
-    });
-    
-    // 检查用户状态显示
-    if (window.authManager) {
-        const isAuthenticated = window.authManager.isAuthenticated;
-        const user = window.authManager.user;
-        console.log('认证状态:', isAuthenticated ? `已登录 (${user?.email})` : '未登录');
-    }
-    
-    console.log('=== 检查完成 ===');
-}
 
-// 测试登出按钮
-function testLogoutButton() {
-    console.log('测试登出按钮...');
-    
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (!logoutBtn) {
-        console.error('登出按钮未找到');
-        return;
-    }
-    
-    console.log('登出按钮状态:', {
-        exists: true,
-        visible: getComputedStyle(logoutBtn).display !== 'none',
-        clickable: getComputedStyle(logoutBtn).pointerEvents !== 'none'
-    });
-    
-    // 尝试触发点击事件
-    logoutBtn.click();
-    console.log('已触发登出按钮点击事件');
-}
 
 // 显示可用的调试命令
 function showConsoleCommands() {
@@ -227,5 +183,3 @@ console.log('- debugAuthState() - 检查认证状态');
 console.log('- forceUpdateUserDisplay() - 强制更新显示');
 console.log('- simulateLogin() - 模拟登录');
 console.log('- clearLoginState() - 清除登录状态');
-console.log('- checkMainPageState() - 检查主页面状态');
-console.log('- testLogoutButton() - 测试登出按钮');
