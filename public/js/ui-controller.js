@@ -13,7 +13,7 @@ export class UIController {
             resultsContainer: document.getElementById('resultsContainer'),
             debugLevel: document.getElementById('debugLevel')
         };
-        
+
         this.timerInterval = null;
         this.startTime = null;
         this.isRecording = false;
@@ -38,22 +38,22 @@ export class UIController {
         } else {
             this.setupTouchEvents();
         }
-        
+
         this.setupButtonEvents();
         this.setupDebugControls();
     }
-    
+
     // 设置调试控制
     setupDebugControls() {
         if (this.elements.debugLevel) {
             // 设置初始值
             this.elements.debugLevel.value = window.debugConfig.config.currentLevel;
-            
+
             // 监听变化
             this.elements.debugLevel.addEventListener('change', (e) => {
                 const newLevel = e.target.value;
                 window.debugConfig.setLevel(newLevel);
-                
+
                 // 如果有结果显示，重新格式化显示
                 if (this.lastResultData) {
                     this.showResults(this.lastResultData);
@@ -65,14 +65,14 @@ export class UIController {
     // 设置触摸事件
     setupTouchEvents() {
         const button = this.elements.microphoneButton;
-        
+
         if (!button) {
             console.error('麦克风按钮元素不存在，无法绑定事件');
             return;
         }
-        
+
         console.log('正在为麦克风按钮绑定事件...', button);
-        
+
         // 触摸事件
         button.addEventListener('touchstart', (e) => {
             console.log('touchstart 事件被触发', e);
@@ -114,12 +114,12 @@ export class UIController {
         button.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         });
-        
+
         // 添加简单的点击测试事件
         button.addEventListener('click', (e) => {
             console.log('麦克风按钮被点击了！');
         });
-        
+
         console.log('麦克风按钮事件绑定完成');
     }
 
@@ -136,12 +136,12 @@ export class UIController {
     // 处理触摸移动
     handleTouchMove(e) {
         if (!this.isRecording) return;
-        
+
         const touch = e.touches[0];
         this.currentTouchY = touch.clientY;
-        
+
         const deltaY = this.startTouchY - this.currentTouchY;
-        
+
         if (deltaY > this.cancelThreshold) {
             // 向上滑动超过阈值，显示取消状态
             if (!this.isCanceling) {
@@ -164,7 +164,7 @@ export class UIController {
         } else {
             this.handlePressEnd();
         }
-        
+
         this.startTouchY = null;
         this.currentTouchY = null;
         this.isCanceling = false;
@@ -182,10 +182,10 @@ export class UIController {
     // 处理鼠标移动（桌面测试）
     handleMouseMove(e) {
         if (!this.isRecording) return;
-        
+
         this.currentTouchY = e.clientY;
         const deltaY = this.startTouchY - this.currentTouchY;
-        
+
         if (deltaY > this.cancelThreshold) {
             if (!this.isCanceling) {
                 this.isCanceling = true;
@@ -202,13 +202,13 @@ export class UIController {
     // 处理鼠标结束（桌面测试）
     handleMouseEnd(e) {
         if (!this.isRecording) return;
-        
+
         if (this.isCanceling) {
             this.handleCancel();
         } else {
             this.handlePressEnd();
         }
-        
+
         this.startTouchY = null;
         this.currentTouchY = null;
         this.isCanceling = false;
@@ -232,14 +232,14 @@ export class UIController {
             this.handleRefresh();
         });
     }
-    
+
     // 处理刷新按钮点击
     handleRefresh() {
         // 添加一个简单的确认提示
         if (confirm('确定要刷新页面吗？未保存的数据将丢失。')) {
             // 强制刷新，绕过缓存
             window.location.reload(true);
-            
+
             // 如果上面的方法不起作用，尝试其他方法
             setTimeout(() => {
                 window.location.href = window.location.href + '?_refresh=' + Date.now();
@@ -250,13 +250,13 @@ export class UIController {
     // 处理按下开始
     handlePressStart() {
         console.log('handlePressStart 被调用');
-        
+
         // 检查用户是否已登录
         if (!this.checkAuthenticationStatus()) {
             console.log('认证检查失败，阻止录音');
             return; // 如果未登录，不继续录音流程
         }
-        
+
         console.log('认证检查通过，开始录音流程');
         this.isRecording = true;
         if (this.onRecordingStart) {
@@ -270,14 +270,14 @@ export class UIController {
         const token = localStorage.getItem('zhaoqiuku_access_token');
         const hasAuthManager = !!window.authManager;
         const isAuthenticated = window.authManager?.isAuthenticated;
-        
+
         console.log('检查认证状态:', {
             hasToken: !!token,
             hasAuthManager: hasAuthManager,
             isAuthenticated: isAuthenticated,
             user: window.authManager?.user?.email
         });
-        
+
         // 如果有token或者认证管理器显示已登录，则允许录音
         if (token || (hasAuthManager && isAuthenticated)) {
             console.log('用户已登录，允许录音');
@@ -285,7 +285,7 @@ export class UIController {
             this.clearLoginRequiredState();
             return true;
         }
-        
+
         console.log('用户未登录，显示登录提示');
         this.showLoginRequired();
         return false;
@@ -295,7 +295,7 @@ export class UIController {
     clearLoginRequiredState() {
         // 移除麦克风按钮的禁用样式
         this.elements.microphoneButton.classList.remove('login-required');
-        
+
         // 如果当前显示的是登录提示，清除它
         const container = this.elements.resultsContainer;
         if (container.querySelector('.login-required-message')) {
@@ -313,23 +313,23 @@ export class UIController {
                 <br><small>即将跳转到登录页面...</small>
             </div>
         `;
-        
+
         // 给麦克风按钮添加禁用样式
         this.elements.microphoneButton.classList.add('login-required');
-        
+
         // 震动提示
         this.vibrate([100, 50, 100]);
-        
+
         // 延迟跳转到登录页面
         setTimeout(() => {
             // 保存当前页面URL，登录后可以返回
             const currentUrl = window.location.href;
             const returnUrl = encodeURIComponent(currentUrl);
-            
+
             // 跳转到登录页面，带上返回URL参数
             window.location.href = `auth.html?return=${returnUrl}`;
         }, 2000); // 2秒后跳转，让用户看到提示消息
-        
+
         // 添加倒计时显示
         let countdown = 2;
         const countdownInterval = setInterval(() => {
@@ -371,7 +371,7 @@ export class UIController {
         this.elements.listeningIndicator.classList.add('active');
         this.elements.cancelIndicator.classList.add('active');
         this.elements.timer.classList.add('recording');
-        
+
         this.startTimer();
     }
 
@@ -382,7 +382,7 @@ export class UIController {
         this.elements.listeningIndicator.classList.remove('active');
         this.elements.cancelIndicator.classList.remove('active', 'canceling');
         this.elements.timer.classList.remove('recording');
-        
+
         this.stopTimer();
     }
 
@@ -403,7 +403,7 @@ export class UIController {
     startTimer() {
         this.startTime = Date.now();
         this.updateTimer();
-        
+
         this.timerInterval = setInterval(() => {
             this.updateTimer();
         }, 100);
@@ -424,11 +424,11 @@ export class UIController {
     // 更新计时器显示
     updateTimer() {
         if (!this.startTime) return;
-        
+
         const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
         const minutes = Math.floor(elapsed / 60);
         const seconds = elapsed % 60;
-        
+
         const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         this.elements.timer.textContent = timeString;
     }
@@ -455,9 +455,9 @@ export class UIController {
     showResults(data) {
         // 保存最后的结果数据，用于调试级别切换时重新显示
         this.lastResultData = data;
-        
+
         const container = this.elements.resultsContainer;
-        
+
         if (typeof data === 'string') {
             container.innerHTML = `<div class="results-json">${this.escapeHtml(data)}</div>`;
         } else {
@@ -465,181 +465,179 @@ export class UIController {
             const formattedData = this.formatDebugData(data);
             container.innerHTML = `<div class="results-json">${formattedData}</div>`;
         }
-        
+
         // 自动滚动到顶部
         container.scrollTop = 0;
     }
-    
+
     // 格式化调试数据显示
     formatDebugData(data) {
         const debugConfig = window.debugConfig.getCurrentConfig();
         let html = '';
-        
+
         // 显示当前调试级别
         html += `<div style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 10px; text-align: right;">
             调试级别: ${window.debugConfig.getCurrentLevelName()}
         </div>`;
-        
-        // 1. 显示主要结果（所有级别都显示）
-        if (debugConfig.showTranscript && data.transcript) {
-            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">
-                📝 识别结果: ${this.escapeHtml(data.transcript)}
-            </div>`;
-        }
-        
+
         // 显示业务处理结果（如果有）
         if (data.business_result) {
             const business = data.business_result;
             const resultColor = business.success ? 'var(--success)' : 'var(--error)';
-            const resultIcon = business.success ? '✅' : '❌';
-            
-            // 显示用户提问和AI回复的对话格式
+
+            // 显示用户提问和AI回复的对话格式（合并在同一个div中）
             html += `<div style="margin-bottom: 15px; padding: 15px; border-radius: 12px; background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1);">
-                <div style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px; font-size: 1rem;">
+                <div style="color: var(--primary-color); font-weight: bold; margin-bottom: 6px; font-size: 1rem;">
                     📝 用户说: ${this.escapeHtml(data.transcript)}
                 </div>
                 <div style="color: ${resultColor}; font-weight: bold; font-size: 1rem; line-height: 1.4;">
                     📝 AI回复：${this.escapeHtml(business.message)}
                 </div>
             </div>`;
-            
-            // 显示操作详情（仅在调试模式下）
-            if (debugConfig.showApiResponse) {
-                if (data.action) {
-                    const actionNames = {
-                        'put': '存放物品',
-                        'get': '查找物品', 
-                        'unknown': '未知操作'
-                    };
-                    html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+        } else if (debugConfig.showTranscript && data.transcript) {
+            // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果
+            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">
+                📝 识别结果: ${this.escapeHtml(data.transcript)}
+            </div>`;
+        }
+
+        // 显示操作详情（仅在调试模式下）
+        if (debugConfig.showApiResponse) {
+            if (data.action) {
+                const actionNames = {
+                    'put': '存放物品',
+                    'get': '查找物品',
+                    'unknown': '未知操作'
+                };
+                html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
                         🎯 操作类型: ${actionNames[data.action] || data.action}
                     </div>`;
-                }
-                
-                if (data.object) {
-                    html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+            }
+
+            if (data.object) {
+                html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
                         📦 物品名称: ${this.escapeHtml(data.object)}
                     </div>`;
-                }
-                
-                if (data.location) {
-                    html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+            }
+
+            if (data.location) {
+                html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
                         📍 存放位置: ${this.escapeHtml(data.location)}
                     </div>`;
-                }
             }
         }
-        
-        // 2. 显示API响应的关键信息（调试模式及以上）
-        if (debugConfig.showApiResponse) {
-            if (data.keywords && data.keywords.length > 0) {
-                html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
+    }
+
+    // 2. 显示API响应的关键信息（调试模式及以上）
+    if(debugConfig.showApiResponse) {
+        if (data.keywords && data.keywords.length > 0) {
+            html += `<div style="color: var(--primary-color); margin-bottom: 10px;">
                     🏷️ 关键词: ${data.keywords.map(k => this.escapeHtml(k)).join(', ')}
                 </div>`;
-            }
-            
-            if (data.confidence !== undefined && data.confidence !== null) {
-                html += `<div style="color: var(--warning); margin-bottom: 10px;">
+        }
+
+        if (data.confidence !== undefined && data.confidence !== null) {
+            html += `<div style="color: var(--warning); margin-bottom: 10px;">
                     📊 置信度: ${data.confidence}
                 </div>`;
-            }
-            
-            // 显示解析后的API响应
-            if (data.raw_response) {
-                html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+        }
+
+        // 显示解析后的API响应
+        if (data.raw_response) {
+            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
                     📋 API 响应内容:
                 </div>`;
-                html += `<pre style="font-size: 0.85rem; color: var(--text-primary); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px;">${JSON.stringify(data.raw_response, null, 2)}</pre>`;
-            }
+            html += `<pre style="font-size: 0.85rem; color: var(--text-primary); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px;">${JSON.stringify(data.raw_response, null, 2)}</pre>`;
         }
-        
-        // 3. 显示完整调试信息（完整调试模式）
-        if (debugConfig.showRequestInfo && data.debug && data.debug.request) {
-            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+    }
+
+    // 3. 显示完整调试信息（完整调试模式）
+    if(debugConfig.showRequestInfo && data.debug && data.debug.request) {
+    html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
                 📤 API 请求详情:
             </div>`;
-            html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.request, null, 2)}</pre>`;
-        }
-        
-        if (debugConfig.showRequestInfo && data.debug && data.debug.response) {
-            html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+    html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.request, null, 2)}</pre>`;
+}
+
+if (debugConfig.showRequestInfo && data.debug && data.debug.response) {
+    html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
                 📥 API 响应详情:
             </div>`;
-            html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.response, null, 2)}</pre>`;
-        }
-        
-        // 如果是正常模式但没有识别结果，显示简单提示
-        if (debugConfig.currentLevel === 'normal' && !data.transcript) {
-            html = `<div style="color: var(--text-muted); text-align: center; font-style: italic;">
+    html += `<pre style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${JSON.stringify(data.debug.response, null, 2)}</pre>`;
+}
+
+// 如果是正常模式但没有识别结果，显示简单提示
+if (debugConfig.currentLevel === 'normal' && !data.transcript) {
+    html = `<div style="color: var(--text-muted); text-align: center; font-style: italic;">
                 未能识别语音内容，请重试
             </div>`;
-        }
-        
-        // 如果没有任何内容，显示完整JSON作为后备
-        if (!html.trim()) {
-            html = `<pre style="font-size: 0.85rem;">${JSON.stringify(data, null, 2)}</pre>`;
-        }
-        
-        return html;
+}
+
+// 如果没有任何内容，显示完整JSON作为后备
+if (!html.trim()) {
+    html = `<pre style="font-size: 0.85rem;">${JSON.stringify(data, null, 2)}</pre>`;
+}
+
+return html;
     }
 
-    // 显示加载状态
-    showLoading(message = '处理中...') {
-        this.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
-    }
+// 显示加载状态
+showLoading(message = '处理中...') {
+    this.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
+}
 
-    // 显示错误
-    showError(error) {
-        const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
-        this.elements.resultsContainer.innerHTML = `
+// 显示错误
+showError(error) {
+    const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
+    this.elements.resultsContainer.innerHTML = `
             <div style="color: var(--error); text-align: center;">
                 <strong>错误:</strong> ${this.escapeHtml(errorMessage)}
             </div>
         `;
-    }
+}
 
-    // 清除结果
-    clearResults() {
-        this.elements.resultsContainer.innerHTML = '<div class="placeholder">等待语音输入...</div>';
-    }
+// 清除结果
+clearResults() {
+    this.elements.resultsContainer.innerHTML = '<div class="placeholder">等待语音输入...</div>';
+}
 
-    // 显示提示消息
-    showMessage(message, type = 'info') {
-        const colors = {
-            info: 'var(--primary-color)',
-            success: 'var(--success)',
-            warning: 'var(--warning)',
-            error: 'var(--error)'
-        };
-        
-        this.elements.resultsContainer.innerHTML = `
+// 显示提示消息
+showMessage(message, type = 'info') {
+    const colors = {
+        info: 'var(--primary-color)',
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        error: 'var(--error)'
+    };
+
+    this.elements.resultsContainer.innerHTML = `
             <div style="color: ${colors[type]}; text-align: center;">
                 ${this.escapeHtml(message)}
             </div>
         `;
-    }
+}
 
-    // HTML转义
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+// HTML转义
+escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
-    // 显示权限请求提示
-    showPermissionPrompt() {
-        this.showMessage('请允许访问麦克风权限以使用语音功能', 'warning');
-    }
+// 显示权限请求提示
+showPermissionPrompt() {
+    this.showMessage('请允许访问麦克风权限以使用语音功能', 'warning');
+}
 
-    // 显示不支持提示
-    showUnsupportedPrompt() {
-        this.showError('您的浏览器不支持语音录制功能，请使用现代浏览器');
-    }
+// 显示不支持提示
+showUnsupportedPrompt() {
+    this.showError('您的浏览器不支持语音录制功能，请使用现代浏览器');
+}
 
-    // 添加震动反馈（如果支持）
-    vibrate(pattern = [100]) {
-        if ('vibrate' in navigator) {
-            navigator.vibrate(pattern);
-        }
+// 添加震动反馈（如果支持）
+vibrate(pattern = [100]) {
+    if ('vibrate' in navigator) {
+        navigator.vibrate(pattern);
     }
+}
 }
