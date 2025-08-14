@@ -2,6 +2,15 @@
 console.log('main.js 脚本开始执行');
 
 import { VoiceRecognitionApp } from './App.js';
+import { AudioRecorder } from './audio-recorder.js';
+import { UIController } from './ui-controller.js';
+import { APIClient } from './api-client.js';
+
+// 将类暴露到全局作用域，以便class-check.js可以检测到
+window.AudioRecorder = AudioRecorder;
+window.UIController = UIController;
+window.APIClient = APIClient;
+window.VoiceRecognitionApp = VoiceRecognitionApp;
 
 // 应用启动函数
 async function startApp() {
