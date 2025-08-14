@@ -1,10 +1,11 @@
 // main.js - 应用入口点
+console.log('main.js 脚本开始执行');
 
 import { VoiceRecognitionApp } from './App.js';
 
-// 应用启动
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOMContentLoaded 事件触发');
+// 应用启动函数
+async function startApp() {
+    console.log('开始初始化应用');
     const app = new VoiceRecognitionApp();
     console.log('VoiceRecognitionApp 实例创建完成');
     
@@ -59,7 +60,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('unhandledrejection', (event) => {
         console.error('未处理的Promise拒绝:', event.reason);
     });
-});
+}
+
+// 如果DOM已加载完成，立即初始化；否则等待DOMContentLoaded事件
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+} else {
+    console.log('DOM已加载完成，立即启动应用');
+    startApp();
+}
 
 // 页面完全加载后的最终检查
 window.addEventListener('load', () => {
