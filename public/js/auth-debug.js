@@ -8,7 +8,7 @@
 // 调试函数：检查认证状态
 function debugAuthState() {
     console.log('=== 认证状态调试 ===');
-    
+
     // 检查认证管理器
     console.log('1. 认证管理器状态:');
     console.log('   - 存在:', !!window.authManager);
@@ -17,20 +17,20 @@ function debugAuthState() {
         console.log('   - 用户信息:', window.authManager.user);
         console.log('   - Token存在:', !!window.authManager.tokens);
     }
-    
+
     // 检查DOM元素
     console.log('2. DOM元素状态:');
     const authLinks = document.getElementById('authLinks');
     const userInfo = document.getElementById('userInfo');
     const userEmail = document.getElementById('userEmail');
-    
+
     console.log('   - authLinks存在:', !!authLinks);
     console.log('   - authLinks显示:', authLinks ? authLinks.style.display : 'N/A');
     console.log('   - userInfo存在:', !!userInfo);
     console.log('   - userInfo隐藏:', userInfo ? userInfo.classList.contains('hidden') : 'N/A');
     console.log('   - userEmail存在:', !!userEmail);
     console.log('   - userEmail内容:', userEmail ? userEmail.textContent : 'N/A');
-    
+
     // 检查LocalStorage
     console.log('3. LocalStorage状态:');
     const storageKeys = [
@@ -39,28 +39,28 @@ function debugAuthState() {
         'zhaoqiuku_user_info',
         'zhaoqiuku_login_time'
     ];
-    
+
     storageKeys.forEach(key => {
         const value = localStorage.getItem(key);
         console.log(`   - ${key}:`, value ? (key.includes('token') ? '存在' : value) : '不存在');
     });
-    
+
     console.log('=== 调试结束 ===');
 }
 
 // 强制更新用户显示
 function forceUpdateUserDisplay() {
     console.log('强制更新用户显示...');
-    
+
     const authLinks = document.getElementById('authLinks');
     const userInfo = document.getElementById('userInfo');
     const userEmail = document.getElementById('userEmail');
-    
+
     if (!authLinks || !userInfo || !userEmail) {
         console.error('DOM元素未找到');
         return;
     }
-    
+
     // 检查认证管理器状态
     if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
         // 显示用户信息，隐藏登录链接
@@ -86,12 +86,12 @@ function simulateLogin() {
         console.error('认证管理器未初始化');
         return;
     }
-    
+
     const mockUser = {
         email: 'test@example.com',
         id: 'test123'
     };
-    
+
     // 模拟设置认证状态
     window.authManager.isAuthenticated = true;
     window.authManager.user = mockUser;
@@ -99,13 +99,13 @@ function simulateLogin() {
         access: 'mock_access_token',
         refresh: 'mock_refresh_token'
     };
-    
+
     // 保存到localStorage
     localStorage.setItem('zhaoqiuku_user_info', JSON.stringify(mockUser));
     localStorage.setItem('zhaoqiuku_access_token', 'mock_access_token');
     localStorage.setItem('zhaoqiuku_refresh_token', 'mock_refresh_token');
     localStorage.setItem('zhaoqiuku_login_time', Date.now().toString());
-    
+
     // 触发认证状态变化事件
     window.dispatchEvent(new CustomEvent('authStateChange', {
         detail: {
@@ -114,7 +114,7 @@ function simulateLogin() {
             user: mockUser
         }
     }));
-    
+
     console.log('模拟登录完成');
     forceUpdateUserDisplay();
 }
@@ -125,18 +125,18 @@ function clearLoginState() {
         console.error('认证管理器未初始化');
         return;
     }
-    
+
     // 清除认证状态
     window.authManager.isAuthenticated = false;
     window.authManager.user = null;
     window.authManager.tokens = null;
-    
+
     // 从localStorage清除
     localStorage.removeItem('zhaoqiuku_user_info');
     localStorage.removeItem('zhaoqiuku_access_token');
     localStorage.removeItem('zhaoqiuku_refresh_token');
     localStorage.removeItem('zhaoqiuku_login_time');
-    
+
     // 触发认证状态变化事件
     window.dispatchEvent(new CustomEvent('authStateChange', {
         detail: {
@@ -144,7 +144,7 @@ function clearLoginState() {
             isAuthenticated: false
         }
     }));
-    
+
     console.log('登录状态已清除');
     forceUpdateUserDisplay();
 }
@@ -158,8 +158,6 @@ function showConsoleCommands() {
     console.log('- forceUpdateUserDisplay() - 强制更新显示');
     console.log('- simulateLogin() - 模拟登录');
     console.log('- clearLoginState() - 清除登录状态');
-    console.log('- checkMainPageState() - 检查主页面状态');
-    console.log('- testLogoutButton() - 测试登出按钮');
 }
 
 // 页面加载完成后显示可用命令
@@ -174,8 +172,6 @@ window.debugAuthState = debugAuthState;
 window.forceUpdateUserDisplay = forceUpdateUserDisplay;
 window.simulateLogin = simulateLogin;
 window.clearLoginState = clearLoginState;
-window.checkMainPageState = checkMainPageState;
-window.testLogoutButton = testLogoutButton;
 window.showConsoleCommands = showConsoleCommands;
 
 console.log('认证调试工具已加载，可在控制台使用以下函数:');

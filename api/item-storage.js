@@ -26,15 +26,29 @@ const ITEMS_TABLE = 'items';
 export async function handleItemStorage(transcriptionResult, userId, clientIP) {
     const { action, object, location, transcript } = transcriptionResult;
     
+    // 🔍 调试日志：分析结果分类
+    console.log('=== 物品存储分析结果 ===');
+    console.log('转录结果:', transcript);
+    console.log('动作类型:', action);
+    console.log('物品名称:', object);
+    console.log('存放位置:', location);
+    console.log('用户ID:', userId);
+    console.log('客户端IP:', clientIP);
+    console.log('========================');
+    
     try {
         switch (action) {
             case 'put':
+                console.log('🔄 执行存放操作 (PUT)');
                 return await handlePutAction(object, location, userId, clientIP, transcript);
             case 'get':
+                console.log('🔍 执行查找操作 (GET)');
                 return await handleGetAction(object, userId);
             case 'unknown':
+                console.log('❓ 未知操作类型 (UNKNOWN)');
                 return handleUnknownAction();
             default:
+                console.error('❌ 无效的操作类型:', action);
                 throw new Error(`未知的操作类型: ${action}`);
         }
     } catch (error) {
@@ -51,7 +65,12 @@ export async function handleItemStorage(transcriptionResult, userId, clientIP) {
  * 处理存放物品操作 (action: put)
  */
 async function handlePutAction(object, location, userId, clientIP, transcript) {
+    console.log('📝 PUT操作 - 数据验证');
+    console.log('物品名称:', object);
+    console.log('存放位置:', location);
+    
     if (!object || !location) {
+        console.log('❌ PUT操作失败 - 数据不完整');
         return {
             success: false,
             message: '物品名称或存放位置信息不完整，请重新描述'
@@ -61,28 +80,40 @@ async function handlePutAction(object, location, userId, clientIP, transcript) {
     const supabase = await createSupabaseClient();
     const currentTimestamp = Math.floor(Date.now() / 1000);
 
+    // 🔍 调试日志：SQL操作
+    const insertData = {
+        user_id: userId,
+        item_name: object,
+        location: location,
+        operation_time: currentTimestamp,
+        client_ip: clientIP,
+        transcript: transcript,
+        action_type: 'put'
+    };
+    
+    console.log('📊 执行SQL INSERT操作');
+    console.log('表名:', ITEMS_TABLE);
+    console.log('插入数据:', insertData);
+    console.log('SQL等效语句:', `INSERT INTO ${ITEMS_TABLE} (user_id, item_name, location, operation_time, client_ip, transcript, action_type) VALUES ('${userId}', '${object}', '${location}', ${currentTimestamp}, '${clientIP}', '${transcript}', 'put')`);
+
     // 插入记录到数据库
     const { data, error } = await supabase
         .from(ITEMS_TABLE)
-        .insert({
-            user_id: userId,
-            item_name: object,
-            location: location,
-            operation_time: currentTimestamp,
-            client_ip: clientIP,
-            transcript: transcript,
-            action_type: 'put'
-        })
+        .insert(insertData)
         .select()
         .single();
 
     if (error) {
-        console.error('插入物品记录失败:', error);
+        console.error('❌ SQL INSERT失败:', error);
+        console.error('错误详情:', error.message);
         return {
             success: false,
             message: '记录存储失败，请稍后重试'
         };
     }
+
+    console.log('✅ SQL INSERT成功');
+    console.log('返回数据:', data);
 
     return {
         success: true,
@@ -99,7 +130,12 @@ async function handlePutAction(object, location, userId, clientIP, transcript) {
  * 处理查找物品操作 (action: get)
  */
 async function handleGetAction(object, userId) {
+    console.log('🔍 GET操作 - 数据验证');
+    console.log('查找物品:', object);
+    console.log('用户ID:', userId);
+    
     if (!object) {
+        console.log('❌ GET操作失败 - 物品名称为空');
         return {
             success: false,
             message: '请明确要查找的物品名称'
@@ -107,6 +143,16 @@ async function handleGetAction(object, userId) {
     }
 
     const supabase = await createSupabaseClient();
+
+    // 🔍 调试日志：SQL查询操作
+    console.log('📊 执行SQL SELECT操作');
+    console.log('表名:', ITEMS_TABLE);
+    console.log('查询条件:', {
+        user_id: userId,
+        item_name: object,
+        action_type: 'put'
+    });
+    console.log('SQL等效语句:', `SELECT * FROM ${ITEMS_TABLE} WHERE user_id = '${userId}' AND item_name = '${object}' AND action_type = 'put' ORDER BY operation_time DESC LIMIT 1`);
 
     // 查找最新的存放记录
     const { data, error } = await supabase
@@ -120,15 +166,25 @@ async function handleGetAction(object, userId) {
         .single();
 
     if (error || !data) {
+        console.log('❌ SQL SELECT失败或无数据');
+        console.log('错误信息:', error?.message || '无匹配记录');
         return {
             success: false,
             message: `没有找到${object}的存放记录，请确认物品名称是否正确`
         };
     }
 
+    console.log('✅ SQL SELECT成功');
+    console.log('查询结果:', data);
+
     // 格式化记录时间
     const recordDate = new Date(data.operation_time * 1000);
     const formattedDate = `${recordDate.getFullYear()}年${recordDate.getMonth() + 1}月${recordDate.getDate()}日`;
+    
+    console.log('📅 时间格式化:', {
+        原始时间戳: data.operation_time,
+        格式化时间: formattedDate
+    });
 
     return {
         success: true,
@@ -146,6 +202,9 @@ async function handleGetAction(object, userId) {
  * 处理未知意图操作 (action: unknown)
  */
 function handleUnknownAction() {
+    console.log('❓ UNKNOWN操作 - 意图不明确');
+    console.log('无需数据库操作，直接返回提示信息');
+    
     return {
         success: false,
         message: '您的意图不明确，重新提问，是要记录物品存放位置还是要查找物品。'

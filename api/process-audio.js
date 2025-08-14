@@ -26,9 +26,13 @@ export default async function handler(req, res) {
     }
 
     try {
+        console.log('🚀 开始处理音频请求');
+        console.log('请求时间:', new Date().toISOString());
+        
         // 验证用户认证
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            console.log('❌ 认证失败 - 未提供令牌');
             return res.status(401).json({ error: '未提供认证令牌' });
         }
 
@@ -38,7 +42,10 @@ export default async function handler(req, res) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             userId = decoded.userId;
+            console.log('✅ 用户认证成功');
+            console.log('用户ID:', userId);
         } catch (jwtError) {
+            console.log('❌ 认证失败 - 令牌无效:', jwtError.message);
             return res.status(401).json({ error: '认证令牌无效' });
         }
 
@@ -65,26 +72,45 @@ export default async function handler(req, res) {
                         '127.0.0.1';
 
         // 步骤1: 调用音频转录
+        console.log('🎤 开始音频转录处理');
+        console.log('用户ID:', userId);
+        console.log('音频大小:', `${(byteLength / 1024 / 1024).toFixed(2)}MB`);
+        console.log('音频格式:', mimeType);
+        
         const transcriptionResult = await transcribeAudio(mimeType, data);
         
         if (!transcriptionResult.success) {
+            console.error('❌ 音频转录失败:', transcriptionResult.error);
             return res.status(500).json(transcriptionResult);
         }
 
+        console.log('✅ 音频转录成功');
+        console.log('转录文本:', transcriptionResult.text_blob);
+        console.log('解析结果:', transcriptionResult.parsed_json);
+
         // 步骤2: 处理业务逻辑
+        console.log('🔄 开始业务逻辑处理');
         const businessResult = await handleItemStorage(
             transcriptionResult.parsed_json, 
             userId, 
             clientIP
         );
+        
+        console.log('✅ 业务逻辑处理完成');
+        console.log('处理结果:', businessResult);
 
         // 返回完整结果
-        return res.status(200).json({
+        const finalResult = {
             success: true,
             transcription: transcriptionResult,
             business: businessResult,
             timestamp: new Date().toISOString()
-        });
+        };
+        
+        console.log('🎉 请求处理完成');
+        console.log('最终结果:', JSON.stringify(finalResult, null, 2));
+        
+        return res.status(200).json(finalResult);
 
     } catch (error) {
         console.error('处理音频请求失败:', error);
@@ -171,13 +197,30 @@ async function transcribeAudio(mimeType, data) {
         // 尝试解析JSON响应
         let parsedJson = null;
         if (responseText) {
+            console.log('🔍 开始解析AI返回的JSON');
+            console.log('原始响应文本:', responseText);
+            
             try {
                 const jsonMatch = responseText.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
+                    console.log('找到JSON片段:', jsonMatch[0]);
                     parsedJson = JSON.parse(jsonMatch[0]);
+                    console.log('✅ JSON解析成功:', parsedJson);
+                    
+                    // 🔍 详细分析结果
+                    console.log('=== AI分析结果详情 ===');
+                    console.log('转录文本:', parsedJson.transcript);
+                    console.log('动作分类:', parsedJson.action);
+                    console.log('物品名称:', parsedJson.object);
+                    console.log('存放位置:', parsedJson.location);
+                    console.log('置信度:', parsedJson.confidence);
+                    console.log('=====================');
+                } else {
+                    console.log('❌ 未找到有效的JSON格式');
                 }
             } catch (parseError) {
-                console.error('解析JSON失败:', parseError);
+                console.error('❌ JSON解析失败:', parseError);
+                console.log('使用默认unknown格式');
                 parsedJson = {
                     transcript: responseText.trim(),
                     action: "unknown",
@@ -186,6 +229,8 @@ async function transcribeAudio(mimeType, data) {
                     confidence: null
                 };
             }
+        } else {
+            console.log('❌ AI返回的响应文本为空');
         }
 
         return {
