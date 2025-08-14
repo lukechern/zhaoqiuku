@@ -141,5 +141,5 @@ window.showConsoleCommands = () => {
 };
 
 // 初始化时显示可用命令
-console.log('🎯 找球库语音识别助手已加载');
+console.log('🎯 AI寻物助手已加载');
 console.log('输入 showConsoleCommands() 查看可用命令');
