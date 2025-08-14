@@ -70,9 +70,9 @@ export class APIClient {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 
-                // 如果是认证错误且使用的是新API，尝试回退到旧API
-                if (response.status === 401 && useNewApi) {
-                    console.log('🔄 认证失败，回退到传统API');
+                // 如果是认证错误或端点不存在且使用的是新API，尝试回退到旧API
+                if ((response.status === 401 || response.status === 404) && useNewApi) {
+                    console.log('🔄 API调用失败，回退到传统API');
                     return this.transcribeAudioLegacy(audioBlob, mimeType);
                 }
                 
