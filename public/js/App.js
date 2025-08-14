@@ -16,24 +16,30 @@ import { EventHandler } from './EventHandler.js';
 // 主应用程序
 export class VoiceRecognitionApp {
     constructor() {
+        console.log('VoiceRecognitionApp 构造函数开始');
         this.audioRecorder = new AudioRecorder();
+        console.log('AudioRecorder 实例化完成');
         this.uiController = new UIController();
+        console.log('UIController 实例化完成');
         this.apiClient = new APIClient();
+        console.log('APIClient 实例化完成');
         
         this.isInitialized = false;
         this.isProcessing = false;
         
         // 用户状态管理
         this.userStateManager = new UserStateManager(this);
+        console.log('UserStateManager 实例化完成');
         
         // 应用初始化
         this.appInitializer = new AppInitializer(this);
+        console.log('AppInitializer 实例化完成');
         
         // 事件处理
         this.eventHandler = new EventHandler(this);
+        console.log('EventHandler 实例化完成');
         
-        // 初始化用户状态
-        this.userStateManager.initializeUserState();
+        console.log('VoiceRecognitionApp 构造函数结束');
     }
 
     // 应用销毁

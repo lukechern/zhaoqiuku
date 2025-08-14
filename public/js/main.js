@@ -4,13 +4,21 @@ import { VoiceRecognitionApp } from './App.js';
 
 // 应用启动
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOMContentLoaded 事件触发');
     const app = new VoiceRecognitionApp();
+    console.log('VoiceRecognitionApp 实例创建完成');
     
     // 将app实例保存到全局，方便调试
     window.app = app;
+    console.log('window.app 设置完成');
     
     try {
         await app.appInitializer.initialize();
+        console.log('app.appInitializer.initialize() 执行完成');
+        
+        // 初始化用户状态
+        app.userStateManager.initializeUserState();
+        console.log('app.userStateManager.initializeUserState() 执行完成');
         
         // 应用初始化完成后，多次检查用户状态
         setTimeout(() => {
