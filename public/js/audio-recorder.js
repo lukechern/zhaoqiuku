@@ -1,5 +1,5 @@
 // 音频录制模块
-class AudioRecorder {
+export class AudioRecorder {
     constructor() {
         this.mediaRecorder = null;
         this.audioStream = null;

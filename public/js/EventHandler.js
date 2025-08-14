@@ -1,4 +1,5 @@
 // EventHandler.js - 事件处理模块
+import { AudioRecorder } from './audio-recorder.js';
 
 export class EventHandler {
     constructor(app) {

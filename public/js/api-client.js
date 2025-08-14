@@ -1,5 +1,5 @@
 // API客户端模块
-class APIClient {
+export class APIClient {
     constructor() {
         this.config = window.apiConfig;
     }

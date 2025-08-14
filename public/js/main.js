@@ -121,9 +121,9 @@ window.testMicrophoneButton = function() {
     });
 };
 
-window.forceStartRecording = function() {
-    console.log('强制开始录音测试...');
-    if (window.app && window.app.uiController) {
-        window.app.uiController.handlePressStart();
-    }
-};
+// window.forceStartRecording = function() {
+//     console.log('强制开始录音测试...');
+//     if (window.app && window.app.uiController) {
+//         window.app.uiController.handlePressStart();
+//     }
+// };
