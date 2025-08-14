@@ -63,6 +63,12 @@ const DEBUG_CONFIG = {
 class DebugConfigManager {
     constructor() {
         this.config = DEBUG_CONFIG;
+        // 页面加载完成后显示调试信息
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.updateDebugInfoDisplay());
+        } else {
+            this.updateDebugInfoDisplay();
+        }
     }
     
     // 获取当前调试配置
@@ -80,6 +86,9 @@ class DebugConfigManager {
             window.dispatchEvent(new CustomEvent('debugLevelChanged', {
                 detail: { level, config: this.config.levels[level] }
             }));
+            
+            // 更新调试信息显示
+            this.updateDebugInfoDisplay();
             
             return true;
         }
@@ -105,6 +114,32 @@ class DebugConfigManager {
     // 获取当前级别名称
     getCurrentLevelName() {
         return this.getCurrentConfig().name;
+    }
+    
+    // 更新调试信息显示
+    updateDebugInfoDisplay() {
+        // 等待DOM加载完成
+        const update = () => {
+            const debugInfoElement = document.getElementById('debugInfo');
+            if (debugInfoElement) {
+                const currentLevel = this.config.currentLevel;
+                const currentConfig = this.getCurrentConfig();
+                
+                // 只有在非正常模式下才显示调试信息
+                if (currentLevel !== DEBUG_LEVELS.NORMAL) {
+                    debugInfoElement.textContent = `调试级别: ${currentConfig.name}`;
+                    debugInfoElement.classList.remove('hidden');
+                } else {
+                    debugInfoElement.classList.add('hidden');
+                }
+            }
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', update);
+        } else {
+            update();
+        }
     }
 }
 

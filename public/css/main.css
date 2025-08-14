@@ -47,20 +47,41 @@ body {
     padding-top: 2rem;
 }
 
-.header h1 {
+.header-content {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.header-content li {
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+}
+
+.header-title {
     font-size: 2rem;
     font-weight: 700;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
 }
 
-.subtitle {
+.header-subtitle {
     color: var(--text-secondary);
     font-size: 1rem;
     font-weight: 400;
+    margin-top: 0.2rem;
+}
+
+.debug-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+    min-height: 1.2rem;
 }
 
 .debug-controls {
