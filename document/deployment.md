@@ -45,7 +45,80 @@
 3. 创建新的 API Key
 4. 保存 API Key（后续配置需要）
 
-#### 1.2 准备代码仓库
+#### 1.2 配置 Supabase 数据库
+
+1. 访问 [Supabase](https://supabase.com/) 并创建账号
+2. 创建新项目
+3. 在 SQL Editor 中执行以下建表语句：
+
+```sql
+-- 创建用户表
+CREATE TABLE IF NOT EXISTS users (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    verification_code VARCHAR(10),
+    code_expires_at TIMESTAMP WITH TIME ZONE,
+    is_verified BOOLEAN DEFAULT FALSE,
+    registered_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    status VARCHAR(20) DEFAULT 'pending'
+);
+
+-- 创建物品存储表
+CREATE TABLE IF NOT EXISTS items (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    item_name VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    operation_time BIGINT NOT NULL,
+    client_ip INET,
+    transcript TEXT,
+    action_type VARCHAR(10) NOT NULL CHECK (action_type IN ('put', 'get')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 创建更新时间触发器函数
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- 创建用户表索引和触发器
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_verification_code ON users(verification_code);
+CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+
+CREATE TRIGGER update_users_updated_at 
+    BEFORE UPDATE ON users 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- 创建物品表索引和触发器
+CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
+CREATE INDEX IF NOT EXISTS idx_items_item_name ON items(item_name);
+CREATE INDEX IF NOT EXISTS idx_items_user_item ON items(user_id, item_name);
+CREATE INDEX IF NOT EXISTS idx_items_operation_time ON items(operation_time);
+CREATE INDEX IF NOT EXISTS idx_items_action_type ON items(action_type);
+
+CREATE TRIGGER update_items_updated_at 
+    BEFORE UPDATE ON items 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+```
+
+4. 获取项目 URL 和 API Key（在项目设置中）
+
+#### 1.3 配置 Resend 邮件服务
+
+1. 访问 [Resend](https://resend.com/) 并创建账号
+2. 获取 API Key
+3. 配置发件域名（可选）
+
+#### 1.4 准备代码仓库
 
 1. 将项目代码推送到 GitHub 仓库
 2. 确保所有文件都已提交
@@ -65,6 +138,14 @@
 
 - **变量名**: `GEMINI_API_KEY`
 - **值**: 你的 Google Gemini API Key
+- **变量名**: `SUPABASE_URL`
+- **值**: 你的 Supabase 项目 URL
+- **变量名**: `SUPABASE_ANON_KEY`
+- **值**: 你的 Supabase 匿名访问密钥
+- **变量名**: `RESEND_API_KEY`
+- **值**: 你的 Resend 邮件服务 API Key
+- **变量名**: `JWT_SECRET`
+- **值**: JWT 签名密钥（至少32位随机字符串）
 
 #### 2.3 部署设置
 
@@ -152,6 +233,10 @@ Vercel 会自动检测项目类型，无需额外配置。默认设置：
 | 变量名 | 描述 | 示例值 |
 |--------|------|--------|
 | `GEMINI_API_KEY` | Google Gemini API 密钥 | `AIzaSyC...` |
+| `SUPABASE_URL` | Supabase 项目 URL | `https://xxx.supabase.co` |
+| `SUPABASE_ANON_KEY` | Supabase 匿名访问密钥 | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` |
+| `RESEND_API_KEY` | Resend 邮件服务 API 密钥 | `re_xxx` |
+| `JWT_SECRET` | JWT 签名密钥 | `your-32-char-secret-key` |
 
 ### 可选的环境变量
 

@@ -1,4 +1,4 @@
-# 找球库 - AI语音寻物助手
+# 找秋裤 - AI语音寻物助手
 
 一个基于WebView的语音识别应用，支持物品存放和查找的语音指令识别。
 
@@ -16,6 +16,8 @@ zhaoqiuku/
 │   └── README.md
 ├── api/                        # Vercel API端点
 │   ├── transcribe.js          # 语音转录API
+│   ├── process-audio.js       # 音频处理完整流程API（推荐）
+│   ├── item-storage.js        # 物品存储业务逻辑
 │   ├── health.js              # 健康检查API
 │   ├── unified-auth.js        # 统一认证API（推荐）
 │   ├── send-verification-code.js  # 发送邮箱验证码API（旧版）
@@ -162,6 +164,7 @@ const CURRENT_DEBUG_LEVEL = 'full_debug';
 在 Supabase 控制台的 SQL Editor 中执行以下 SQL：
 
 ```sql
+-- 创建用户表
 CREATE TABLE IF NOT EXISTS users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -173,10 +176,50 @@ CREATE TABLE IF NOT EXISTS users (
     status VARCHAR(20) DEFAULT 'pending'
 );
 
--- 创建索引
+-- 创建物品存储表
+CREATE TABLE IF NOT EXISTS items (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    item_name VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    operation_time BIGINT NOT NULL,
+    client_ip INET,
+    transcript TEXT,
+    action_type VARCHAR(10) NOT NULL CHECK (action_type IN ('put', 'get')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 创建更新时间触发器函数
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- 创建用户表索引和触发器
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_verification_code ON users(verification_code);
 CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+
+CREATE TRIGGER update_users_updated_at 
+    BEFORE UPDATE ON users 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- 创建物品表索引和触发器
+CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
+CREATE INDEX IF NOT EXISTS idx_items_item_name ON items(item_name);
+CREATE INDEX IF NOT EXISTS idx_items_user_item ON items(user_id, item_name);
+CREATE INDEX IF NOT EXISTS idx_items_operation_time ON items(operation_time);
+CREATE INDEX IF NOT EXISTS idx_items_action_type ON items(action_type);
+
+CREATE TRIGGER update_items_updated_at 
+    BEFORE UPDATE ON items 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
 ```
 
 #### 3. 配置环境变量
@@ -221,6 +264,13 @@ showApiConfig()             // 显示API配置信息
 - 物品存放和查找指令识别
 - 实时音频录制和处理
 
+### 📦 物品存储管理
+- **存放物品**: 语音指令"把钥匙放在桌子上"，系统自动记录物品和位置
+- **查找物品**: 语音指令"钥匙在哪里"，系统返回存放位置和记录时间
+- **智能识别**: 自动区分存放(put)、查找(get)和未知(unknown)三种操作类型
+- **用户隔离**: 每个用户只能查看和管理自己的物品记录
+- **完整记录**: 记录操作时间、IP地址、原始语音转录等详细信息
+
 ### 👤 用户系统
 - **统一认证流程**：合并注册和登录
 - 邮箱验证码认证（6位数字）
@@ -234,6 +284,42 @@ showApiConfig()             // 显示API配置信息
 - 多级调试模式
 - 实时API请求监控
 - 完整的错误日志
+
+## API 使用说明
+
+### 🎯 推荐使用的API端点
+
+**完整音频处理流程** (推荐):
+```
+POST /api/process-audio
+```
+- 集成音频转录和物品存储业务逻辑
+- 需要用户认证 (Bearer Token)
+- 自动处理三种操作类型 (put/get/unknown)
+- 返回转录结果和业务处理结果
+
+**传统音频转录** (仅转录):
+```
+POST /api/transcribe
+```
+- 仅进行音频转录，不处理业务逻辑
+- 无需用户认证
+- 返回原始转录结果
+
+### 📋 业务逻辑处理
+
+系统根据语音转录结果的 `action` 字段执行不同操作：
+
+1. **action: "put"** - 存放物品
+   - 记录用户ID、物品名、存放位置、操作时间、IP地址
+   - 返回确认信息："XX的存放位置为XX，已经记录好了，以后随时来问我。"
+
+2. **action: "get"** - 查找物品
+   - 查询用户的物品存放记录
+   - 返回位置和记录时间："XX的存放位置为XX，记录时间为XX年XX月XX日"
+
+3. **action: "unknown"** - 未知意图
+   - 提示用户重新描述："您的意图不明确，重新提问，是要记录物品存放位置还是要查找物品。"
 
 ## 技术栈
 

@@ -39,6 +39,23 @@ export const DATABASE_TABLES = {
             UPDATED_AT: 'updated_at',
             STATUS: 'status'
         }
+    },
+    
+    // 物品存储表
+    ITEMS: {
+        TABLE_NAME: 'items',
+        COLUMNS: {
+            ID: 'id',
+            USER_ID: 'user_id',
+            ITEM_NAME: 'item_name',
+            LOCATION: 'location',
+            OPERATION_TIME: 'operation_time',
+            CLIENT_IP: 'client_ip',
+            TRANSCRIPT: 'transcript',
+            ACTION_TYPE: 'action_type',
+            CREATED_AT: 'created_at',
+            UPDATED_AT: 'updated_at'
+        }
     }
 };
 
@@ -119,6 +136,58 @@ export const SQL_QUERIES = {
             code_expires_at = NULL
         WHERE code_expires_at < NOW()
             AND verification_code IS NOT NULL;
+    `,
+
+    // 创建物品存储表的 SQL
+    CREATE_ITEMS_TABLE: `
+        CREATE TABLE IF NOT EXISTS items (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            item_name VARCHAR(255) NOT NULL,
+            location VARCHAR(255) NOT NULL,
+            operation_time BIGINT NOT NULL,
+            client_ip INET,
+            transcript TEXT,
+            action_type VARCHAR(10) NOT NULL CHECK (action_type IN ('put', 'get')),
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+
+        -- 创建索引
+        CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
+        CREATE INDEX IF NOT EXISTS idx_items_item_name ON items(item_name);
+        CREATE INDEX IF NOT EXISTS idx_items_user_item ON items(user_id, item_name);
+        CREATE INDEX IF NOT EXISTS idx_items_operation_time ON items(operation_time);
+        CREATE INDEX IF NOT EXISTS idx_items_action_type ON items(action_type);
+
+        -- 创建更新时间触发器
+        CREATE TRIGGER update_items_updated_at 
+            BEFORE UPDATE ON items 
+            FOR EACH ROW 
+            EXECUTE FUNCTION update_updated_at_column();
+    `,
+
+    // 插入物品记录
+    INSERT_ITEM: `
+        INSERT INTO items (user_id, item_name, location, operation_time, client_ip, transcript, action_type)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *;
+    `,
+
+    // 查找用户的物品记录
+    FIND_USER_ITEM: `
+        SELECT * FROM items 
+        WHERE user_id = $1 AND item_name = $2 AND action_type = 'put'
+        ORDER BY operation_time DESC 
+        LIMIT 1;
+    `,
+
+    // 获取用户所有物品记录
+    GET_USER_ITEMS: `
+        SELECT * FROM items 
+        WHERE user_id = $1 
+        ORDER BY operation_time DESC 
+        LIMIT $2;
     `
 };
 
