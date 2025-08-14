@@ -157,9 +157,12 @@ body {
     transform: translateY(-1px);
 }
 
-.control-btn svg {
-    width: 16px;
-    height: 16px;
+.control-btn svg,
+.control-btn img.control-icon {
+    width: 20px;
+    height: 20px;
+    fill: white;
+    color: white;
 }
 
 .results-section {
@@ -413,7 +416,7 @@ body {
         font-size: 0.8rem;
     }
 }
-/
+/*
 * 登录提示样式 */
 .login-required-message {
     background: linear-gradient(135deg, var(--warning), #f6ad55);
