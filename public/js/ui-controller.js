@@ -482,7 +482,7 @@ export class UIController {
         
         // 1. 显示主要结果（所有级别都显示）
         if (debugConfig.showTranscript && data.transcript) {
-            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 15px; font-size: 1.1rem;">
+            html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">
                 📝 识别结果: ${this.escapeHtml(data.transcript)}
             </div>`;
         }
@@ -493,11 +493,17 @@ export class UIController {
             const resultColor = business.success ? 'var(--success)' : 'var(--error)';
             const resultIcon = business.success ? '✅' : '❌';
             
-            html += `<div style="color: ${resultColor}; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; padding: 10px; border: 1px solid ${resultColor}; border-radius: 8px; background: rgba(${business.success ? '76, 175, 80' : '244, 67, 54'}, 0.1);">
-                ${resultIcon} ${this.escapeHtml(business.message)}
+            // 显示用户提问和AI回复的对话格式
+            html += `<div style="margin-bottom: 15px; padding: 15px; border-radius: 12px; background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1);">
+                <div style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px; font-size: 1rem;">
+                    📝 用户提问: ${this.escapeHtml(data.transcript)}
+                </div>
+                <div style="color: ${resultColor}; font-weight: bold; font-size: 1rem; line-height: 1.4;">
+                    📝 AI回复：${this.escapeHtml(business.message)}
+                </div>
             </div>`;
             
-            // 显示操作详情
+            // 显示操作详情（仅在调试模式下）
             if (debugConfig.showApiResponse) {
                 if (data.action) {
                     const actionNames = {
