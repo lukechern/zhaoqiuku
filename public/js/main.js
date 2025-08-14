@@ -686,3 +686,51 @@ window.addEventListener('load', () => {
         }
     }, 200);
 });
+
+// 全局调试函数
+window.testMicrophoneButton = function() {
+    console.log('=== 麦克风按钮测试 ===');
+    
+    const button = document.getElementById('microphoneButton');
+    console.log('按钮元素:', button);
+    
+    if (button) {
+        console.log('按钮样式:', {
+            display: getComputedStyle(button).display,
+            visibility: getComputedStyle(button).visibility,
+            pointerEvents: getComputedStyle(button).pointerEvents,
+            zIndex: getComputedStyle(button).zIndex
+        });
+        
+        console.log('按钮位置:', button.getBoundingClientRect());
+        console.log('按钮类名:', button.className);
+        
+        // 尝试手动触发事件
+        console.log('尝试触发 mousedown 事件...');
+        button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+        
+        setTimeout(() => {
+            console.log('尝试触发 mouseup 事件...');
+            button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        }, 100);
+    }
+    
+    console.log('认证状态:', {
+        hasAuthManager: !!window.authManager,
+        isAuthenticated: window.authManager?.isAuthenticated,
+        user: window.authManager?.user
+    });
+    
+    console.log('应用状态:', {
+        hasApp: !!window.app,
+        hasUIController: !!window.app?.uiController,
+        hasAudioRecorder: !!window.app?.audioRecorder
+    });
+};
+
+window.forceStartRecording = function() {
+    console.log('强制开始录音测试...');
+    if (window.app && window.app.uiController) {
+        window.app.uiController.handlePressStart();
+    }
+};

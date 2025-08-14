@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>语音识别 Demo</title>
-    
+
     <!-- 防缓存设置 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    
+
     <script>
         // 动态添加版本号防止CSS缓存
         const timestamp = Date.now();
@@ -38,7 +38,7 @@
             </div>
             <h1>语音识别助手</h1>
             <p class="subtitle">按住麦克风说话，最长20秒</p>
-            
+
             <!-- 调试级别控制 -->
             <div class="debug-controls" id="debugControls">
                 <label for="debugLevel">调试级别:</label>
@@ -47,9 +47,13 @@
                     <option value="debug">调试模式</option>
                     <option value="full_debug" selected>完整调试</option>
                 </select>
-                <button onclick="checkMainPageState()" style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">检查状态</button>
-                <button onclick="forceUpdateUserDisplay(); if(window.stateSyncManager) window.stateSyncManager.forcSync();" style="margin-left: 5px; padding: 5px 10px; font-size: 12px;">强制更新</button>
-                <button onclick="testLogoutButton()" style="margin-left: 5px; padding: 5px 10px; font-size: 12px;">测试登出</button>
+                <button onclick="checkMainPageState()"
+                    style="margin-left: 10px; padding: 5px 10px; font-size: 12px;">检查状态</button>
+                <button
+                    onclick="forceUpdateUserDisplay(); if(window.stateSyncManager) window.stateSyncManager.forcSync();"
+                    style="margin-left: 5px; padding: 5px 10px; font-size: 12px;">强制更新</button>
+                <button onclick="testLogoutButton()"
+                    style="margin-left: 5px; padding: 5px 10px; font-size: 12px;">测试登出</button>
             </div>
         </header>
 
@@ -117,18 +121,18 @@
 
     <script>
         // 页面刷新检测和状态恢复
-        window.addEventListener('beforeunload', function() {
+        window.addEventListener('beforeunload', function () {
             // 标记页面即将刷新
             sessionStorage.setItem('page_refreshing', 'true');
         });
-        
+
         // 检查是否是页面刷新
         const isPageRefresh = sessionStorage.getItem('page_refreshing') === 'true';
         if (isPageRefresh) {
             console.log('检测到页面刷新，准备恢复状态...');
             sessionStorage.removeItem('page_refreshing');
         }
-        
+
         // 动态加载JavaScript文件，防止缓存
         const jsTimestamp = Date.now();
         const scripts = [
@@ -138,22 +142,25 @@
             'js/state-sync.js',
             'js/auth-debug.js',
             'js/audio-recorder.js',
-            'js/ui-controller.js', 
+            'js/ui-controller.js',
             'js/api-client.js',
-            'js/main.js'
+            'js/main.js',
+            'debug-microphone.js',  // 临时调试脚本
+            'microphone-diagnostics.js',  // 诊断工具
+            'quick-fix.js'  // 快速修复
         ];
-        
+
         // 强制清除缓存并加载脚本
         scripts.forEach((src, index) => {
             const script = document.createElement('script');
             script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
             script.async = false; // 确保按顺序加载
-            script.onerror = function() {
+            script.onerror = function () {
                 console.error('Failed to load script:', src);
             };
-            script.onload = function() {
+            script.onload = function () {
                 console.log('Loaded script:', src);
-                
+
                 // 如果是最后一个脚本且是页面刷新，延迟恢复状态
                 if (index === scripts.length - 1 && isPageRefresh) {
                     setTimeout(() => {

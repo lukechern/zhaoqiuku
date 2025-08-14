@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单按钮测试</title>
+    <style>
+        body { padding: 20px; font-family: Arial, sans-serif; }
+        .test-btn { 
+            width: 100px; 
+            height: 100px; 
+            background: #667eea; 
+            border: none; 
+            border-radius: 50%; 
+            color: white; 
+            cursor: pointer; 
+            margin: 10px;
+        }
+        .log { 
+            background: #f0f0f0; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            max-height: 200px; 
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>简单按钮测试</h2>
+    
+    <button class="test-btn" id="testBtn1" onclick="addLog('onclick 事件触发')">
+        点击测试1
+    </button>
+    
+    <button class="test-btn" id="testBtn2">
+        点击测试2
+    </button>
+    
+    <div class="log" id="log">
+        <p>等待测试...</p>
+    </div>
+    
+    <button onclick="clearLog()">清除日志</button>
+    <button onclick="testOriginalMic()">测试原始麦克风按钮</button>
+    
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(msg) {
+            const p = document.createElement('p');
+            p.textContent = new Date().toLocaleTimeString() + ': ' + msg;
+            log.appendChild(p);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            log.innerHTML = '<p>日志已清除</p>';
+        }
+        
+        // 测试按钮2的事件绑定
+        document.getElementById('testBtn2').addEventListener('click', () => {
+            addLog('addEventListener 点击事件触发');
+        });
+        
+        document.getElementById('testBtn2').addEventListener('mousedown', () => {
+            addLog('mousedown 事件触发');
+        });
+        
+        document.getElementById('testBtn2').addEventListener('touchstart', () => {
+            addLog('touchstart 事件触发');
+        });
+        
+        // 测试原始麦克风按钮
+        function testOriginalMic() {
+            // 尝试在父窗口中找到麦克风按钮
+            let micButton = null;
+            
+            try {
+                // 如果在iframe中
+                if (window.parent && window.parent !== window) {
+                    micButton = window.parent.document.getElementById('microphoneButton');
+                } else {
+                    // 如果在同一页面
+                    micButton = document.getElementById('microphoneButton');
+                }
+                
+                if (micButton) {
+                    addLog('找到麦克风按钮: ' + micButton.tagName);
+                    addLog('按钮类名: ' + micButton.className);
+                    
+                    // 检查按钮样式
+                    const styles = window.getComputedStyle(micButton);
+                    addLog('按钮显示状态: ' + styles.display);
+                    addLog('按钮可见性: ' + styles.visibility);
+                    addLog('指针事件: ' + styles.pointerEvents);
+                    
+                    // 尝试触发事件
+                    addLog('尝试触发点击事件...');
+                    micButton.click();
+                    
+                    // 尝试触发鼠标事件
+                    setTimeout(() => {
+                        addLog('尝试触发 mousedown 事件...');
+                        const event = new MouseEvent('mousedown', { bubbles: true });
+                        micButton.dispatchEvent(event);
+                    }, 100);
+                    
+                } else {
+                    addLog('未找到麦克风按钮');
+                }
+            } catch (error) {
+                addLog('测试出错: ' + error.message);
+            }
+        }
+        
+        addLog('测试页面已加载');
+    </script>
+</body>
+</html>

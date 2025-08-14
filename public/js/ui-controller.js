@@ -25,7 +25,20 @@ class UIController {
 
     // 初始化UI事件
     initialize() {
-        this.setupTouchEvents();
+        // 确保DOM元素存在后再绑定事件
+        if (!this.elements.microphoneButton) {
+            console.error('麦克风按钮元素未找到，延迟初始化...');
+            setTimeout(() => {
+                this.elements.microphoneButton = document.getElementById('microphoneButton');
+                if (this.elements.microphoneButton) {
+                    this.setupTouchEvents();
+                    console.log('麦克风按钮事件已延迟绑定');
+                }
+            }, 100);
+        } else {
+            this.setupTouchEvents();
+        }
+        
         this.setupButtonEvents();
         this.setupDebugControls();
     }
@@ -53,8 +66,16 @@ class UIController {
     setupTouchEvents() {
         const button = this.elements.microphoneButton;
         
+        if (!button) {
+            console.error('麦克风按钮元素不存在，无法绑定事件');
+            return;
+        }
+        
+        console.log('正在为麦克风按钮绑定事件...', button);
+        
         // 触摸事件
         button.addEventListener('touchstart', (e) => {
+            console.log('touchstart 事件被触发', e);
             e.preventDefault();
             this.handleTouchStart(e);
         }, { passive: false });
@@ -76,6 +97,7 @@ class UIController {
 
         // 鼠标事件（用于桌面测试）
         button.addEventListener('mousedown', (e) => {
+            console.log('mousedown 事件被触发', e);
             e.preventDefault();
             this.handleMouseStart(e);
         });
@@ -92,10 +114,18 @@ class UIController {
         button.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         });
+        
+        // 添加简单的点击测试事件
+        button.addEventListener('click', (e) => {
+            console.log('麦克风按钮被点击了！');
+        });
+        
+        console.log('麦克风按钮事件绑定完成');
     }
 
     // 处理触摸开始
     handleTouchStart(e) {
+        console.log('handleTouchStart 被调用');
         const touch = e.touches[0];
         this.startTouchY = touch.clientY;
         this.currentTouchY = touch.clientY;
@@ -142,6 +172,7 @@ class UIController {
 
     // 处理鼠标开始（桌面测试）
     handleMouseStart(e) {
+        console.log('handleMouseStart 被调用');
         this.startTouchY = e.clientY;
         this.currentTouchY = e.clientY;
         this.isCanceling = false;
@@ -218,11 +249,15 @@ class UIController {
 
     // 处理按下开始
     handlePressStart() {
+        console.log('handlePressStart 被调用');
+        
         // 检查用户是否已登录
         if (!this.checkAuthenticationStatus()) {
+            console.log('认证检查失败，阻止录音');
             return; // 如果未登录，不继续录音流程
         }
         
+        console.log('认证检查通过，开始录音流程');
         this.isRecording = true;
         if (this.onRecordingStart) {
             this.onRecordingStart();
@@ -231,12 +266,20 @@ class UIController {
 
     // 检查用户认证状态
     checkAuthenticationStatus() {
+        console.log('检查认证状态:', {
+            hasAuthManager: !!window.authManager,
+            isAuthenticated: window.authManager?.isAuthenticated,
+            user: window.authManager?.user?.email
+        });
+        
         // 检查认证管理器是否存在且用户已登录
         if (!window.authManager || !window.authManager.isAuthenticated) {
+            console.log('用户未登录，显示登录提示');
             this.showLoginRequired();
             return false;
         }
         
+        console.log('用户已登录，允许录音');
         // 如果已登录，确保清除任何登录相关的样式
         this.clearLoginRequiredState();
         return true;
