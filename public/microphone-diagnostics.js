@@ -90,7 +90,7 @@ class MicrophoneDiagnostics {
 
     // 检查事件处理器
     checkEventHandlers(button) {
-        const events = ['click', 'mousedown', 'mouseup', 'touchstart', 'touchend'];
+        const events = ['click', 'mousedown', 'mouseup'];
         const handlers = {};
         
         events.forEach(eventType => {
@@ -102,10 +102,7 @@ class MicrophoneDiagnostics {
             button.addEventListener(eventType, testHandler);
             
             // 触发事件
-            const event = eventType.startsWith('touch') ? 
-                new TouchEvent(eventType, { bubbles: true, touches: [{ clientX: 0, clientY: 0 }] }) :
-                new MouseEvent(eventType, { bubbles: true });
-            
+            const event = new MouseEvent(eventType, { bubbles: true });
             button.dispatchEvent(event);
             
             // 移除测试处理器
@@ -113,6 +110,9 @@ class MicrophoneDiagnostics {
             
             handlers[eventType] = triggered ? '✅ 响应' : '❌ 无响应';
         });
+        
+        // 简单检查触摸事件支持
+        handlers['touchSupport'] = 'ontouchstart' in window ? '✅ 支持触摸' : '❌ 不支持触摸';
         
         return handlers;
     }
