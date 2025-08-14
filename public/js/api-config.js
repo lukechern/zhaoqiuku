@@ -13,7 +13,7 @@ const API_ENDPOINTS = {
     BASE_URL: '/api',
     
     // 具体端点
-    TRANSCRIBE: '/process-audio',  // 使用新的完整流程API
+    TRANSCRIBE: '/process-audio-simple',  // 使用简化版API进行调试
     TRANSCRIBE_LEGACY: '/transcribe',  // 保留旧的转录API
     HEALTH: '/health',
     
