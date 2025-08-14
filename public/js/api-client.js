@@ -324,6 +324,22 @@ export class APIClient {
             displayResult.confidence = result.confidence;
         }
 
+        // 添加业务处理结果（如果有）
+        if (result.business_result) {
+            displayResult.business_result = result.business_result;
+        }
+
+        // 添加解析的动作信息（如果有）
+        if (result.action) {
+            displayResult.action = result.action;
+        }
+        if (result.object) {
+            displayResult.object = result.object;
+        }
+        if (result.location) {
+            displayResult.location = result.location;
+        }
+
         return displayResult;
     }
 

@@ -496,7 +496,7 @@ export class UIController {
             // 显示用户提问和AI回复的对话格式
             html += `<div style="margin-bottom: 15px; padding: 15px; border-radius: 12px; background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.1);">
                 <div style="color: var(--primary-color); font-weight: bold; margin-bottom: 8px; font-size: 1rem;">
-                    📝 用户提问: ${this.escapeHtml(data.transcript)}
+                    📝 用户说: ${this.escapeHtml(data.transcript)}
                 </div>
                 <div style="color: ${resultColor}; font-weight: bold; font-size: 1rem; line-height: 1.4;">
                     📝 AI回复：${this.escapeHtml(business.message)}
