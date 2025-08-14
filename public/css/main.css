@@ -191,7 +191,7 @@ body {
 .results-section {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
+    /* border-bottom: 1px solid var(--border); */
 }
 
 .results-section h2 {
@@ -201,8 +201,8 @@ body {
 }
 
 .results-container {
-    background: var(--surface-light);
-    border: 1px solid var(--border);
+    /* background: var(--surface-light);
+    border: 1px solid var(--border); */
     border-radius: 12px;
     padding: 1rem;
     height: 13.5rem; /* 再增加50%高度，约9行高度 */

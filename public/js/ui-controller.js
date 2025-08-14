@@ -600,7 +600,7 @@ export class UIController {
 
     // 清除结果
     clearResults() {
-        this.elements.resultsContainer.innerHTML = '<div class="placeholder">等待语音输入...</div>';
+        this.elements.resultsContainer.innerHTML = '<div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>';
     }
 
     // 显示提示消息
