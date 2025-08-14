@@ -151,10 +151,17 @@
             'quick-fix.js'  // 快速修复
         ];
 
+        // 需要作为模块加载的脚本
+        const moduleScripts = new Set(['js/main.js']);
+
         // 强制清除缓存并加载脚本
         scripts.forEach((src, index) => {
             const script = document.createElement('script');
             script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
+            // 如果是模块脚本，设置type="module"
+            if (moduleScripts.has(src)) {
+                script.type = 'module';
+            }
             script.async = false; // 确保按顺序加载
             script.onerror = function () {
                 console.error('Failed to load script:', src);
