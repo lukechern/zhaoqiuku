@@ -123,12 +123,33 @@ export default async function handler(req, res) {
             }
         }
 
+        // 如果解析成功且有明确的动作，添加简单的业务逻辑响应
+        let businessResult = null;
+        if (parsedJson && parsedJson.action && parsedJson.action !== 'unknown') {
+            if (parsedJson.action === 'put' && parsedJson.object && parsedJson.location) {
+                businessResult = {
+                    success: true,
+                    message: `${parsedJson.object}的存放位置为${parsedJson.location}，已经记录好了，以后随时来问我。`,
+                    data: {
+                        item: parsedJson.object,
+                        location: parsedJson.location
+                    }
+                };
+            } else if (parsedJson.action === 'get' && parsedJson.object) {
+                businessResult = {
+                    success: false,
+                    message: `需要登录后才能查询${parsedJson.object}的存放记录，请先登录。`
+                };
+            }
+        }
+
         // 返回结果
         const result = {
             success: true,
             raw: geminiResult,
             text_blob: responseText.trim(),
             parsed_json: parsedJson,
+            business_result: businessResult,
             timestamp: new Date().toISOString(),
             audio_size_mb: (byteLength / 1024 / 1024).toFixed(2)
         };
