@@ -30,27 +30,13 @@ async function startApp() {
         app.userStateManager.initializeUserState();
         console.log('app.userStateManager.initializeUserState() 执行完成');
         
-        // 应用初始化完成后，多次检查用户状态
+        // 应用初始化完成后，检查用户状态
         setTimeout(() => {
-            console.log('应用初始化完成，第一次检查用户状态...');
+            console.log('应用初始化完成，检查用户状态...');
             if (window.authManager) {
                 app.userStateManager.updateUserDisplay();
             }
         }, 100);
-        
-        setTimeout(() => {
-            console.log('应用初始化完成，第二次检查用户状态...');
-            if (window.authManager) {
-                app.userStateManager.updateUserDisplay();
-            }
-        }, 500);
-        
-        setTimeout(() => {
-            console.log('应用初始化完成，最终检查用户状态...');
-            if (window.authManager) {
-                app.userStateManager.updateUserDisplay();
-            }
-        }, 1000);
         
     } catch (error) {
         console.error('应用启动失败:', error);

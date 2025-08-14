@@ -56,242 +56,171 @@ function forceUpdateUserDisplay() {
     const userInfo = document.getElementById('userInfo');
     const userEmail = document.getElementById('userEmail');
     
-    console.log('DOM元素检查:', {
-        authLinks: !!authLinks,
-        userInfo: !!userInfo,
-        userEmail: !!userEmail,
-        authLinksDisplay: authLinks?.style.display,
-        userInfoHidden: userInfo?.classList.contains('hidden')
-    });
-    
     if (!authLinks || !userInfo || !userEmail) {
         console.error('DOM元素未找到');
         return;
     }
     
     // 检查认证管理器状态
-    console.log('认证管理器状态:', {
-        exists: !!window.authManager,
-        isAuthenticated: window.authManager?.isAuthenticated,
-        hasUser: !!window.authManager?.user,
-        userEmail: window.authManager?.user?.email
-    });
-    
     if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
         // 显示用户信息，隐藏登录链接
         authLinks.style.display = 'none';
-        authLinks.classList.add('hidden'); // 双重保险
+        authLinks.classList.add('hidden');
         userInfo.classList.remove('hidden');
-        userInfo.style.display = 'flex'; // 确保显示
+        userInfo.style.display = 'flex';
         userEmail.textContent = window.authManager.user.email;
         console.log('已显示用户信息:', window.authManager.user.email);
-        
-        // 验证更新结果
-        console.log('更新后状态:', {
-            authLinksDisplay: authLinks.style.display,
-            authLinksHidden: authLinks.classList.contains('hidden'),
-            userInfoDisplay: userInfo.style.display,
-            userInfoHidden: userInfo.classList.contains('hidden'),
-            userEmailText: userEmail.textContent
-        });
     } else {
         // 显示登录链接，隐藏用户信息
         authLinks.style.display = 'flex';
-        authLinks.classList.remove('hidden'); // 双重保险
+        authLinks.classList.remove('hidden');
         userInfo.classList.add('hidden');
-        userInfo.style.display = 'none'; // 确保隐藏
+        userInfo.style.display = 'none';
         console.log('已显示登录链接');
-        
-        // 验证更新结果
-        console.log('更新后状态:', {
-            authLinksDisplay: authLinks.style.display,
-            authLinksHidden: authLinks.classList.contains('hidden'),
-            userInfoDisplay: userInfo.style.display,
-            userInfoHidden: userInfo.classList.contains('hidden')
-        });
-    }
-    
-    // 如果有应用实例，也调用其更新方法
-    if (window.app && typeof window.app.updateUserDisplay === 'function') {
-        console.log('调用应用实例的更新方法...');
-        window.app.updateUserDisplay();
     }
 }
 
-// 模拟登录状态
+// 模拟登录
 function simulateLogin() {
-    console.log('模拟登录状态...');
+    if (!window.authManager) {
+        console.error('认证管理器未初始化');
+        return;
+    }
     
-    const mockAuthData = {
-        user: {
-            id: 'debug-user-id',
-            email: 'debug@example.com',
-            status: 'active',
-            isVerified: true
-        },
-        tokens: {
-            accessToken: 'debug-access-token',
-            refreshToken: 'debug-refresh-token',
-            tokenType: 'Bearer'
-        }
+    const mockUser = {
+        email: 'test@example.com',
+        id: 'test123'
     };
     
-    if (window.authManager) {
-        window.authManager.saveAuthState(mockAuthData);
-        console.log('模拟登录完成');
-    } else {
-        console.error('认证管理器不存在');
-    }
+    // 模拟设置认证状态
+    window.authManager.isAuthenticated = true;
+    window.authManager.user = mockUser;
+    window.authManager.tokens = {
+        access: 'mock_access_token',
+        refresh: 'mock_refresh_token'
+    };
+    
+    // 保存到localStorage
+    localStorage.setItem('zhaoqiuku_user_info', JSON.stringify(mockUser));
+    localStorage.setItem('zhaoqiuku_access_token', 'mock_access_token');
+    localStorage.setItem('zhaoqiuku_refresh_token', 'mock_refresh_token');
+    localStorage.setItem('zhaoqiuku_login_time', Date.now().toString());
+    
+    // 触发认证状态变化事件
+    window.dispatchEvent(new CustomEvent('authStateChange', {
+        detail: {
+            type: 'login',
+            isAuthenticated: true,
+            user: mockUser
+        }
+    }));
+    
+    console.log('模拟登录完成');
+    forceUpdateUserDisplay();
 }
 
 // 清除登录状态
 function clearLoginState() {
-    console.log('清除登录状态...');
-    
-    if (window.authManager) {
-        window.authManager.clearAuthState();
-        console.log('登录状态已清除');
-    } else {
-        console.error('认证管理器不存在');
+    if (!window.authManager) {
+        console.error('认证管理器未初始化');
+        return;
     }
-}
-
-// 全局登出处理函数
-async function handleGlobalLogout() {
-    console.log('全局登出函数被调用');
     
-    try {
-        // 显示确认对话框
-        const userEmail = window.authManager?.user?.email || '当前用户';
-        const confirmMessage = `确定要退出登录吗？\n\n当前登录用户：${userEmail}`;
-        
-        if (!confirm(confirmMessage)) {
-            console.log('用户取消登出');
-            return;
+    // 清除认证状态
+    window.authManager.isAuthenticated = false;
+    window.authManager.user = null;
+    window.authManager.tokens = null;
+    
+    // 从localStorage清除
+    localStorage.removeItem('zhaoqiuku_user_info');
+    localStorage.removeItem('zhaoqiuku_access_token');
+    localStorage.removeItem('zhaoqiuku_refresh_token');
+    localStorage.removeItem('zhaoqiuku_login_time');
+    
+    // 触发认证状态变化事件
+    window.dispatchEvent(new CustomEvent('authStateChange', {
+        detail: {
+            type: 'logout',
+            isAuthenticated: false
         }
-
-        console.log('开始登出流程...');
-        
-        // 执行登出
-        if (window.authManager) {
-            const success = await window.authManager.logout();
-            
-            if (success) {
-                console.log('登出成功');
-                alert('已成功退出登录');
-                
-                // 强制更新用户显示状态
-                setTimeout(() => {
-                    if (window.forceUpdateUserDisplay) {
-                        window.forceUpdateUserDisplay();
-                    }
-                }, 100);
-                
-            } else {
-                console.error('登出失败');
-                alert('退出登录失败，请重试');
-            }
-        } else {
-            console.error('认证管理器不存在');
-            alert('系统错误，请刷新页面后重试');
-        }
-        
-    } catch (error) {
-        console.error('登出处理失败:', error);
-        alert('退出登录时发生错误：' + error.message);
-    }
-}
-
-// 测试登出按钮
-function testLogoutButton() {
-    console.log('=== 登出按钮测试 ===');
+    }));
     
-    const logoutBtn = document.getElementById('logoutBtn');
-    console.log('登出按钮:', {
-        exists: !!logoutBtn,
-        visible: logoutBtn ? !logoutBtn.classList.contains('hidden') : false,
-        display: logoutBtn ? getComputedStyle(logoutBtn).display : 'N/A',
-        clickable: logoutBtn ? getComputedStyle(logoutBtn).pointerEvents !== 'none' : false
-    });
-    
-    if (logoutBtn) {
-        console.log('手动触发登出按钮点击...');
-        logoutBtn.click();
-    } else {
-        console.error('登出按钮未找到');
-    }
-    
-    console.log('=== 测试完成 ===');
+    console.log('登录状态已清除');
+    forceUpdateUserDisplay();
 }
 
 // 检查主页面状态
 function checkMainPageState() {
     console.log('=== 主页面状态检查 ===');
     
-    // 检查应用实例
-    const hasApp = window.app || (window.VoiceRecognitionApp && document.querySelector('.container'));
-    console.log('应用实例存在:', !!hasApp);
+    // 检查必要的全局对象
+    const checks = {
+        'window.authManager': !!window.authManager,
+        'window.app': !!window.app,
+        'window.stateSyncManager': !!window.stateSyncManager
+    };
     
-    // 检查DOM元素
-    const authLinks = document.getElementById('authLinks');
-    const userInfo = document.getElementById('userInfo');
-    const userEmail = document.getElementById('userEmail');
-    
-    console.log('DOM元素状态:');
-    console.log('  authLinks:', {
-        exists: !!authLinks,
-        display: authLinks?.style.display || 'default',
-        computedDisplay: authLinks ? getComputedStyle(authLinks).display : 'N/A'
-    });
-    console.log('  userInfo:', {
-        exists: !!userInfo,
-        hasHiddenClass: userInfo?.classList.contains('hidden'),
-        display: userInfo?.style.display || 'default',
-        computedDisplay: userInfo ? getComputedStyle(userInfo).display : 'N/A'
-    });
-    console.log('  userEmail:', {
-        exists: !!userEmail,
-        textContent: userEmail?.textContent || 'empty'
+    Object.entries(checks).forEach(([name, exists]) => {
+        console.log(`${name}: ${exists ? '✅' : '❌'}`);
     });
     
-    // 检查认证状态
-    debugAuthState();
+    // 检查用户状态显示
+    if (window.authManager) {
+        const isAuthenticated = window.authManager.isAuthenticated;
+        const user = window.authManager.user;
+        console.log('认证状态:', isAuthenticated ? `已登录 (${user?.email})` : '未登录');
+    }
     
     console.log('=== 检查完成 ===');
 }
 
-// 添加到全局作用域，方便在控制台调用
+// 测试登出按钮
+function testLogoutButton() {
+    console.log('测试登出按钮...');
+    
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (!logoutBtn) {
+        console.error('登出按钮未找到');
+        return;
+    }
+    
+    console.log('登出按钮状态:', {
+        exists: true,
+        visible: getComputedStyle(logoutBtn).display !== 'none',
+        clickable: getComputedStyle(logoutBtn).pointerEvents !== 'none'
+    });
+    
+    // 尝试触发点击事件
+    logoutBtn.click();
+    console.log('已触发登出按钮点击事件');
+}
+
+// 显示可用的调试命令
+function showConsoleCommands() {
+    console.log('输入以下命令进行调试:');
+    console.log('- debugAuthState() - 检查认证状态');
+    console.log('- forceUpdateUserDisplay() - 强制更新显示');
+    console.log('- simulateLogin() - 模拟登录');
+    console.log('- clearLoginState() - 清除登录状态');
+    console.log('- checkMainPageState() - 检查主页面状态');
+    console.log('- testLogoutButton() - 测试登出按钮');
+}
+
+// 页面加载完成后显示可用命令
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', showConsoleCommands);
+} else {
+    showConsoleCommands();
+}
+
+// 导出到全局作用域
 window.debugAuthState = debugAuthState;
 window.forceUpdateUserDisplay = forceUpdateUserDisplay;
 window.simulateLogin = simulateLogin;
 window.clearLoginState = clearLoginState;
 window.checkMainPageState = checkMainPageState;
 window.testLogoutButton = testLogoutButton;
-window.handleGlobalLogout = handleGlobalLogout;
-
-// 页面加载完成后自动运行一次调试
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        console.log('页面加载完成，运行认证状态调试...');
-        debugAuthState();
-        
-        // 如果检测到已登录状态但显示不正确，自动修复
-        if (window.authManager && window.authManager.isAuthenticated) {
-            const authLinks = document.getElementById('authLinks');
-            const userInfo = document.getElementById('userInfo');
-            
-            if (authLinks && userInfo) {
-                const authLinksVisible = authLinks.style.display !== 'none' && !authLinks.classList.contains('hidden');
-                const userInfoHidden = userInfo.classList.contains('hidden') || userInfo.style.display === 'none';
-                
-                if (authLinksVisible || userInfoHidden) {
-                    console.log('检测到显示状态不正确，自动修复...');
-                    forceUpdateUserDisplay();
-                }
-            }
-        }
-    }, 500);
-});
+window.showConsoleCommands = showConsoleCommands;
 
 console.log('认证调试工具已加载，可在控制台使用以下函数:');
 console.log('- debugAuthState() - 检查认证状态');
