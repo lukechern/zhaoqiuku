@@ -1,0 +1,123 @@
+/* 响应式设计 */
+@media (max-width: 768px) {
+    body {
+        display: block;
+        padding: 0;
+        background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+    }
+    
+    body::before {
+        display: none;
+    }
+    
+    .mobile-frame {
+        width: 100%;
+        max-width: none;
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+    }
+    
+    .mobile-frame::before,
+    .mobile-frame::after {
+        display: none;
+    }
+    
+    .container {
+        padding: 10px 5px;
+        min-height: 100vh;
+        max-width: 100%;
+    }
+    
+    .results-container {
+        padding: 0.5rem;
+    }
+    
+    .user-ai-dialog {
+        padding: 3px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 5px 2px;
+    }
+    
+    .results-container {
+        padding: 0.25rem;
+    }
+    
+    .user-ai-dialog {
+        padding: 2px;
+        font-size: 0.85rem;
+    }
+    
+    .user-ai-dialog .user-say,
+    .user-ai-dialog .ai-reply {
+        padding: 1px 0;
+    }
+    
+    .header-top {
+        justify-content: center;
+    }
+    
+    .user-actions {
+        gap: 0.5rem;
+    }
+    
+    .auth-link {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+    .mobile-frame {
+        box-shadow: 
+            0 0 0 8px rgba(255, 255, 255, 0.15),
+            0 0 0 12px rgba(0, 0, 0, 0.3),
+            0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* 平板设备适配 */
+@media (min-width: 769px) and (max-width: 1024px) {
+    body {
+        padding: 10px 0;
+    }
+    
+    .mobile-frame {
+        width: 360px;
+        max-width: 360px;
+    }
+}
+
+/* 超大屏幕适配 */
+@media (min-width: 1440px) {
+    body {
+        padding: 10px 0;
+    }
+    
+    .mobile-frame {
+        width: 390px;
+        max-width: 390px;
+        box-shadow: 
+            0 0 0 10px rgba(255, 255, 255, 0.15),
+            0 0 0 15px rgba(0, 0, 0, 0.3),
+            0 40px 100px rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* 横屏模式优化 */
+@media (min-width: 769px) and (max-height: 600px) {
+    body {
+        padding: 10px 0;
+    }
+    
+    .mobile-frame {
+        min-height: calc(100vh - 20px);
+    }
+}

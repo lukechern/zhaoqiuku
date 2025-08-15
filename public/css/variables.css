@@ -1,0 +1,17 @@
+/* CSS 变量定义 */
+:root {
+    --primary-color: #667eea;
+    --primary-dark: #5a67d8;
+    --secondary-color: #764ba2;
+    --background: #0f0f23;
+    --surface: #1a1a2e;
+    --surface-light: #16213e;
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --text-muted: #718096;
+    --success: #48bb78;
+    --warning: #ed8936;
+    --error: #f56565;
+    --border: #2d3748;
+    --shadow: rgba(0, 0, 0, 0.3);
+}

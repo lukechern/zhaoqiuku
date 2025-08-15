@@ -14,9 +14,21 @@
     <script>
         // 动态添加版本号防止CSS缓存
         const timestamp = Date.now();
-        document.write('<link rel="stylesheet" href="css/main.css?v=' + timestamp + '">');
-        document.write('<link rel="stylesheet" href="css/microphone.css?v=' + timestamp + '">');
-        document.write('<link rel="stylesheet" href="css/animations.css?v=' + timestamp + '">');
+        const cssFiles = [
+            'css/variables.css',
+            'css/layout.css',
+            'css/header.css',
+            'css/buttons.css',
+            'css/results.css',
+            'css/auth.css',
+            'css/responsive.css',
+            'css/microphone.css',
+            'css/animations.css'
+        ];
+        
+        cssFiles.forEach(file => {
+            document.write('<link rel="stylesheet" href="' + file + '?v=' + timestamp + '">');
+        });
     </script>
 </head>
 
@@ -32,38 +44,28 @@
                         </div>
                         <!-- 已登录状态 -->
                         <div class="user-info hidden" id="userInfo">
-                            <span class="user-email" id="userEmail">用户邮箱</span>
-                            <button class="auth-link logout-btn" id="logoutBtn"
-                                onclick="handleGlobalLogout()">登出</button>
+                            <span class="user-email" id="userEmail"></span>
+                            <button class="auth-link logout-btn" id="logoutBtn">退出登录</button>
                         </div>
                     </div>
                 </div>
-                <h1>AI语音寻物助手</h1>
-                <p class="subtitle"></p>
+                <ul class="header-content">
+                    <li><h1 class="header-title">找秋裤</h1></li>
+                    <li><p class="header-subtitle">AI语音寻物助手</p></li>
+                </ul>
+                <div class="debug-info" id="debugInfo"></div>
+                <div class="debug-controls hidden" id="debugControls">
+                    <label for="debugMode">调试模式:</label>
+                    <select id="debugMode" class="debug-select">
+                        <option value="normal">正常</option>
+                        <option value="transcribe">语音识别</option>
+                        <option value="tts">语音合成</option>
+                        <option value="full">完整流程</option>
+                    </select>
+                </div>
             </header>
 
-            <section class="results-section">
-                <div class="results-container" id="resultsContainer">
-                    <div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>
-                </div>
-            </section>
-
             <main class="main-content">
-                <div class="controls">
-                    <button class="control-btn" id="playbackBtn" disabled>
-                        <img src="img/play.svg" alt="播放图标" class="control-icon">
-                        回放
-                    </button>
-                    <button class="control-btn" id="clearBtn" disabled>
-                        <img src="img/delete.svg" alt="删除图标" class="control-icon">
-                        清除
-                    </button>
-                    <button class="control-btn" id="refreshBtn">
-                        <img src="img/refresh.svg" alt="刷新图标" class="control-icon">
-                        刷新
-                    </button>
-                </div>
-
                 <div class="microphone-container">
                     <div class="sound-waves" id="soundWaves">
                         <div class="wave"></div>
@@ -72,19 +74,61 @@
                         <div class="wave"></div>
                         <div class="wave"></div>
                     </div>
-
-                    <div class="microphone-button" id="microphoneButton">
-                        <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
-                    </div>
-
-
-                    <div class="cancel-indicator" id="cancelIndicator">
-                        <span>向上滑动取消录音</span>
-                    </div>
-
+                    <button class="microphone-button" id="microphoneButton" aria-label="按住说话">
+                        <svg class="microphone-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15C13.6569 15 15 13.6569 15 12V6C15 4.34315 13.6569 3 12 3C10.3431 3 9 4.34315 9 6V12C9 13.6569 10.3431 15 12 15Z" fill="white"/>
+                            <path d="M19 10V12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12V10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 19V22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M8 22H16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <div class="listening-indicator" id="listeningIndicator">按住说话</div>
+                    <div class="cancel-indicator" id="cancelIndicator">↑ 上滑取消</div>
+                    <div class="timer" id="recordingTimer">00:00</div>
                 </div>
-                
+
+                <div class="controls">
+                    <button class="control-btn" id="refreshBtn" aria-label="刷新">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M15 12L12 9M12 9L9 12M12 9V15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        刷新
+                    </button>
+                    <button class="control-btn" id="historyBtn" aria-label="历史记录">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 8V12L15 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/>
+                            <path d="M12 3V5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 19V21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        历史记录
+                    </button>
+                    <button class="control-btn" id="settingsBtn" aria-label="设置">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="2" fill="white"/>
+                            <circle cx="12" cy="5" r="2" fill="white"/>
+                            <circle cx="12" cy="19" r="2" fill="white"/>
+                        </svg>
+                        设置
+                    </button>
+                </div>
+
+                <section class="results-section">
+                    <h2>对话记录</h2>
+                    <div class="results-container" id="resultsContainer">
+                        <div class="placeholder" id="placeholder">按住麦克风开始说话</div>
+                    </div>
+                </section>
             </main>
+        </div>
+    </div>
+
+    <!-- 加载动画容器 -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loadingText">正在处理中...</p>
         </div>
     </div>
 
@@ -110,40 +154,40 @@
             'js/auth-manager.js',
             'js/state-sync.js',
             'js/auth-debug.js',
-            // 模块脚本将通过main.js加载
+            'js/audio-recorder.js',
+            'js/ui-controller.js',
+            'js/api-client.js',
+            'js/tts-service.js',
+            'js/UserStateManager.js',
+            'js/EventHandler.js',
+            'js/App.js',
+            'js/AppInitializer.js',
             'js/main.js'
         ];
 
         // 需要作为模块加载的脚本
-        const moduleScripts = new Set([
-            'js/main.js'
-        ]);
+        const moduleScripts = new Set(['js/main.js']);
 
         // 强制清除缓存并加载脚本
         scripts.forEach((src, index) => {
             const script = document.createElement('script');
-            script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
-            // 如果是模块脚本，设置type="module"
-            if (moduleScripts.has(src)) {
-                script.type = 'module';
-            }
-            script.async = false; // 确保按顺序加载
-            script.onerror = function () {
-                console.error('Failed to load script:', src);
-            };
-            script.onload = function () {
+            script.src = `${src}?v=${jsTimestamp}&t=${Math.random()}`;
+            script.type = 'module';
+            script.async = false;
+            script.onerror = () => console.error('Failed to load script:', src);
+            
+            script.onload = () => {
                 console.log('Loaded script:', src);
-
+                
                 // 如果是最后一个脚本且是页面刷新，延迟恢复状态
                 if (index === scripts.length - 1 && isPageRefresh) {
                     setTimeout(() => {
                         console.log('页面刷新后恢复用户状态...');
-                        if (window.forceUpdateUserDisplay) {
-                            window.forceUpdateUserDisplay();
-                        }
+                        window.forceUpdateUserDisplay?.();
                     }, 500);
                 }
             };
+            
             document.head.appendChild(script);
         });
     </script>
