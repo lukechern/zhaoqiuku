@@ -31,6 +31,23 @@
             document.write('<link rel="stylesheet" href="' + file + '?v=' + timestamp + '">');
         });
     </script>
+
+    <!-- 预加载底部导航 -->
+    <script>
+        // 预加载底部导航组件
+        (function () {
+            const preloadNav = async () => {
+                try {
+                    const response = await fetch('components/bottom-nav.html');
+                    const navHtml = await response.text();
+                    window.preloadedNavHtml = navHtml;
+                } catch (error) {
+                    console.error('Failed to preload navigation:', error);
+                }
+            };
+            preloadNav();
+        })();
+    </script>
 </head>
 
 <body>
@@ -104,12 +121,12 @@
         // 动态加载JavaScript文件，防止缓存
         const jsTimestamp = Date.now();
         const scripts = [
+            'js/navigation.js', // 优先加载导航组件
             'js/debug-config.js',
             'js/api-config.js',
             'js/auth-manager.js',
             'js/state-sync.js',
             'js/auth-debug.js',
-            'js/navigation.js',
             // 模块脚本将通过main.js加载
             'js/main.js'
         ];

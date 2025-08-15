@@ -30,8 +30,15 @@ class ComponentManager {
 
     async loadNavigation() {
         try {
-            const response = await fetch('components/bottom-nav.html');
-            const navHtml = await response.text();
+            let navHtml;
+            
+            // 优先使用预加载的内容
+            if (window.preloadedNavHtml) {
+                navHtml = window.preloadedNavHtml;
+            } else {
+                const response = await fetch('components/bottom-nav.html');
+                navHtml = await response.text();
+            }
             
             // 找到容器并插入导航栏
             const container = document.querySelector('.container');
@@ -57,23 +64,46 @@ class ComponentManager {
     }
 
     async loadComponents() {
-        await Promise.all([
-            this.loadHeaderTop(),
-            this.loadNavigation()
-        ]);
+        // 优先加载底部导航，然后再加载header-top
+        await this.loadNavigation();
+        await this.loadHeaderTop();
+    }
+
+    // 立即加载底部导航，不等待DOM完全加载
+    async loadNavigationImmediately() {
+        // 等待container元素可用
+        const waitForContainer = () => {
+            return new Promise((resolve) => {
+                const checkContainer = () => {
+                    const container = document.querySelector('.container');
+                    if (container) {
+                        resolve(container);
+                    } else {
+                        setTimeout(checkContainer, 10);
+                    }
+                };
+                checkContainer();
+            });
+        };
+
+        await waitForContainer();
+        await this.loadNavigation();
     }
 
     init() {
-        // 页面加载完成后加载所有组件
+        // 立即开始加载底部导航
+        this.loadNavigationImmediately();
+        
+        // 等待DOM完全加载后再加载其他组件
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
-                this.loadComponents();
+                this.loadHeaderTop();
             });
         } else {
-            this.loadComponents();
+            this.loadHeaderTop();
         }
     }
 }
 
-// 初始化组件管理器
+// 立即初始化组件管理器
 new ComponentManager();
