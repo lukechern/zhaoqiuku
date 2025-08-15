@@ -9,8 +9,15 @@ class ComponentManager {
         const path = window.location.pathname;
         if (path.includes('history.html')) {
             return 'history';
+        } else if (path.includes('auth.html')) {
+            return 'auth';
         }
         return 'index';
+    }
+
+    shouldShowNavigation() {
+        // auth页面不显示底部导航栏
+        return this.currentPage !== 'auth';
     }
 
     async loadHeaderTop() {
@@ -90,13 +97,19 @@ class ComponentManager {
     }
 
     async loadComponents() {
-        // 优先加载底部导航，然后再加载header-top
-        await this.loadNavigation();
+        // 根据页面类型决定是否加载底部导航
+        if (this.shouldShowNavigation()) {
+            await this.loadNavigation();
+        }
         await this.loadHeaderTop();
     }
 
     // 立即加载底部导航，不等待DOM完全加载
     async loadNavigationImmediately() {
+        if (!this.shouldShowNavigation()) {
+            return;
+        }
+
         // 等待container元素可用
         const waitForContainer = () => {
             return new Promise((resolve) => {
@@ -117,7 +130,7 @@ class ComponentManager {
     }
 
     init() {
-        // 立即开始加载底部导航
+        // 立即开始加载底部导航（如果需要的话）
         this.loadNavigationImmediately();
         
         // 等待DOM完全加载后再加载其他组件

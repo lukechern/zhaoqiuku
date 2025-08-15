@@ -50,120 +50,120 @@
     </script>
 </head>
 
-<body>
-    <div class="mobile-frame">
-        <div class="container">
-            <header class="header">
-                <h1>AI语音寻物助手</h1>
-                <p class="subtitle"></p>
-            </header>
+<body data-page="index"></body>
+<div class="mobile-frame">
+    <div class="container">
+        <header class="header">
+            <h1>AI语音寻物助手</h1>
+            <p class="subtitle"></p>
+        </header>
 
-            <section class="results-section">
-                <div class="results-container" id="resultsContainer">
-                    <div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>
-                </div>
-            </section>
+        <section class="results-section">
+            <div class="results-container" id="resultsContainer">
+                <div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>
+            </div>
+        </section>
 
-            <main class="main-content">
-                <div class="controls">
-                    <button class="control-btn" id="playbackBtn" disabled>
-                        <img src="img/play.svg" alt="播放图标" class="control-icon">
-                        回放
-                    </button>
-                    <button class="control-btn" id="clearBtn" disabled>
-                        <img src="img/delete.svg" alt="删除图标" class="control-icon">
-                        清除
-                    </button>
-                    <button class="control-btn" id="refreshBtn">
-                        <img src="img/refresh.svg" alt="刷新图标" class="control-icon">
-                        刷新
-                    </button>
-                </div>
+        <main class="main-content">
+            <div class="controls">
+                <button class="control-btn" id="playbackBtn" disabled>
+                    <img src="img/play.svg" alt="播放图标" class="control-icon">
+                    回放
+                </button>
+                <button class="control-btn" id="clearBtn" disabled>
+                    <img src="img/delete.svg" alt="删除图标" class="control-icon">
+                    清除
+                </button>
+                <button class="control-btn" id="refreshBtn">
+                    <img src="img/refresh.svg" alt="刷新图标" class="control-icon">
+                    刷新
+                </button>
+            </div>
 
-                <div class="microphone-container">
-                    <div class="sound-waves" id="soundWaves">
-                        <div class="wave"></div>
-                        <div class="wave"></div>
-                        <div class="wave"></div>
-                        <div class="wave"></div>
-                        <div class="wave"></div>
-                    </div>
-
-                    <div class="microphone-button" id="microphoneButton">
-                        <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
-                    </div>
-
-
-                    <div class="cancel-indicator" id="cancelIndicator">
-                        <span>向上滑动取消录音</span>
-                    </div>
-
+            <div class="microphone-container">
+                <div class="sound-waves" id="soundWaves">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
                 </div>
 
-            </main>
-        </div>
+                <div class="microphone-button" id="microphoneButton">
+                    <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
+                </div>
+
+
+                <div class="cancel-indicator" id="cancelIndicator">
+                    <span>向上滑动取消录音</span>
+                </div>
+
+            </div>
+
+        </main>
     </div>
+</div>
 
-    <script>
-        // 页面刷新检测和状态恢复
-        window.addEventListener('beforeunload', function () {
-            // 标记页面即将刷新
-            sessionStorage.setItem('page_refreshing', 'true');
-        });
+<script>
+    // 页面刷新检测和状态恢复
+    window.addEventListener('beforeunload', function () {
+        // 标记页面即将刷新
+        sessionStorage.setItem('page_refreshing', 'true');
+    });
 
-        // 检查是否是页面刷新
-        const isPageRefresh = sessionStorage.getItem('page_refreshing') === 'true';
-        if (isPageRefresh) {
-            console.log('检测到页面刷新，准备恢复状态...');
-            sessionStorage.removeItem('page_refreshing');
+    // 检查是否是页面刷新
+    const isPageRefresh = sessionStorage.getItem('page_refreshing') === 'true';
+    if (isPageRefresh) {
+        console.log('检测到页面刷新，准备恢复状态...');
+        sessionStorage.removeItem('page_refreshing');
+    }
+
+    // 动态加载JavaScript文件，防止缓存
+    const jsTimestamp = Date.now();
+    const scripts = [
+        'js/navigation.js', // 优先加载导航组件
+        'js/debug-config.js',
+        'js/api-config.js',
+        'js/auth-manager.js',
+        'js/state-sync.js',
+        'js/auth-debug.js',
+        // 模块脚本将通过main.js加载
+        'js/main.js'
+    ];
+
+    // 需要作为模块加载的脚本
+    const moduleScripts = new Set([
+        'js/main.js'
+    ]);
+
+    // 强制清除缓存并加载脚本
+    scripts.forEach((src, index) => {
+        const script = document.createElement('script');
+        script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
+        // 如果是模块脚本，设置type="module"
+        if (moduleScripts.has(src)) {
+            script.type = 'module';
         }
+        script.async = false; // 确保按顺序加载
+        script.onerror = function () {
+            console.error('Failed to load script:', src);
+        };
+        script.onload = function () {
+            console.log('Loaded script:', src);
 
-        // 动态加载JavaScript文件，防止缓存
-        const jsTimestamp = Date.now();
-        const scripts = [
-            'js/navigation.js', // 优先加载导航组件
-            'js/debug-config.js',
-            'js/api-config.js',
-            'js/auth-manager.js',
-            'js/state-sync.js',
-            'js/auth-debug.js',
-            // 模块脚本将通过main.js加载
-            'js/main.js'
-        ];
-
-        // 需要作为模块加载的脚本
-        const moduleScripts = new Set([
-            'js/main.js'
-        ]);
-
-        // 强制清除缓存并加载脚本
-        scripts.forEach((src, index) => {
-            const script = document.createElement('script');
-            script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
-            // 如果是模块脚本，设置type="module"
-            if (moduleScripts.has(src)) {
-                script.type = 'module';
+            // 如果是最后一个脚本且是页面刷新，延迟恢复状态
+            if (index === scripts.length - 1 && isPageRefresh) {
+                setTimeout(() => {
+                    console.log('页面刷新后恢复用户状态...');
+                    if (window.forceUpdateUserDisplay) {
+                        window.forceUpdateUserDisplay();
+                    }
+                }, 500);
             }
-            script.async = false; // 确保按顺序加载
-            script.onerror = function () {
-                console.error('Failed to load script:', src);
-            };
-            script.onload = function () {
-                console.log('Loaded script:', src);
-
-                // 如果是最后一个脚本且是页面刷新，延迟恢复状态
-                if (index === scripts.length - 1 && isPageRefresh) {
-                    setTimeout(() => {
-                        console.log('页面刷新后恢复用户状态...');
-                        if (window.forceUpdateUserDisplay) {
-                            window.forceUpdateUserDisplay();
-                        }
-                    }, 500);
-                }
-            };
-            document.head.appendChild(script);
-        });
-    </script>
+        };
+        document.head.appendChild(script);
+    });
+</script>
 </body>
 
 </html>
