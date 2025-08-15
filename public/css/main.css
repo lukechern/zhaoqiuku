@@ -30,6 +30,93 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* PC端手机框架容器 */
+@media (min-width: 769px) {
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px 0;
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    .mobile-frame {
+        width: 375px;
+        max-width: 375px;
+        min-height: calc(100vh - 40px);
+        background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+        border-radius: 25px;
+        box-shadow: 
+            0 0 0 8px rgba(255, 255, 255, 0.1),
+            0 0 0 12px rgba(0, 0, 0, 0.2),
+            0 20px 60px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-frame::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        z-index: 10;
+    }
+    
+    .mobile-frame::after {
+        content: '';
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+        z-index: 10;
+    }
+    
+    /* 手机屏幕边框效果 */
+    .mobile-frame {
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* 添加手机侧边按钮效果 */
+    .mobile-frame {
+        position: relative;
+    }
+    
+    .mobile-frame::before {
+        box-shadow: 
+            -8px 60px 0 -6px rgba(255, 255, 255, 0.1),
+            -8px 80px 0 -6px rgba(255, 255, 255, 0.1),
+            -8px 100px 0 -6px rgba(255, 255, 255, 0.1),
+            8px 50px 0 -6px rgba(255, 255, 255, 0.1);
+    }
 }
 
 .container {
@@ -39,6 +126,16 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+
+/* PC端容器样式 */
+@media (min-width: 769px) {
+    .container {
+        padding: 30px 20px 20px;
+        min-height: calc(100vh - 40px);
+        max-width: 375px;
+        width: 100%;
+    }
 }
 
 .header {
@@ -317,13 +414,40 @@ body {
 .webview-environment .control-btn {
     /* WebView中按钮优化 */
     -webkit-appearance: none;
+    appearance: none;
     border-radius: 12px;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+    body {
+        display: block;
+        padding: 0;
+        background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+    }
+    
+    body::before {
+        display: none;
+    }
+    
+    .mobile-frame {
+        width: 100%;
+        max-width: none;
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+    }
+    
+    .mobile-frame::before,
+    .mobile-frame::after {
+        display: none;
+    }
+    
     .container {
-        padding: 10px 5px; /* 减少左右边距，特别是左边距 */
+        padding: 10px 5px;
+        min-height: 100vh;
+        max-width: 100%;
     }
     
     .results-container {
@@ -338,7 +462,7 @@ body {
 
 @media (max-width: 480px) {
     .container {
-        padding: 5px 2px; /* 进一步减少边距 */
+        padding: 5px 2px;
     }
     
     .results-container {
@@ -353,6 +477,16 @@ body {
     .user-ai-dialog .user-say,
     .user-ai-dialog .ai-reply {
         padding: 1px 0;
+    }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1200px) {
+    .mobile-frame {
+        box-shadow: 
+            0 0 0 8px rgba(255, 255, 255, 0.15),
+            0 0 0 12px rgba(0, 0, 0, 0.3),
+            0 30px 80px rgba(0, 0, 0, 0.5);
     }
 }
 /* 用户
@@ -623,4 +757,43 @@ body {
 .tts-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+/* 平板
+设备适配 */
+@media (min-width: 769px) and (max-width: 1024px) {
+    body {
+        padding: 10px 0;
+    }
+    
+    .mobile-frame {
+        width: 360px;
+        max-width: 360px;
+    }
+}
+
+/* 超大屏幕适配 */
+@media (min-width: 1440px) {
+    body {
+        padding: 40px 0;
+    }
+    
+    .mobile-frame {
+        width: 390px;
+        max-width: 390px;
+        box-shadow: 
+            0 0 0 10px rgba(255, 255, 255, 0.15),
+            0 0 0 15px rgba(0, 0, 0, 0.3),
+            0 40px 100px rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* 横屏模式优化 */
+@media (min-width: 769px) and (max-height: 600px) {
+    body {
+        padding: 10px 0;
+    }
+    
+    .mobile-frame {
+        min-height: calc(100vh - 20px);
+    }
 }

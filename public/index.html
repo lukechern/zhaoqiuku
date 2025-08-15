@@ -21,71 +21,74 @@
 </head>
 
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-top">
-                <div class="user-actions" id="userActions">
-                    <!-- 未登录状态 -->
-                    <div class="auth-links" id="authLinks">
-                        <a href="auth.html" class="auth-link">登录/注册</a>
+    <div class="mobile-frame">
+        <div class="container">
+            <header class="header">
+                <div class="header-top">
+                    <div class="user-actions" id="userActions">
+                        <!-- 未登录状态 -->
+                        <div class="auth-links" id="authLinks">
+                            <a href="auth.html" class="auth-link">登录/注册</a>
+                        </div>
+                        <!-- 已登录状态 -->
+                        <div class="user-info hidden" id="userInfo">
+                            <span class="user-email" id="userEmail">用户邮箱</span>
+                            <button class="auth-link logout-btn" id="logoutBtn"
+                                onclick="handleGlobalLogout()">登出</button>
+                        </div>
                     </div>
-                    <!-- 已登录状态 -->
-                    <div class="user-info hidden" id="userInfo">
-                        <span class="user-email" id="userEmail">用户邮箱</span>
-                        <button class="auth-link logout-btn" id="logoutBtn" onclick="handleGlobalLogout()">登出</button>
+                </div>
+                <h1>AI语音寻物助手</h1>
+                <p class="subtitle"></p>
+            </header>
+
+            <section class="results-section">
+                <div class="results-container" id="resultsContainer">
+                    <div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>
+                </div>
+            </section>
+
+            <main class="main-content">
+                <div class="controls">
+                    <button class="control-btn" id="playbackBtn" disabled>
+                        <img src="img/play.svg" alt="播放图标" class="control-icon">
+                        回放
+                    </button>
+                    <button class="control-btn" id="clearBtn" disabled>
+                        <img src="img/delete.svg" alt="删除图标" class="control-icon">
+                        清除
+                    </button>
+                    <button class="control-btn" id="refreshBtn">
+                        <img src="img/refresh.svg" alt="刷新图标" class="control-icon">
+                        刷新
+                    </button>
+                </div>
+
+                <div class="microphone-container">
+                    <div class="sound-waves" id="soundWaves">
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
                     </div>
-                </div>
-            </div>
-            <h1>AI语音寻物助手</h1>
-            <p class="subtitle"></p>
-        </header>
 
-        <section class="results-section">
-            <div class="results-container" id="resultsContainer">
-                <div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>
-            </div>
-        </section>
+                    <div class="microphone-button" id="microphoneButton">
+                        <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
+                    </div>
 
-        <main class="main-content">
-            <div class="controls">
-                <button class="control-btn" id="playbackBtn" disabled>
-                    <img src="img/play.svg" alt="播放图标" class="control-icon">
-                    回放
-                </button>
-                <button class="control-btn" id="clearBtn" disabled>
-                    <img src="img/delete.svg" alt="删除图标" class="control-icon">
-                    清除
-                </button>
-                <button class="control-btn" id="refreshBtn">
-                    <img src="img/refresh.svg" alt="刷新图标" class="control-icon">
-                    刷新
-                </button>
-            </div>
+                    <div class="listening-indicator" id="listeningIndicator">
+                        <span>聆听中...</span>
+                    </div>
 
-            <div class="microphone-container">
-                <div class="sound-waves" id="soundWaves">
-                    <div class="wave"></div>
-                    <div class="wave"></div>
-                    <div class="wave"></div>
-                    <div class="wave"></div>
-                    <div class="wave"></div>
-                </div>
+                    <div class="cancel-indicator" id="cancelIndicator">
+                        <span>向上滑动取消录音</span>
+                    </div>
 
-                <div class="microphone-button" id="microphoneButton">
-                    <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
+                    <div class="timer" id="timer">00:00</div>
                 </div>
-                
-                <div class="listening-indicator" id="listeningIndicator">
-                    <span>聆听中...</span>
-                </div>
-                
-                <div class="cancel-indicator" id="cancelIndicator">
-                    <span>向上滑动取消录音</span>
-                </div>
-                
-                <div class="timer" id="timer">00:00</div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
 
     <script>
