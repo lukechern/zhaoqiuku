@@ -2,7 +2,10 @@
 class ComponentManager {
     constructor() {
         this.currentPage = this.getCurrentPage();
-        this.init();
+        // 在auth页面不执行任何操作
+        if (this.currentPage !== 'auth') {
+            this.init();
+        }
     }
 
     getCurrentPage() {

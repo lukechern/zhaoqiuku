@@ -38,8 +38,13 @@
     <div class="mobile-frame">
         <div class="container">
             <header class="header">
-                <h1>找秋裤 - AI语音寻物助手</h1>
-                <p class="subtitle">请输入您的邮箱地址进行身份验证</p>
+                <div class="header-top">
+                    <div class="user-actions">
+                        <div class="auth-title">找秋裤 - AI语音寻物助手</div>
+                    </div>
+                </div>
+                <h1>用户身份认证</h1>
+                <p class="subtitle">找秋裤 - AI语音寻物助手</p>
             </header>
 
             <main class="register-content">
@@ -48,10 +53,10 @@
                 <div class="step" id="emailStep">
                     <div class="form-group">
                         <label for="email">邮箱地址</label>
-                        <input type="email" id="email" placeholder="请输入您的邮箱地址" required>
+                        <input type="email" id="email" placeholder="请输入您的电子邮箱地址" required>
                         <div class="error-message" id="emailError"></div>
                         <div class="help-text">
-                            我们将向您的邮箱发送验证码进行身份验证
+                            我们将向您的电子邮箱发送验证码进行身份验证
                         </div>
                     </div>
                     <button class="register-btn" id="sendCodeBtn">获取验证码</button>
