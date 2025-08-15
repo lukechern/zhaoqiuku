@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS 测试页面 - 找秋裤</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .test-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: 8px;
+        }
+        
+        .test-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .test-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s ease;
+        }
+        
+        .test-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .test-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+        
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .status.success {
+            background: rgba(72, 187, 120, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+        
+        .status.error {
+            background: rgba(245, 101, 101, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+        
+        .status.info {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .config-display {
+            background: var(--surface-light);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>TTS 测试页面</h1>
+            <p class="subtitle">测试 Azure Speech Service 文本转语音功能</p>
+        </header>
+
+        <div class="test-container">
+            <!-- 配置状态 -->
+            <div class="test-section">
+                <h3>配置状态</h3>
+                <div id="configStatus" class="status info">正在检查配置...</div>
+                <div id="configDisplay" class="config-display"></div>
+            </div>
+
+            <!-- 文本测试 -->
+            <div class="test-section">
+                <h3>文本朗读测试</h3>
+                <textarea 
+                    id="testText" 
+                    class="test-input" 
+                    rows="3" 
+                    placeholder="输入要朗读的文本...">你好，这是一个TTS测试。欢迎使用找秋裤AI语音寻物助手！</textarea>
+                <button id="speakBtn" class="test-btn">开始朗读</button>
+                <button id="stopBtn" class="test-btn" disabled>停止朗读</button>
+                <div id="speakStatus" class="status info" style="display: none;"></div>
+            </div>
+
+            <!-- API响应模拟测试 -->
+            <div class="test-section">
+                <h3>API响应模拟测试</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    模拟真实的API响应数据，测试自动朗读功能
+                </p>
+                <button id="testApiResponse1" class="test-btn">测试存放物品</button>
+                <button id="testApiResponse2" class="test-btn">测试查找物品</button>
+                <button id="testApiResponse3" class="test-btn">测试错误响应</button>
+                <div id="apiTestStatus" class="status info" style="display: none;"></div>
+            </div>
+
+            <!-- 返回主页 -->
+            <div class="test-section">
+                <a href="index.html" class="test-btn" style="text-decoration: none; display: inline-block;">返回主页</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../config/ttsConfit.js"></script>
+    <script type="module">
+        import { TTSService } from './js/tts-service.js';
+
+        let ttsService;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 等待配置加载
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            ttsService = new TTSService();
+            updateConfigStatus();
+            setupEventListeners();
+        });
+
+        async function updateConfigStatus() {
+            const statusEl = document.getElementById('configStatus');
+            const displayEl = document.getElementById('configDisplay');
+            
+            // 测试TTS API是否可用
+            try {
+                const testResponse = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: '测试' })
+                });
+                
+                if (testResponse.ok || testResponse.status === 400) {
+                    // 400错误表示API存在但参数有问题，这是正常的
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ TTS服务API可用，后端配置正常';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ TTS服务API不可用，请检查后端配置';
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ 无法连接到TTS服务API';
+            }
+
+            // 显示前端配置信息
+            const config = { ...window.ttsConfig };
+            displayEl.textContent = JSON.stringify(config, null, 2);
+        }
+
+        function setupEventListeners() {
+            const speakBtn = document.getElementById('speakBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const testText = document.getElementById('testText');
+            const speakStatus = document.getElementById('speakStatus');
+
+            // 朗读按钮
+            speakBtn.addEventListener('click', async () => {
+                const text = testText.value.trim();
+                if (!text) {
+                    showStatus(speakStatus, 'error', '请输入要朗读的文本');
+                    return;
+                }
+
+                speakBtn.disabled = true;
+                stopBtn.disabled = false;
+                showStatus(speakStatus, 'info', '正在朗读...');
+
+                try {
+                    await ttsService.speak(text);
+                    showStatus(speakStatus, 'success', '朗读完成');
+                } catch (error) {
+                    showStatus(speakStatus, 'error', '朗读失败: ' + error.message);
+                } finally {
+                    speakBtn.disabled = false;
+                    stopBtn.disabled = true;
+                }
+            });
+
+            // 停止按钮
+            stopBtn.addEventListener('click', () => {
+                ttsService.stop();
+                speakBtn.disabled = false;
+                stopBtn.disabled = true;
+                showStatus(speakStatus, 'info', '已停止朗读');
+            });
+
+            // API响应测试按钮
+            document.getElementById('testApiResponse1').addEventListener('click', () => {
+                testApiResponse({
+                    transcript: "把我的钥匙放在客厅茶几上",
+                    business_result: {
+                        success: true,
+                        message: "好的，我已经记录下您将钥匙放在客厅茶几上了。"
+                    },
+                    action: "put",
+                    object: "钥匙",
+                    location: "客厅茶几"
+                });
+            });
+
+            document.getElementById('testApiResponse2').addEventListener('click', () => {
+                testApiResponse({
+                    transcript: "我的手机在哪里",
+                    business_result: {
+                        success: true,
+                        message: "根据记录，您的手机在卧室床头柜上。"
+                    },
+                    action: "get",
+                    object: "手机",
+                    location: "卧室床头柜"
+                });
+            });
+
+            document.getElementById('testApiResponse3').addEventListener('click', () => {
+                testApiResponse({
+                    transcript: "找不到的东西",
+                    business_result: {
+                        success: false,
+                        message: "抱歉，我没有找到相关的物品记录。"
+                    },
+                    action: "get",
+                    object: "找不到的东西"
+                });
+            });
+        }
+
+        async function testApiResponse(mockData) {
+            const statusEl = document.getElementById('apiTestStatus');
+            showStatus(statusEl, 'info', '正在测试API响应朗读...');
+
+            try {
+                await ttsService.autoReadResponse(mockData);
+                showStatus(statusEl, 'success', '✅ API响应朗读测试完成');
+            } catch (error) {
+                showStatus(statusEl, 'error', '❌ API响应朗读测试失败: ' + error.message);
+            }
+        }
+
+        function showStatus(element, type, message) {
+            element.className = `status ${type}`;
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

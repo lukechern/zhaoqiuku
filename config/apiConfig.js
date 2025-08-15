@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
     // Gemini API配置
     GEMINI: {
         BASE_URL: 'https://generativelanguage.googleapis.com/v1beta',
-        MODEL: 'gemini-2.5-flash-lite',
+        MODEL: 'gemini-2.5-flash',
         ENDPOINT: 'generateContent'
     },
 

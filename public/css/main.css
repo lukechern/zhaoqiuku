@@ -531,3 +531,96 @@ body {
 #timer {
     display: none;
 }
+
+/* TTS 朗读状态样式 */
+.tts-playing {
+    position: relative;
+}
+
+.tts-playing::after {
+    content: '🔊';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 12px;
+    animation: tts-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tts-pulse {
+    0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+/* 用户对话样式优化 */
+.user-ai-dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.user-say {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    padding: 12px 16px;
+    border-radius: 18px 18px 18px 4px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    max-width: 85%;
+    align-self: flex-end;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.ai-reply {
+    background: var(--surface-light);
+    color: var(--text-primary);
+    padding: 12px 16px;
+    border-radius: 18px 18px 4px 18px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    max-width: 85%;
+    align-self: flex-start;
+    border: 1px solid var(--border);
+    position: relative;
+}
+
+/* TTS 控制按钮样式 */
+.tts-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: flex-end;
+}
+
+.tts-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tts-btn:hover {
+    background: var(--surface-light);
+    color: var(--text-primary);
+}
+
+.tts-btn.playing {
+    background: var(--primary-color);
+    color: white;
+    animation: tts-pulse 1.5s ease-in-out infinite;
+}
+
+.tts-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -5,12 +5,14 @@ import { VoiceRecognitionApp } from './App.js';
 import { AudioRecorder } from './audio-recorder.js';
 import { UIController } from './ui-controller.js';
 import { APIClient } from './api-client.js';
+import { TTSService } from './tts-service.js';
 
 // 将类暴露到全局作用域，以便class-check.js可以检测到
 window.AudioRecorder = AudioRecorder;
 window.UIController = UIController;
 window.APIClient = APIClient;
 window.VoiceRecognitionApp = VoiceRecognitionApp;
+window.TTSService = TTSService;
 
 // 应用启动函数
 async function startApp() {
@@ -25,6 +27,12 @@ async function startApp() {
     try {
         await app.appInitializer.initialize();
         console.log('app.appInitializer.initialize() 执行完成');
+        
+        // 初始化TTS服务
+        if (window.ttsConfig && !window.ttsService) {
+            window.ttsService = new TTSService();
+            console.log('TTS服务初始化完成');
+        }
         
         // 初始化用户状态
         app.userStateManager.initializeUserState();

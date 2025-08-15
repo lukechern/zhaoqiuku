@@ -486,6 +486,23 @@ export class UIController {
 
         // 自动滚动到顶部
         container.scrollTop = 0;
+
+        // 自动朗读API响应内容
+        this.autoReadResponse(data);
+    }
+
+    // 自动朗读API响应内容
+    async autoReadResponse(data) {
+        try {
+            // 检查TTS服务是否可用
+            if (window.ttsService && window.ttsService.isAvailable()) {
+                await window.ttsService.autoReadResponse(data);
+            } else {
+                console.log('TTS服务不可用或未配置');
+            }
+        } catch (error) {
+            console.error('自动朗读失败:', error);
+        }
     }
 
     // 格式化调试数据显示
