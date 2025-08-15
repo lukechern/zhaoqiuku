@@ -4,7 +4,9 @@ export class UIController {
         this.elements = {
             microphoneButton: document.getElementById('microphoneButton'),
             soundWaves: document.getElementById('soundWaves'),
+            listeningIndicator: document.getElementById('listeningIndicator'),
             cancelIndicator: document.getElementById('cancelIndicator'),
+            timer: document.getElementById('timer'),
             playbackBtn: document.getElementById('playbackBtn'),
             clearBtn: document.getElementById('clearBtn'),
             refreshBtn: document.getElementById('refreshBtn'),
@@ -367,13 +369,15 @@ export class UIController {
     showRecordingState() {
         this.elements.microphoneButton.classList.add('recording');
         this.elements.soundWaves.classList.add('active', 'recording');
+        this.elements.listeningIndicator.classList.add('active');
         this.elements.cancelIndicator.classList.add('active');
+        this.elements.timer.classList.add('recording');
 
         // 在 results-json 区域显示"聆听中……"和计时器
         this.elements.resultsContainer.innerHTML = `
             <div class="results-json">
                 <div class="listening-status">聆听中……</div>
-                <div class="timer-display">00:00</div>
+                <div class="timer-display">${this.elements.timer.textContent}</div>
             </div>
         `;
 
@@ -384,7 +388,9 @@ export class UIController {
     hideRecordingState() {
         this.elements.microphoneButton.classList.remove('recording');
         this.elements.soundWaves.classList.remove('active', 'recording');
+        this.elements.listeningIndicator.classList.remove('active');
         this.elements.cancelIndicator.classList.remove('active', 'canceling');
+        this.elements.timer.classList.remove('recording');
 
         // 清除 results-json 区域的内容
         this.elements.resultsContainer.innerHTML = '<div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>';
@@ -395,22 +401,14 @@ export class UIController {
     // 显示取消状态
     showCancelState() {
         this.elements.cancelIndicator.classList.add('canceling');
-        // 更新 results-json 区域的文本
-        const listeningStatus = this.elements.resultsContainer.querySelector('.listening-status');
-        if (listeningStatus) {
-            listeningStatus.textContent = '松手取消录音';
-        }
+        this.elements.listeningIndicator.querySelector('span').textContent = '松手取消录音';
         this.vibrate([30, 30, 30]); // 震动提示
     }
 
     // 隐藏取消状态
     hideCancelState() {
         this.elements.cancelIndicator.classList.remove('canceling');
-        // 恢复 results-json 区域的文本
-        const listeningStatus = this.elements.resultsContainer.querySelector('.listening-status');
-        if (listeningStatus) {
-            listeningStatus.textContent = '聆听中……';
-        }
+        this.elements.listeningIndicator.querySelector('span').textContent = '聆听中...';
     }
 
     // 开始计时器

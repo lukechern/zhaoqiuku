@@ -525,3 +525,9 @@ body {
 .login-prompt-animation {
     animation: pulse 0.6s ease-in-out;
 }
+
+/* 隐藏底部的聆听提示和计时器，因为它们现在显示在页面上部 */
+#listeningIndicator,
+#timer {
+    display: none;
+}
