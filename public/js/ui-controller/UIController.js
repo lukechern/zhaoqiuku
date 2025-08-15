@@ -263,7 +263,7 @@ export class UIController {
 
         // 清除 results-json 区域的内容
         if (this.elements.resultsContainer) {
-            this.elements.resultsContainer.innerHTML = '<div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>';
+            this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？按住麦克风问问AI</div>';
         }
 
         if (this.stopTimer) {
@@ -338,7 +338,7 @@ export class UIController {
 
     // 清除结果
     clearResults() {
-        this.elements.resultsContainer.innerHTML = '<div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>';
+        this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？按住麦克风问问AI</div>';
     }
 
     // HTML转义
