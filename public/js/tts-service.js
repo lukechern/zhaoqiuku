@@ -4,7 +4,7 @@ export class TTSService {
         this.isPlaying = false;
         this.currentAudio = null;
         this.audioContext = null;
-        
+
         // 初始化音频上下文
         this.initAudioContext();
     }
@@ -28,9 +28,9 @@ export class TTSService {
         if (!data) return null;
 
         // 默认只朗读AI回复
-        return (data.business_result && data.business_result.message) || 
-               data.transcript || 
-               null;
+        return (data.business_result && data.business_result.message) ||
+            data.transcript ||
+            null;
     }
 
     // 自动朗读API响应内容
@@ -67,13 +67,19 @@ export class TTSService {
             if (text.length > 500) {
                 processedText = text.substring(0, 500) + '...';
             }
-            
+
             // 调用TTS API（只传递文本，参数由后端决定）
             const audioData = await this.callAzureTTS(processedText);
-            
+
+            // 如果TTS服务未配置，静默跳过
+            if (audioData === null) {
+                console.log('TTS服务未配置，跳过语音播放');
+                return;
+            }
+
             // 播放音频
             await this.playAudio(audioData);
-            
+
         } catch (error) {
             console.error('TTS朗读失败:', error);
             console.error('朗读失败:', error.message);
@@ -97,6 +103,13 @@ export class TTSService {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
+
+            // 如果是TTS服务未配置，给出友好提示
+            if (response.status === 503 && errorData.code === 'TTS_NOT_CONFIGURED') {
+                console.warn('TTS服务未配置，跳过语音播放');
+                return null; // 返回null表示跳过播放
+            }
+
             throw new Error(`TTS API错误 (${response.status}): ${errorData.error || 'Unknown error'}`);
         }
 
@@ -107,27 +120,27 @@ export class TTSService {
     async playAudio(audioData) {
         try {
             this.isPlaying = true;
-            
+
             // 创建音频缓冲区
             const audioBuffer = await this.audioContext.decodeAudioData(audioData.slice(0));
-            
+
             // 创建音频源
             const source = this.audioContext.createBufferSource();
             source.buffer = audioBuffer;
             source.connect(this.audioContext.destination);
-            
+
             // 播放完成处理
             source.onended = () => {
                 this.isPlaying = false;
                 this.currentAudio = null;
             };
-            
+
             // 保存引用以便停止
             this.currentAudio = source;
-            
+
             // 开始播放
             source.start();
-            
+
         } catch (error) {
             this.isPlaying = false;
             this.currentAudio = null;

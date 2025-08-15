@@ -3,7 +3,18 @@
  * 处理文本转语音请求
  */
 
-import ttsConfig from '../config/ttsConfig.js';
+// 直接定义配置，避免模块导入问题
+const ttsConfig = {
+    azure: {
+        region: 'eastasia',
+        voice: {
+            name: 'zh-CN-XiaoxiaoNeural',
+            rate: '0%',
+            pitch: '0%',
+            volume: '0%'
+        }
+    }
+};
 
 export default async function handler(req, res) {
     // 只允许POST请求
@@ -36,11 +47,12 @@ export default async function handler(req, res) {
             keyPreview: subscriptionKey ? subscriptionKey.substring(0, 8) + '...' : 'undefined'
         });
 
-        if (!subscriptionKey || subscriptionKey === 'configured-via-vercel-env') {
+        if (!subscriptionKey || subscriptionKey === 'configured-via-vercel-env' || subscriptionKey === 'your_azure_speech_subscription_key_here' || subscriptionKey === '你的真实Azure密钥') {
             console.error('Azure Speech Service 密钥缺失或未正确配置');
-            return res.status(500).json({ 
-                error: 'TTS服务配置不完整：缺少AZURE_SPEECH_KEY环境变量',
-                details: '请在环境变量中设置有效的Azure Speech Service密钥'
+            return res.status(503).json({ 
+                error: 'TTS服务暂时不可用：Azure Speech Service密钥未配置',
+                details: '请在环境变量中设置有效的Azure Speech Service密钥',
+                code: 'TTS_NOT_CONFIGURED'
             });
         }
 

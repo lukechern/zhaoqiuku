@@ -59,6 +59,9 @@ const ttsConfig = {
 };
 
 // 导出配置
+export default ttsConfig;
+
+// 兼容 CommonJS
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = ttsConfig;
 } else if (typeof window !== 'undefined') {
