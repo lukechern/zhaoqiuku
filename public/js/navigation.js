@@ -20,6 +20,11 @@ class ComponentManager {
         return this.currentPage !== 'auth';
     }
 
+    shouldLoadHeaderTop() {
+        // auth页面不加载header-top组件
+        return this.currentPage !== 'auth';
+    }
+
     async loadHeaderTop() {
         try {
             const response = await fetch('components/header-top.html');
@@ -101,7 +106,13 @@ class ComponentManager {
         if (this.shouldShowNavigation()) {
             await this.loadNavigation();
         }
-        await this.loadHeaderTop();
+        // 根据页面类型决定是否加载header-top
+        if (this.shouldLoadHeaderTop()) {
+            await this.loadHeaderTop();
+        } else if (this.currentPage === 'auth') {
+            // 在auth页面添加标题
+            this.addAuthPageTitle();
+        }
     }
 
     // 立即加载底部导航，不等待DOM完全加载
@@ -136,16 +147,42 @@ class ComponentManager {
         // 等待DOM完全加载后再加载其他组件
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
-                this.loadHeaderTop();
+                if (this.shouldLoadHeaderTop()) {
+                    this.loadHeaderTop();
+                } else if (this.currentPage === 'auth') {
+                    // 在auth页面添加标题
+                    this.addAuthPageTitle();
+                }
             });
         } else {
-            this.loadHeaderTop();
+            if (this.shouldLoadHeaderTop()) {
+                this.loadHeaderTop();
+            } else if (this.currentPage === 'auth') {
+                // 在auth页面添加标题
+                this.addAuthPageTitle();
+            }
+        }
+    }
+
+    addAuthPageTitle() {
+        // 在auth页面添加标题
+        const header = document.querySelector('.header');
+        if (header) {
+            // 确保只添加一次标题
+            if (!header.querySelector('.auth-title')) {
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'header-top';
+                titleDiv.innerHTML = '<div class="user-actions"><div class="auth-title">找秋裤 - AI语音寻物助手</div></div>';
+                header.insertAdjacentElement('afterbegin', titleDiv);
+            }
         }
     }
 }
 
-// 立即初始化组件管理器
-new ComponentManager();
+// 延迟初始化组件管理器，确保在DOM完全加载后执行
+document.addEventListener('DOMContentLoaded', () => {
+    new ComponentManager();
+});
 
 // 创建全局登出函数，以防其他地方还在使用
 window.handleGlobalLogout = async function() {
