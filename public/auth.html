@@ -44,7 +44,6 @@
                     </div>
                 </div>
                 <h1>用户身份认证</h1>
-                <p class="subtitle">找秋裤 - AI语音寻物助手</p>
             </header>
 
             <main class="register-content">
@@ -138,6 +137,10 @@
             'js/auth.js'
         ];
 
+        // 跟踪已加载的脚本数量
+        let loadedScripts = 0;
+        const totalScripts = scripts.length;
+
         // 强制清除缓存并加载脚本
         scripts.forEach((src, index) => {
             const script = document.createElement('script');
@@ -148,6 +151,21 @@
             };
             script.onload = function () {
                 console.log('Loaded script:', src);
+                loadedScripts++;
+                
+                // 当所有脚本加载完成后，初始化UnifiedAuthManager
+                if (loadedScripts === totalScripts) {
+                    console.log('All scripts loaded, initializing UnifiedAuthManager...');
+                    // 确保DOM也已加载完成
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', () => {
+                            new UnifiedAuthManager();
+                        });
+                    } else {
+                        // DOM已经加载完成
+                        new UnifiedAuthManager();
+                    }
+                }
             };
             document.head.appendChild(script);
         });
