@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         let azureUrl;
         if (azureEndpoint.includes('api.cognitive.microsoft.com')) {
             // 新格式: https://eastasia.api.cognitive.microsoft.com/
-            azureUrl = `${azureEndpoint}/speechservices/synthesis/cognitiveservices/v1`;
+            azureUrl = `${azureEndpoint}/cognitiveservices/v1`;
         } else if (azureEndpoint.includes('tts.speech.microsoft.com')) {
             // 专用TTS格式: https://region.tts.speech.microsoft.com/
             azureUrl = `${azureEndpoint}/cognitiveservices/v1`;

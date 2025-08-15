@@ -104,6 +104,7 @@
                 <h3>配置状态</h3>
                 <div id="configStatus" class="status info">正在检查配置...</div>
                 <button id="debugBtn" class="test-btn">详细调试</button>
+                <button id="pathTestBtn" class="test-btn">路径测试</button>
                 <div id="configDisplay" class="config-display"></div>
             </div>
 
@@ -217,6 +218,34 @@
             }
         }
 
+        async function runPathTest() {
+            const statusEl = document.getElementById('configStatus');
+            const displayEl = document.getElementById('configDisplay');
+            
+            statusEl.className = 'status info';
+            statusEl.textContent = '🔍 正在测试Azure API路径...';
+            
+            try {
+                const pathResponse = await fetch('/api/test-azure-paths');
+                const pathData = await pathResponse.json();
+                
+                if (pathData.successfulPath) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = `✅ 找到正确路径: ${pathData.successfulPath}`;
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ 未找到可用的API路径';
+                }
+                
+                displayEl.textContent = JSON.stringify(pathData, null, 2);
+                
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ 路径测试失败: ' + error.message;
+                displayEl.textContent = error.stack || error.message;
+            }
+        }
+
         function setupEventListeners() {
             const speakBtn = document.getElementById('speakBtn');
             const stopBtn = document.getElementById('stopBtn');
@@ -256,6 +285,9 @@
 
             // 调试按钮
             document.getElementById('debugBtn').addEventListener('click', runDetailedDebug);
+            
+            // 路径测试按钮
+            document.getElementById('pathTestBtn').addEventListener('click', runPathTest);
 
             // API响应测试按钮
             document.getElementById('testApiResponse1').addEventListener('click', () => {
