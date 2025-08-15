@@ -3,7 +3,7 @@ console.log('main.js 脚本开始执行');
 
 import { VoiceRecognitionApp } from './App.js';
 import { AudioRecorder } from './audio-recorder.js';
-import { UIController } from './ui-controller.js';
+import { UIController } from './ui-controller.js';  // 确保使用默认导出
 import { APIClient } from './api-client.js';
 import { TTSService } from './tts-service.js';
 

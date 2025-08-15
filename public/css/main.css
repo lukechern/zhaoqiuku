@@ -769,7 +769,7 @@ body {
 /* 超大屏幕适配 */
 @media (min-width: 1440px) {
     body {
-        padding: 40px 0;
+        padding: 10px 0;
     }
     
     .mobile-frame {
