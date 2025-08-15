@@ -373,6 +373,14 @@ export class UIController {
         this.elements.cancelIndicator.classList.add('active');
         this.elements.timer.classList.add('recording');
 
+        // 在 results-json 区域显示"聆听中……"和计时器
+        this.elements.resultsContainer.innerHTML = `
+            <div class="results-json">
+                <div class="listening-status">聆听中……</div>
+                <div class="timer-display">${this.elements.timer.textContent}</div>
+            </div>
+        `;
+
         this.startTimer();
     }
 
@@ -383,6 +391,9 @@ export class UIController {
         this.elements.listeningIndicator.classList.remove('active');
         this.elements.cancelIndicator.classList.remove('active', 'canceling');
         this.elements.timer.classList.remove('recording');
+
+        // 清除 results-json 区域的内容
+        this.elements.resultsContainer.innerHTML = '<div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>';
 
         this.stopTimer();
     }
@@ -432,6 +443,12 @@ export class UIController {
 
         const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         this.elements.timer.textContent = timeString;
+
+        // 同时更新 results-json 区域的计时器显示
+        const timerDisplay = this.elements.resultsContainer.querySelector('.timer-display');
+        if (timerDisplay) {
+            timerDisplay.textContent = timeString;
+        }
     }
 
     // 重置计时器
