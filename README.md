@@ -63,13 +63,7 @@ zhaoqiuku/
 │   │   ├── register.css      # 注册页面样式
 │   │   └── ...               # 其他样式文件
 │   ├── index.html            # 主页面
-│   ├── auth.html             # 统一认证页面（推荐）
-│   ├── tts-test.html         # TTS功能测试页面
-│   ├── tts-quick-test.js     # TTS快速测试脚本
-│   ├── register.html         # 注册页面（旧版）
-│   ├── login.html            # 登录页面（旧版）
-│   ├── test_unified_auth.html # 统一认证测试页面
-│   └── test_register.html    # 调试工具页面
+│   └── auth.html             # 统一认证页面
 ├── document/                   # 项目文档
 │   ├── tts-setup.md          # TTS配置指南
 │   ├── tts-implementation-summary.md  # TTS实现总结
@@ -382,8 +376,7 @@ showApiConfig()             // 显示API配置信息
 3. **浏览器支持**: 需要现代浏览器支持Web Audio API
 
 ### 测试方法
-- **完整测试页面**: 访问 `/tts-test.html` 进行功能测试
-- **Azure连接调试**: 访问 `/api/debug-tts-simple` 测试Azure连接
+- **实际使用测试**: 使用语音识别功能，观察API响应后是否自动朗读
 - **Azure连接调试**: 访问 `/api/debug-tts` 测试Azure连接
 - **控制台快速测试**: 运行 `runFullTTSTest()` 进行完整调试
 - **实际使用测试**: 使用语音识别功能，观察是否自动朗读
