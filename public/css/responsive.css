@@ -76,7 +76,8 @@
 /* 大屏幕优化 */
 @media (min-width: 1200px) {
     .mobile-frame {
-        box-shadow: 
+        max-height: 90vh;
+        box-shadow:
             0 0 0 8px rgba(255, 255, 255, 0.15),
             0 0 0 12px rgba(0, 0, 0, 0.3),
             0 30px 80px rgba(0, 0, 0, 0.5);
@@ -104,7 +105,8 @@
     .mobile-frame {
         width: 390px;
         max-width: 390px;
-        box-shadow: 
+        max-height: 90vh;
+        box-shadow:
             0 0 0 10px rgba(255, 255, 255, 0.15),
             0 0 0 15px rgba(0, 0, 0, 0.3),
             0 40px 100px rgba(0, 0, 0, 0.6);
@@ -118,6 +120,7 @@
     }
     
     .mobile-frame {
+        max-height: 90vh;
         min-height: calc(100vh - 20px);
     }
 }

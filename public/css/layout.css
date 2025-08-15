@@ -119,6 +119,12 @@ body {
         max-width: 375px;
         width: 100%;
     }
+    
+    /* 为index和history页面预留header-top组件的高度 */
+    body[data-page="index"] .container,
+    body[data-page="history"] .container {
+        padding-top: 70px;
+    }
 }
 
 .main-content {
