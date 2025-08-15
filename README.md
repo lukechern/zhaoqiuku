@@ -30,7 +30,6 @@ zhaoqiuku/
 │   ├── debug-user.js          # 用户状态调试API
 │   ├── fix-user-status.js     # 修复用户状态API
 │   ├── fix-all-users.js       # 批量修复用户API
-│   ├── check-env.js           # 环境变量检查API
 │   └── user/
 │       └── profile.js         # 用户信息API
 ├── config/                     # 配置文件
@@ -201,9 +200,8 @@ const ttsConfig = {
    - `JWT_SECRET` - JWT签名密钥（至少32位随机字符串）
    - `AZURE_SPEECH_ENDPOINT` - Azure Speech Service终结点
    - `AZURE_SPEECH_KEY` - Azure Speech Service订阅密钥
-3. **检查环境变量**: 访问 `/api/check-env` 验证配置
-4. **初始化数据库**: 访问 `/api/init-database`
-5. **测试功能**: 访问 `/tts-test.html` 测试TTS功能
+3. **初始化数据库**: 访问 `/api/init-database`
+4. **测试功能**: 访问 `/tts-test.html` 测试TTS功能
 
 **重要**: 所有环境变量必须在Vercel项目设置中配置，不是本地文件。
 
@@ -386,7 +384,7 @@ showApiConfig()             // 显示API配置信息
 
 ### 测试方法
 - **完整测试页面**: 访问 `/tts-test.html` 进行功能测试
-- **环境变量检查**: 访问 `/api/check-env` 验证配置
+- **Azure路径测试**: 访问 `/api/test-azure-paths` 找到正确API路径
 - **Azure连接调试**: 访问 `/api/debug-tts` 测试Azure连接
 - **控制台快速测试**: 运行 `runFullTTSTest()` 进行完整调试
 - **实际使用测试**: 使用语音识别功能，观察是否自动朗读

@@ -1,13 +1,28 @@
 /**
  * TTS调试API
  * 用于测试Azure Speech Service连接和配置
+ * 支持路径测试模式: ?mode=pathtest
  */
 
 export default async function handler(req, res) {
+    const { mode } = req.query;
     try {
         // 检查环境变量
         const endpoint = process.env.AZURE_SPEECH_ENDPOINT;
         const subscriptionKey = process.env.AZURE_SPEECH_KEY;
+
+        if (!endpoint || !subscriptionKey) {
+            return res.status(500).json({ 
+                error: 'Azure Speech Service 配置缺失',
+                hasEndpoint: !!endpoint,
+                hasKey: !!subscriptionKey
+            });
+        }
+
+        // 如果是路径测试模式
+        if (mode === 'pathtest') {
+            return await handlePathTest(endpoint, subscriptionKey, res);
+        }
 
         const debugInfo = {
             timestamp: new Date().toISOString(),

@@ -4,30 +4,7 @@
 console.log('🔍 开始TTS快速调试...');
 
 async function quickTTSDebug() {
-    console.log('1. 检查环境变量配置...');
-    
-    try {
-        const envResponse = await fetch('/api/check-env');
-        const envData = await envResponse.json();
-        
-        console.log('环境变量检查结果:', envData);
-        
-        const azureEndpoint = envData.details?.AZURE_SPEECH_ENDPOINT;
-        const azureKey = envData.details?.AZURE_SPEECH_KEY;
-        
-        if (azureEndpoint?.status !== 'configured' || azureKey?.status !== 'configured') {
-            console.error('❌ Azure配置不完整');
-            return false;
-        }
-        
-        console.log('✅ 环境变量配置正常');
-        
-    } catch (error) {
-        console.error('❌ 环境变量检查失败:', error);
-        return false;
-    }
-    
-    console.log('2. 测试Azure连接...');
+    console.log('1. 测试Azure连接...');
     
     try {
         const debugResponse = await fetch('/api/debug-tts');
@@ -63,7 +40,7 @@ async function quickTTSDebug() {
 }
 
 async function testTTSAPI() {
-    console.log('3. 测试TTS API...');
+    console.log('2. 测试TTS API...');
     
     try {
         const response = await fetch('/api/tts', {
