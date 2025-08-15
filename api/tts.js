@@ -3,6 +3,8 @@
  * 处理文本转语音请求
  */
 
+import config from '../config/ttsConfig.js';
+
 export default async function handler(req, res) {
     // 只允许POST请求
     if (req.method !== 'POST') {
@@ -10,22 +12,27 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { text, voice, rate, pitch, volume } = req.body;
+        const { text } = req.body;
 
         // 验证必需参数
         if (!text || typeof text !== 'string') {
             return res.status(400).json({ error: '缺少必需的text参数' });
         }
 
-        // 检查环境变量 (只需要密钥，区域从配置文件读取)
+        // 检查环境变量 (只需要密钥)
         const subscriptionKey = process.env.AZURE_SPEECH_KEY;
         
-        // 从配置文件读取区域设置
-        const region = 'eastasia'; // 可以从配置文件或环境变量读取
+        // 从后端配置文件读取区域设置和其他参数
+        const region = config.azure.region;
+        const voiceName = config.azure.voice.name;
+        const speechRate = config.azure.voice.rate;
+        const speechPitch = config.azure.voice.pitch;
+        const speechVolume = config.azure.voice.volume;
 
         console.log('TTS API调试信息:', {
             hasKey: !!subscriptionKey,
             region: region,
+            voiceName: voiceName,
             keyPreview: subscriptionKey ? subscriptionKey.substring(0, 8) + '...' : 'undefined'
         });
 
@@ -35,11 +42,6 @@ export default async function handler(req, res) {
         }
 
         // 构建SSML
-        const voiceName = voice || 'zh-CN-XiaoxiaoNeural';
-        const speechRate = rate || '0%';
-        const speechPitch = pitch || '0%';
-        const speechVolume = volume || '0%';
-
         const ssml = `
             <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="zh-CN">
                 <voice name="${voiceName}">

@@ -29,7 +29,7 @@ async function startApp() {
         console.log('app.appInitializer.initialize() 执行完成');
         
         // 初始化TTS服务
-        if (window.ttsConfig && !window.ttsService) {
+        if (!window.ttsService) {
             window.ttsService = new TTSService();
             console.log('TTS服务初始化完成');
         }
