@@ -1,15 +1,12 @@
 // UI控制模块
-import { UIController } from './ui-controller/UIController.js';
+import { UIController as BaseUIController } from './ui-controller/UIController.js';
 import { UIButtonHandler } from './ui-controller/UIButtonHandler.js';
 import { UITouchHandler } from './ui-controller/UITouchHandler.js';
 import { UIDisplayManager } from './ui-controller/UIDisplayManager.js';
 import { UITimerManager } from './ui-controller/UITimerManager.js';
 
-// 保存原始UIController类
-const OriginalUIController = UIController;
-
-// 创建新的UIController类，继承原始类并混入各模块功能
-export class UIController extends OriginalUIController {
+// 扩展UIController类，添加各模块功能
+export class UIController extends BaseUIController {
     constructor() {
         // 调用父类构造函数
         super();
