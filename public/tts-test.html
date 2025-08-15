@@ -103,6 +103,7 @@
             <div class="test-section">
                 <h3>配置状态</h3>
                 <div id="configStatus" class="status info">正在检查配置...</div>
+                <button id="debugBtn" class="test-btn">详细调试</button>
                 <div id="configDisplay" class="config-display"></div>
             </div>
 
@@ -166,22 +167,54 @@
                     body: JSON.stringify({ text: '测试' })
                 });
                 
-                if (testResponse.ok || testResponse.status === 400) {
-                    // 400错误表示API存在但参数有问题，这是正常的
+                if (testResponse.ok) {
                     statusEl.className = 'status success';
                     statusEl.textContent = '✅ TTS服务API可用，后端配置正常';
                 } else {
+                    const errorData = await testResponse.json().catch(() => ({}));
                     statusEl.className = 'status error';
-                    statusEl.textContent = '❌ TTS服务API不可用，请检查后端配置';
+                    statusEl.textContent = `❌ TTS服务API错误 (${testResponse.status}): ${errorData.error || 'Unknown error'}`;
+                    
+                    // 显示详细错误信息
+                    displayEl.textContent = JSON.stringify(errorData, null, 2);
+                    return;
                 }
             } catch (error) {
                 statusEl.className = 'status error';
-                statusEl.textContent = '❌ 无法连接到TTS服务API';
+                statusEl.textContent = '❌ 无法连接到TTS服务API: ' + error.message;
             }
 
             // 显示前端配置信息
             const config = { ...window.ttsConfig };
             displayEl.textContent = JSON.stringify(config, null, 2);
+        }
+
+        async function runDetailedDebug() {
+            const statusEl = document.getElementById('configStatus');
+            const displayEl = document.getElementById('configDisplay');
+            
+            statusEl.className = 'status info';
+            statusEl.textContent = '🔍 正在运行详细调试...';
+            
+            try {
+                const debugResponse = await fetch('/api/debug-tts');
+                const debugData = await debugResponse.json();
+                
+                if (debugData.azureTest?.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ Azure Speech Service连接成功！';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ Azure Speech Service连接失败';
+                }
+                
+                displayEl.textContent = JSON.stringify(debugData, null, 2);
+                
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ 调试API调用失败: ' + error.message;
+                displayEl.textContent = error.stack || error.message;
+            }
         }
 
         function setupEventListeners() {
@@ -220,6 +253,9 @@
                 stopBtn.disabled = true;
                 showStatus(speakStatus, 'info', '已停止朗读');
             });
+
+            // 调试按钮
+            document.getElementById('debugBtn').addEventListener('click', runDetailedDebug);
 
             // API响应测试按钮
             document.getElementById('testApiResponse1').addEventListener('click', () => {

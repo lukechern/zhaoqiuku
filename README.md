@@ -385,9 +385,11 @@ showApiConfig()             // 显示API配置信息
 3. **浏览器支持**: 需要现代浏览器支持Web Audio API
 
 ### 测试方法
-- 访问 `/tts-test.html` 进行完整功能测试
-- 在浏览器控制台运行 `runAllTTSTests()` 快速测试
-- 使用语音识别功能，观察API响应后是否自动朗读
+- **完整测试页面**: 访问 `/tts-test.html` 进行功能测试
+- **环境变量检查**: 访问 `/api/check-env` 验证配置
+- **Azure连接调试**: 访问 `/api/debug-tts` 测试Azure连接
+- **控制台快速测试**: 运行 `runFullTTSTest()` 进行完整调试
+- **实际使用测试**: 使用语音识别功能，观察是否自动朗读
 
 ### 详细配置
 请参考 [TTS配置指南](document/tts-setup.md) 了解详细的配置步骤和故障排除方法。

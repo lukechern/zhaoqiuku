@@ -21,6 +21,13 @@ export default async function handler(req, res) {
         const endpoint = process.env.AZURE_SPEECH_ENDPOINT;
         const subscriptionKey = process.env.AZURE_SPEECH_KEY;
 
+        console.log('TTS API调试信息:', {
+            hasEndpoint: !!endpoint,
+            hasKey: !!subscriptionKey,
+            endpointPreview: endpoint ? endpoint.substring(0, 30) + '...' : 'undefined',
+            keyPreview: subscriptionKey ? subscriptionKey.substring(0, 8) + '...' : 'undefined'
+        });
+
         if (!endpoint || !subscriptionKey) {
             console.error('Azure Speech Service 配置缺失');
             return res.status(500).json({ error: 'TTS服务配置不完整' });
@@ -44,7 +51,25 @@ export default async function handler(req, res) {
 
         // 调用Azure Speech API
         const azureEndpoint = endpoint.replace(/\/$/, '');
-        const azureUrl = `${azureEndpoint}/cognitiveservices/v1`;
+        // 根据不同的终结点格式构建正确的URL
+        let azureUrl;
+        if (azureEndpoint.includes('api.cognitive.microsoft.com')) {
+            // 新格式: https://eastasia.api.cognitive.microsoft.com/
+            // 对于新格式的Cognitive Services多服务终结点，TTS路径是不同的
+            azureUrl = `${azureEndpoint}/speechservices/synthesis/cognitiveservices/v1`;
+        } else if (azureEndpoint.includes('tts.speech.microsoft.com')) {
+            // 专用TTS格式: https://region.tts.speech.microsoft.com/
+            azureUrl = `${azureEndpoint}/cognitiveservices/v1`;
+        } else {
+            // 通用Speech Services格式: https://region.cognitiveservices.azure.com/
+            azureUrl = `${azureEndpoint}/speechservices/v1`;
+        }
+
+        console.log('调用Azure TTS API:', {
+            url: azureUrl,
+            voiceName: voiceName,
+            textLength: text.length
+        });
 
         const response = await fetch(azureUrl, {
             method: 'POST',
@@ -57,11 +82,23 @@ export default async function handler(req, res) {
             body: ssml
         });
 
+        console.log('Azure API响应状态:', response.status);
+
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('Azure TTS API错误:', response.status, errorText);
+            console.error('Azure TTS API错误:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: errorText,
+                url: azureUrl
+            });
             return res.status(response.status).json({ 
-                error: `Azure TTS API错误: ${errorText}` 
+                error: `Azure TTS API错误 (${response.status}): ${errorText}`,
+                details: {
+                    status: response.status,
+                    statusText: response.statusText,
+                    url: azureUrl
+                }
             });
         }
 

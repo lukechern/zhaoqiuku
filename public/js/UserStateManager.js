@@ -33,7 +33,7 @@ export class UserStateManager {
                 // 移除可能存在的旧事件监听器
                 this.logoutBtn.replaceWith(this.logoutBtn.cloneNode(true));
                 this.logoutBtn = document.getElementById('logoutBtn');
-                
+
                 this.logoutBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -65,11 +65,11 @@ export class UserStateManager {
 
         const checkAuthManager = () => {
             attempts++;
-            
+
             if (window.authManager) {
                 console.log('认证管理器已就绪，初始化用户状态显示');
                 this.updateUserDisplay();
-                
+
                 // 设置定期检查，确保状态同步
                 this.startPeriodicStateCheck();
             } else if (attempts < maxAttempts) {
@@ -79,7 +79,7 @@ export class UserStateManager {
                 this.updateUserDisplay();
             }
         };
-        
+
         checkAuthManager();
     }
 
@@ -87,24 +87,24 @@ export class UserStateManager {
     startPeriodicStateCheck() {
         let checkCount = 0;
         const maxChecks = 3;
-        
+
         const checkInterval = setInterval(() => {
             checkCount++;
-            
+
             if (window.authManager && this.authLinks && this.userInfo) {
                 const isAuthenticated = window.authManager.isAuthenticated;
                 const authLinksVisible = this.authLinks.style.display !== 'none';
                 const userInfoHidden = this.userInfo.classList.contains('hidden');
-                
+
                 // 检查状态是否不一致
-                const stateInconsistent = (isAuthenticated && authLinksVisible) || 
-                                        (!isAuthenticated && !userInfoHidden);
-                
+                const stateInconsistent = (isAuthenticated && authLinksVisible) ||
+                    (!isAuthenticated && !userInfoHidden);
+
                 if (stateInconsistent) {
                     this.updateUserDisplay();
                 }
             }
-            
+
             // 只执行有限次数的检查
             if (checkCount >= maxChecks) {
                 clearInterval(checkInterval);
@@ -117,7 +117,7 @@ export class UserStateManager {
         // 限制日志输出，只在前几次调用时输出详细日志
         this.stateCheckCount++;
         const isDebug = this.stateCheckCount <= this.maxInitialChecks;
-        
+
         if (isDebug) {
             console.log('更新用户显示状态:', {
                 hasAuthManager: !!window.authManager,
@@ -146,7 +146,7 @@ export class UserStateManager {
             this.userInfo.classList.remove('hidden');
             this.userInfo.style.display = 'flex';
             this.userEmail.textContent = window.authManager.user.email;
-            
+
             if (isDebug) {
                 console.log('显示用户信息:', window.authManager.user.email);
             }
@@ -156,7 +156,7 @@ export class UserStateManager {
             this.authLinks.classList.remove('hidden');
             this.userInfo.classList.add('hidden');
             this.userInfo.style.display = 'none';
-            
+
             if (isDebug) {
                 console.log('显示登录链接');
             }
@@ -167,12 +167,12 @@ export class UserStateManager {
     handleAuthStateChange(detail) {
         // 立即更新用户显示
         this.updateUserDisplay();
-        
+
         // 清除UI中的登录要求状态
         if (this.app.uiController && this.app.uiController.clearLoginRequiredState) {
             this.app.uiController.clearLoginRequiredState();
         }
-        
+
         // 根据认证状态变化类型处理特定逻辑
         if (detail.type === 'login') {
             if (this.app.uiController && this.app.uiController.showMessage) {
@@ -198,7 +198,7 @@ export class UserStateManager {
             // 显示确认对话框
             const userEmail = window.authManager?.user?.email || '当前用户';
             const confirmMessage = `确定要退出登录吗？\n\n当前登录用户：${userEmail}`;
-            
+
             if (!confirm(confirmMessage)) {
                 return;
             }
@@ -210,7 +210,7 @@ export class UserStateManager {
 
             // 执行登出
             const success = await window.authManager.logout();
-            
+
             if (success) {
                 // 显示成功消息
                 if (this.app.uiController && this.app.uiController.showMessage) {
@@ -218,12 +218,12 @@ export class UserStateManager {
                 } else {
                     alert('已成功退出登录');
                 }
-                
+
                 // 强制更新用户显示状态
                 setTimeout(() => {
                     this.updateUserDisplay();
                 }, 100);
-                
+
             } else {
                 // 显示错误消息
                 if (this.app.uiController && this.app.uiController.showError) {
@@ -232,7 +232,7 @@ export class UserStateManager {
                     alert('退出登录失败，请重试');
                 }
             }
-            
+
         } catch (error) {
             // 显示错误消息
             if (this.app.uiController && this.app.uiController.showError) {
