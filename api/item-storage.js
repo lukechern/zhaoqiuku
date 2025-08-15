@@ -207,7 +207,7 @@ function handleUnknownAction() {
     
     return {
         success: false,
-        message: '您的意图不明确，重新提问，是要记录物品存放位置还是要查找物品。'
+        message: '您的意图不明确，请重新提问，是要记录物品存放位置还是要查找物品。'
     };
 }
 
