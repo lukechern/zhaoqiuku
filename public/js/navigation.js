@@ -104,20 +104,6 @@ class ComponentManager {
         });
     }
 
-    async loadComponents() {
-        // 根据页面类型决定是否加载底部导航
-        if (this.shouldShowNavigation()) {
-            await this.loadNavigation();
-        }
-        // 根据页面类型决定是否加载header-top
-        if (this.shouldLoadHeaderTop()) {
-            await this.loadHeaderTop();
-        } else if (this.currentPage === 'auth') {
-            // 在auth页面添加标题
-            this.addAuthPageTitle();
-        }
-    }
-
     // 立即加载底部导航，不等待DOM完全加载
     async loadNavigationImmediately() {
         if (!this.shouldShowNavigation()) {
@@ -132,15 +118,24 @@ class ComponentManager {
                     if (container) {
                         resolve(container);
                     } else {
-                        setTimeout(checkContainer, 10);
+                        setTimeout(checkContainer, 100); // 增加等待时间
                     }
                 };
                 checkContainer();
             });
         };
 
-        await waitForContainer();
-        await this.loadNavigation();
+        // 等待最多5秒
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout waiting for container')), 5000);
+        });
+
+        try {
+            const container = await Promise.race([waitForContainer(), timeoutPromise]);
+            await this.loadNavigation();
+        } catch (error) {
+            console.error('Failed to load navigation immediately:', error);
+        }
     }
 
     init() {
@@ -148,22 +143,20 @@ class ComponentManager {
         this.loadNavigationImmediately();
         
         // 等待DOM完全加载后再加载其他组件
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                if (this.shouldLoadHeaderTop()) {
-                    this.loadHeaderTop();
-                } else if (this.currentPage === 'auth') {
-                    // 在auth页面添加标题
-                    this.addAuthPageTitle();
-                }
-            });
-        } else {
+        const loadComponents = () => {
             if (this.shouldLoadHeaderTop()) {
                 this.loadHeaderTop();
             } else if (this.currentPage === 'auth') {
                 // 在auth页面添加标题
                 this.addAuthPageTitle();
             }
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadComponents);
+        } else {
+            // DOM已经加载完成，直接加载组件
+            setTimeout(loadComponents, 0);
         }
     }
 
@@ -182,10 +175,18 @@ class ComponentManager {
     }
 }
 
-// 延迟初始化组件管理器，确保在DOM完全加载后执行
-document.addEventListener('DOMContentLoaded', () => {
+// 等待页面和脚本完全加载后再初始化组件管理器
+const initComponentManager = () => {
     new ComponentManager();
-});
+};
+
+// 使用多种方式确保组件管理器被初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initComponentManager);
+} else {
+    // DOM已经加载完成
+    setTimeout(initComponentManager, 0);
+}
 
 // 创建全局登出函数，以防其他地方还在使用
 window.handleGlobalLogout = async function() {
