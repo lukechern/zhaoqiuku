@@ -4,6 +4,55 @@
     padding-top: 2rem;
 }
 
+/* header-top组件样式 */
+.header-top {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.auth-links .auth-link,
+.logout-btn {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.auth-links .auth-link:hover,
+.logout-btn:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-email {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.hidden {
+    display: none;
+}
+
 .header-content {
     list-style: none;
     padding: 0;
