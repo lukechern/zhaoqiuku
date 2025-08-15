@@ -383,7 +383,7 @@ showApiConfig()             // 显示API配置信息
 
 ### 测试方法
 - **完整测试页面**: 访问 `/tts-test.html` 进行功能测试
-- **Azure路径测试**: 访问 `/api/test-azure-paths` 找到正确API路径
+- **Azure连接调试**: 访问 `/api/debug-tts-simple` 测试Azure连接
 - **Azure连接调试**: 访问 `/api/debug-tts` 测试Azure连接
 - **控制台快速测试**: 运行 `runFullTTSTest()` 进行完整调试
 - **实际使用测试**: 使用语音识别功能，观察是否自动朗读

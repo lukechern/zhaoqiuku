@@ -18,15 +18,36 @@ export default async function handler(req, res) {
     try {
         // 检查环境变量
         const hasApiKey = !!process.env.GEMINI_API_KEY;
+        const hasResendKey = !!process.env.RESEND_API_KEY;
+        const hasSupabaseUrl = !!process.env.SUPABASE_URL;
+        const hasSupabaseKey = !!process.env.SUPABASE_ANON_KEY;
+        const hasJwtSecret = !!process.env.JWT_SECRET;
+        const hasAzureTtsKey = !!process.env.AZURE_SPEECH_KEY;
+        
+        // 计算配置完整度
+        const totalConfigs = 6;
+        const configuredCount = [hasApiKey, hasResendKey, hasSupabaseUrl, hasSupabaseKey, hasJwtSecret, hasAzureTtsKey].filter(Boolean).length;
+        const configurationComplete = configuredCount === totalConfigs;
         
         // 返回健康状态
         return res.status(200).json({
-            status: 'healthy',
+            status: configurationComplete ? 'healthy' : 'partial',
             timestamp: new Date().toISOString(),
             service: 'zhaoqiuku-api',
-            version: '1.0.0',
+            version: '2.0.0',
             environment: process.env.NODE_ENV || 'development',
-            apiKeyConfigured: hasApiKey
+            configuration: {
+                complete: configurationComplete,
+                configured: configuredCount,
+                total: totalConfigs,
+                services: {
+                    geminiApi: hasApiKey,
+                    resendEmail: hasResendKey,
+                    supabaseDb: hasSupabaseUrl && hasSupabaseKey,
+                    jwtAuth: hasJwtSecret,
+                    azureTts: hasAzureTtsKey
+                }
+            }
         });
 
     } catch (error) {

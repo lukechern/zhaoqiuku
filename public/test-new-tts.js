@@ -2,28 +2,33 @@
 console.log('🔊 测试新的TTS配置...');
 
 async function testNewTTSConfig() {
-    console.log('1. 检查环境变量配置...');
+    console.log('1. 检查系统配置状态...');
     
     try {
-        const envResponse = await fetch('/api/check-env-updated');
-        const envData = await envResponse.json();
+        const healthResponse = await fetch('/api/health');
+        const healthData = await healthResponse.json();
         
-        console.log('环境变量检查结果:', envData);
+        console.log('系统健康检查结果:', healthData);
         
-        if (envData.summary.status === 'ready') {
-            console.log('✅ 环境变量配置完整');
+        if (healthData.configuration?.services?.azureTts) {
+            console.log('✅ Azure TTS密钥已配置');
         } else {
-            console.error('❌ 环境变量配置不完整');
-            console.log('缺失的变量:', envData.recommendations);
+            console.error('❌ Azure TTS密钥未配置');
             return false;
         }
         
+        if (healthData.status === 'healthy') {
+            console.log('✅ 系统配置完整');
+        } else {
+            console.warn('⚠️ 系统配置不完整，但TTS可以测试');
+        }
+        
     } catch (error) {
-        console.error('❌ 环境变量检查失败:', error);
+        console.error('❌ 系统健康检查失败:', error);
         return false;
     }
     
-    console.log('2. 测试简化的Azure连接...');
+    console.log('2. 测试Azure Speech Service连接...');
     
     try {
         const debugResponse = await fetch('/api/debug-tts-simple');

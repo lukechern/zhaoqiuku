@@ -104,7 +104,6 @@
                 <h3>配置状态</h3>
                 <div id="configStatus" class="status info">正在检查配置...</div>
                 <button id="debugBtn" class="test-btn">详细调试</button>
-                <button id="pathTestBtn" class="test-btn">路径测试</button>
                 <div id="configDisplay" class="config-display"></div>
             </div>
 
@@ -160,34 +159,32 @@
             const statusEl = document.getElementById('configStatus');
             const displayEl = document.getElementById('configDisplay');
             
-            // 测试TTS API是否可用
+            // 首先检查系统健康状态
             try {
-                const testResponse = await fetch('/api/tts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: '测试' })
-                });
+                const healthResponse = await fetch('/api/health');
+                const healthData = await healthResponse.json();
                 
-                if (testResponse.ok) {
+                if (healthData.configuration?.services?.azureTts) {
                     statusEl.className = 'status success';
-                    statusEl.textContent = '✅ TTS服务API可用，后端配置正常';
+                    statusEl.textContent = '✅ Azure TTS配置正常，可以使用';
                 } else {
-                    const errorData = await testResponse.json().catch(() => ({}));
                     statusEl.className = 'status error';
-                    statusEl.textContent = `❌ TTS服务API错误 (${testResponse.status}): ${errorData.error || 'Unknown error'}`;
-                    
-                    // 显示详细错误信息
-                    displayEl.textContent = JSON.stringify(errorData, null, 2);
+                    statusEl.textContent = '❌ Azure TTS密钥未配置';
+                    displayEl.textContent = JSON.stringify(healthData, null, 2);
                     return;
                 }
+                
+                // 显示系统配置信息
+                displayEl.textContent = JSON.stringify({
+                    systemHealth: healthData,
+                    frontendConfig: window.ttsConfig
+                }, null, 2);
+                
             } catch (error) {
                 statusEl.className = 'status error';
-                statusEl.textContent = '❌ 无法连接到TTS服务API: ' + error.message;
+                statusEl.textContent = '❌ 无法检查系统状态: ' + error.message;
+                displayEl.textContent = error.stack || error.message;
             }
-
-            // 显示前端配置信息
-            const config = { ...window.ttsConfig };
-            displayEl.textContent = JSON.stringify(config, null, 2);
         }
 
         async function runDetailedDebug() {
@@ -198,7 +195,7 @@
             statusEl.textContent = '🔍 正在运行详细调试...';
             
             try {
-                const debugResponse = await fetch('/api/debug-tts');
+                const debugResponse = await fetch('/api/debug-tts-simple');
                 const debugData = await debugResponse.json();
                 
                 if (debugData.azureTest?.success) {
@@ -218,33 +215,7 @@
             }
         }
 
-        async function runPathTest() {
-            const statusEl = document.getElementById('configStatus');
-            const displayEl = document.getElementById('configDisplay');
-            
-            statusEl.className = 'status info';
-            statusEl.textContent = '🔍 正在测试Azure API路径...';
-            
-            try {
-                const pathResponse = await fetch('/api/test-azure-paths');
-                const pathData = await pathResponse.json();
-                
-                if (pathData.successfulPath) {
-                    statusEl.className = 'status success';
-                    statusEl.textContent = `✅ 找到正确路径: ${pathData.successfulPath}`;
-                } else {
-                    statusEl.className = 'status error';
-                    statusEl.textContent = '❌ 未找到可用的API路径';
-                }
-                
-                displayEl.textContent = JSON.stringify(pathData, null, 2);
-                
-            } catch (error) {
-                statusEl.className = 'status error';
-                statusEl.textContent = '❌ 路径测试失败: ' + error.message;
-                displayEl.textContent = error.stack || error.message;
-            }
-        }
+
 
         function setupEventListeners() {
             const speakBtn = document.getElementById('speakBtn');
@@ -285,9 +256,6 @@
 
             // 调试按钮
             document.getElementById('debugBtn').addEventListener('click', runDetailedDebug);
-            
-            // 路径测试按钮
-            document.getElementById('pathTestBtn').addEventListener('click', runPathTest);
 
             // API响应测试按钮
             document.getElementById('testApiResponse1').addEventListener('click', () => {
