@@ -14,6 +14,12 @@
     margin-bottom: 1rem;
 }
 
+/* header-top占位元素样式 */
+.header-top-placeholder {
+    height: 50px;
+    margin-bottom: 1rem;
+}
+
 .user-actions {
     display: flex;
     align-items: center;

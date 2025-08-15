@@ -33,13 +33,23 @@ class ComponentManager {
             const response = await fetch('components/header-top.html');
             const headerHtml = await response.text();
             
-            // 找到header并插入header-top
-            const header = document.querySelector('.header');
-            if (header) {
-                header.insertAdjacentHTML('afterbegin', headerHtml);
+            // 找到header-top占位元素并替换为header-top组件
+            const placeholder = document.querySelector('.header-top-placeholder');
+            if (placeholder) {
+                placeholder.insertAdjacentHTML('afterend', headerHtml);
+                placeholder.remove();
                 
                 // 添加登出按钮事件监听器
                 this.setupLogoutHandler();
+            } else {
+                // 降级处理：如果找不到占位元素，则插入到header开头
+                const header = document.querySelector('.header');
+                if (header) {
+                    header.insertAdjacentHTML('afterbegin', headerHtml);
+                    
+                    // 添加登出按钮事件监听器
+                    this.setupLogoutHandler();
+                }
             }
         } catch (error) {
             console.error('Failed to load header-top:', error);
