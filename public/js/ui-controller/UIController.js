@@ -5,9 +5,9 @@ export class UIController {
         this.elements = {
             microphoneButton: document.getElementById('microphoneButton'),
             soundWaves: document.getElementById('soundWaves'),
-            listeningIndicator: document.getElementById('listeningIndicator'),
+            listeningIndicator: null, // 已移除的元素，设为null
             cancelIndicator: document.getElementById('cancelIndicator'),
-            timer: document.getElementById('timer'),
+            timer: null, // 已移除的元素，设为null
             playbackBtn: document.getElementById('playbackBtn'),
             clearBtn: document.getElementById('clearBtn'),
             refreshBtn: document.getElementById('refreshBtn'),
@@ -30,19 +30,50 @@ export class UIController {
         // 确保DOM元素存在后再绑定事件
         if (!this.elements.microphoneButton) {
             console.error('麦克风按钮元素未找到，延迟初始化...');
-            setTimeout(() => {
-                this.elements.microphoneButton = document.getElementById('microphoneButton');
-                if (this.elements.microphoneButton) {
-                    this.setupTouchEvents();
-                    console.log('麦克风按钮事件已延迟绑定');
-                }
-            }, 100);
+            this.retryElementInitialization();
         } else {
             this.setupTouchEvents();
         }
 
         this.setupButtonEvents();
         this.setupDebugControls();
+    }
+
+    // 重试元素初始化
+    retryElementInitialization() {
+        const maxRetries = 10;
+        let retries = 0;
+
+        const tryInitialize = () => {
+            retries++;
+            console.log(`尝试初始化UI元素，第${retries}次...`);
+
+            // 重新获取所有元素
+            this.elements = {
+                microphoneButton: document.getElementById('microphoneButton') || this.elements.microphoneButton,
+                soundWaves: document.getElementById('soundWaves') || this.elements.soundWaves,
+                listeningIndicator: null, // 已移除的元素，设为null
+                cancelIndicator: document.getElementById('cancelIndicator') || this.elements.cancelIndicator,
+                timer: null, // 已移除的元素，设为null
+                playbackBtn: document.getElementById('playbackBtn') || this.elements.playbackBtn,
+                clearBtn: document.getElementById('clearBtn') || this.elements.clearBtn,
+                refreshBtn: document.getElementById('refreshBtn') || this.elements.refreshBtn,
+                resultsContainer: document.getElementById('resultsContainer') || this.elements.resultsContainer,
+                debugLevel: document.getElementById('debugLevel') || this.elements.debugLevel
+            };
+
+            // 检查关键元素是否已加载
+            if (this.elements.microphoneButton) {
+                console.log('UI元素初始化成功');
+                this.setupTouchEvents();
+            } else if (retries < maxRetries) {
+                setTimeout(tryInitialize, 200);
+            } else {
+                console.error('UI元素初始化失败，达到最大重试次数');
+            }
+        };
+
+        setTimeout(tryInitialize, 200);
     }
 
     // 设置调试控制 - 前台控制已禁用，只能通过配置文件或控制台设置
@@ -184,46 +215,92 @@ export class UIController {
 
     // 显示录音状态
     showRecordingState() {
-        this.elements.microphoneButton.classList.add('recording');
-        this.elements.soundWaves.classList.add('active', 'recording');
-        this.elements.listeningIndicator.classList.add('active');
-        this.elements.cancelIndicator.classList.add('active');
-        this.elements.timer.classList.add('recording');
+        // 添加元素存在性检查
+        if (this.elements.microphoneButton) {
+            this.elements.microphoneButton.classList.add('recording');
+        }
+        if (this.elements.soundWaves) {
+            this.elements.soundWaves.classList.add('active', 'recording');
+        }
+        if (this.elements.cancelIndicator) {
+            this.elements.cancelIndicator.classList.add('active');
+        }
+        if (this.elements.timer) {
+            this.elements.timer.classList.add('recording');
+        }
 
         // 在 results-json 区域显示"聆听中……"和计时器
-        this.elements.resultsContainer.innerHTML = `
-            <div class="results-json">
-                <div class="listening-status">聆听中……</div>
-                <div class="timer-display">${this.elements.timer.textContent}</div>
-            </div>
-        `;
+        if (this.elements.resultsContainer) {
+            this.elements.resultsContainer.innerHTML = `
+                <div class="results-json">
+                    <div class="listening-status">聆听中……</div>
+                    <div class="timer-display">00:00</div>
+                </div>
+            `;
+        }
 
         // 启动计时器
-        this.startTimer();
+        if (this.startTimer) {
+            this.startTimer();
+        }
     }
 
     // 隐藏录音状态
     hideRecordingState() {
-        this.elements.microphoneButton.classList.remove('recording');
-        this.elements.soundWaves.classList.remove('active', 'recording');
-        this.elements.listeningIndicator.classList.remove('active');
-        this.elements.cancelIndicator.classList.remove('active', 'canceling');
-        this.elements.timer.classList.remove('recording');
+        // 添加元素存在性检查
+        if (this.elements.microphoneButton) {
+            this.elements.microphoneButton.classList.remove('recording');
+        }
+        if (this.elements.soundWaves) {
+            this.elements.soundWaves.classList.remove('active', 'recording');
+        }
+        if (this.elements.cancelIndicator) {
+            this.elements.cancelIndicator.classList.remove('active', 'canceling');
+        }
+        if (this.elements.timer) {
+            this.elements.timer.classList.remove('recording');
+        }
 
         // 清除 results-json 区域的内容
-        this.elements.resultsContainer.innerHTML = '<div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>';
+        if (this.elements.resultsContainer) {
+            this.elements.resultsContainer.innerHTML = '<div class="placeholder">按住麦克风问AI（存放物品，或者查找物品），最长20秒</div>';
+        }
 
-        this.stopTimer();
+        if (this.stopTimer) {
+            this.stopTimer();
+        }
     }
 
     // 显示取消状态
     showCancelState() {
-        this.elements.cancelIndicator.classList.add('canceling');
-        this.elements.listeningIndicator.querySelector('span').textContent = '松手取消录音';
+        if (this.elements.cancelIndicator) {
+            this.elements.cancelIndicator.classList.add('canceling');
+        }
+        // 通过resultsContainer更新取消状态文本
+        if (this.elements.resultsContainer) {
+            const statusElement = this.elements.resultsContainer.querySelector('.listening-status');
+            if (statusElement) {
+                statusElement.textContent = '松手取消录音';
+            }
+        }
         this.vibrate([30, 30, 30]); // 震动提示
     }
 
     // 隐藏取消状态
+    hideCancelState() {
+        if (this.elements.cancelIndicator) {
+            this.elements.cancelIndicator.classList.remove('canceling');
+        }
+        // 通过resultsContainer恢复状态文本
+        if (this.elements.resultsContainer) {
+            const statusElement = this.elements.resultsContainer.querySelector('.listening-status');
+            if (statusElement) {
+                statusElement.textContent = '聆听中……';
+            }
+        }
+    }
+
+    // 显示结果
     showResults(data) {
         // 保存最后的结果数据，用于调试级别切换时重新显示
         this.lastResultData = data;

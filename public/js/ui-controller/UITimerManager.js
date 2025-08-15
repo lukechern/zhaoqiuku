@@ -36,30 +36,45 @@ export class UITimerManager {
         const seconds = elapsed % 60;
 
         const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        this.uiController.elements.timer.textContent = timeString;
 
-        // 同时更新 results-json 区域的计时器显示
-        const timerDisplay = this.uiController.elements.resultsContainer.querySelector('.timer-display');
-        if (timerDisplay) {
-            timerDisplay.textContent = timeString;
+        // 更新resultsContainer中的计时器显示
+        if (this.uiController.elements.resultsContainer) {
+            const timerDisplay = this.uiController.elements.resultsContainer.querySelector('.timer-display');
+            if (timerDisplay) {
+                timerDisplay.textContent = timeString;
+            }
         }
     }
 
     // 重置计时器
     resetTimer() {
-        this.uiController.elements.timer.textContent = '00:00';
+        // 更新resultsContainer中的计时器显示
+        if (this.uiController.elements.resultsContainer) {
+            const timerDisplay = this.uiController.elements.resultsContainer.querySelector('.timer-display');
+            if (timerDisplay) {
+                timerDisplay.textContent = '00:00';
+            }
+        }
         this.uiController.startTime = null;
     }
 
     // 启用控制按钮
     enableControls() {
-        this.uiController.elements.playbackBtn.disabled = false;
-        this.uiController.elements.clearBtn.disabled = false;
+        if (this.uiController.elements.playbackBtn) {
+            this.uiController.elements.playbackBtn.disabled = false;
+        }
+        if (this.uiController.elements.clearBtn) {
+            this.uiController.elements.clearBtn.disabled = false;
+        }
     }
 
     // 禁用控制按钮
     disableControls() {
-        this.uiController.elements.playbackBtn.disabled = true;
-        this.uiController.elements.clearBtn.disabled = true;
+        if (this.uiController.elements.playbackBtn) {
+            this.uiController.elements.playbackBtn.disabled = true;
+        }
+        if (this.uiController.elements.clearBtn) {
+            this.uiController.elements.clearBtn.disabled = true;
+        }
     }
 }

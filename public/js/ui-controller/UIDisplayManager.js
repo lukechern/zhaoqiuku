@@ -7,8 +7,16 @@ export class UIDisplayManager {
 
     // 隐藏取消状态
     hideCancelState() {
-        this.uiController.elements.cancelIndicator.classList.remove('canceling');
-        this.uiController.elements.listeningIndicator.querySelector('span').textContent = '聆听中...';
+        if (this.uiController.elements.cancelIndicator) {
+            this.uiController.elements.cancelIndicator.classList.remove('canceling');
+        }
+        // 通过resultsContainer恢复状态文本
+        if (this.uiController.elements.resultsContainer) {
+            const statusElement = this.uiController.elements.resultsContainer.querySelector('.listening-status');
+            if (statusElement) {
+                statusElement.textContent = '聆听中……';
+            }
+        }
     }
 
     // 格式化调试数据显示
@@ -125,17 +133,21 @@ export class UIDisplayManager {
 
     // 显示加载状态
     showLoading(message = '处理中...') {
-        this.uiController.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
+        if (this.uiController.elements.resultsContainer) {
+            this.uiController.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
+        }
     }
 
     // 显示错误
     showError(error) {
         const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
-        this.uiController.elements.resultsContainer.innerHTML = `
-            <div style="color: var(--error); text-align: center;">
-                <strong>错误:</strong> ${this.uiController.escapeHtml(errorMessage)}
-            </div>
-        `;
+        if (this.uiController.elements.resultsContainer) {
+            this.uiController.elements.resultsContainer.innerHTML = `
+                <div style="color: var(--error); text-align: center;">
+                    <strong>错误:</strong> ${this.uiController.escapeHtml(errorMessage)}
+                </div>
+            `;
+        }
     }
 
     // 显示提示消息
@@ -147,11 +159,13 @@ export class UIDisplayManager {
             error: 'var(--error)'
         };
 
-        this.uiController.elements.resultsContainer.innerHTML = `
-            <div style="color: ${colors[type]}; text-align: center;">
-                ${this.uiController.escapeHtml(message)}
-            </div>
-        `;
+        if (this.uiController.elements.resultsContainer) {
+            this.uiController.elements.resultsContainer.innerHTML = `
+                <div style="color: ${colors[type]}; text-align: center;">
+                    ${this.uiController.escapeHtml(message)}
+                </div>
+            `;
+        }
     }
 
     // 显示权限请求提示
