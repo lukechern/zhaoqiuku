@@ -28,7 +28,7 @@
 AZURE_SPEECH_KEY = your_azure_speech_subscription_key_here
 ```
 
-**注意**: 不再需要配置 `AZURE_SPEECH_ENDPOINT`，系统会根据 `config/ttsConfit.js` 中的区域设置自动构建标准终结点。
+**注意**: 不再需要配置 `AZURE_SPEECH_ENDPOINT`，系统会根据前端配置中的区域设置自动构建标准终结点。
 
 #### 本地开发配置（可选）：
 如果需要本地测试，可以在项目根目录创建 `.env.local` 文件：
@@ -44,9 +44,9 @@ AZURE_SPEECH_KEY=your_azure_speech_subscription_key_here
 - 环境变量只在服务端使用，前端无法直接访问
 - 终结点URL会根据配置文件中的区域自动构建为: `https://eastasia.tts.speech.microsoft.com/cognitiveservices/v1`
 
-### 3. 修改TTS配置文件
+### 3. TTS配置说明
 
-编辑 `config/ttsConfit.js` 文件，根据需要调整以下设置：
+TTS配置现在内置在前端代码中，默认设置如下：
 
 ```javascript
 const ttsConfig = {

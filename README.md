@@ -38,7 +38,7 @@ zhaoqiuku/
 │   ├── emailConfig.js         # 邮件配置（发件人、模板等）
 │   ├── databaseConfig.js      # 数据库配置（Supabase连接等）
 │   ├── authConfig.js          # 认证配置（JWT、Cookie等）
-│   ├── ttsConfit.js           # TTS配置（语音角色、语速等）
+│   ├── ttsConfig.js           # TTS配置（语音角色、语速等）
 │   └── emailConfigTest.js     # 邮件配置测试工具
 ├── utils/                      # 工具函数
 │   ├── database.js            # 数据库操作工具
@@ -123,7 +123,7 @@ const CURRENT_DEBUG_LEVEL = 'full_debug';
 ```
 
 ### � TTS配置i
-修改 `config/ttsConfit.js` 中的TTS设置：
+修改 `config/ttsConfig.js` 中的TTS设置：
 
 ```javascript
 const ttsConfig = {

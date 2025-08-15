@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置文件访问测试</title>
+</head>
+<body>
+    <h1>配置文件访问测试</h1>
+    <div id="results"></div>
+
+    <script>
+        const configFiles = [
+            '../config/apiConfig.js',
+            '../config/authConfig.js', 
+            '../config/debugConfig.js',
+            '../config/ttsConfig.js'
+        ];
+
+        async function testConfigAccess() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>测试结果:</h2>';
+
+            for (const configFile of configFiles) {
+                try {
+                    const response = await fetch(configFile);
+                    const status = response.ok ? '✅ 可访问' : `❌ ${response.status}`;
+                    results.innerHTML += `<p>${configFile}: ${status}</p>`;
+                } catch (error) {
+                    results.innerHTML += `<p>${configFile}: ❌ 错误 - ${error.message}</p>`;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', testConfigAccess);
+    </script>
+</body>
+</html>

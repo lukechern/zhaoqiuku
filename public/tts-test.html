@@ -139,7 +139,7 @@
         </div>
     </div>
 
-    <script src="../config/ttsConfit.js"></script>
+    <script src="../config/ttsConfig.js"></script>
     <script type="module">
         import { TTSService } from './js/tts-service.js';
 
@@ -148,9 +148,10 @@
         // 初始化
         document.addEventListener('DOMContentLoaded', async () => {
             // 等待配置加载
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
-            ttsService = new TTSService();
+            // 使用全局TTS服务实例，如果不存在则创建
+            ttsService = window.ttsService || new TTSService();
             updateConfigStatus();
             setupEventListeners();
         });

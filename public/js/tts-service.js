@@ -1,13 +1,49 @@
 // Azure Speech Service TTS 服务模块
 export class TTSService {
     constructor() {
-        this.config = window.ttsConfig;
+        this.config = this.initializeConfig();
         this.isPlaying = false;
         this.currentAudio = null;
         this.audioContext = null;
         
         // 初始化音频上下文
         this.initAudioContext();
+    }
+
+    // 初始化配置，提供默认值
+    initializeConfig() {
+        const defaultConfig = {
+            enabled: true,
+            azure: {
+                region: 'eastasia',
+                voice: {
+                    name: 'zh-CN-XiaoxiaoNeural',
+                    rate: '0%',
+                    pitch: '0%',
+                    volume: '0%'
+                },
+                audioFormat: 'audio-16khz-128kbitrate-mono-mp3'
+            },
+            autoRead: {
+                enabled: true,
+                delay: 500,
+                maxLength: 500,
+                readFullContent: false
+            },
+            errorHandling: {
+                showErrors: true,
+                fallbackToAlert: false
+            }
+        };
+
+        // 如果window.ttsConfig存在，合并配置
+        if (window.ttsConfig) {
+            return { ...defaultConfig, ...window.ttsConfig };
+        }
+
+        // 如果没有配置，使用默认配置
+        console.warn('TTS配置未找到，使用默认配置');
+        return defaultConfig;
     }
 
     // 初始化音频上下文
@@ -28,7 +64,13 @@ export class TTSService {
     extractTextToRead(data) {
         if (!data) return null;
 
-        const autoReadConfig = this.config.autoRead;
+        const autoReadConfig = this.config?.autoRead;
+        if (!autoReadConfig) {
+            // 如果没有配置，默认只朗读AI回复
+            return (data.business_result && data.business_result.message) || 
+                   data.transcript || 
+                   null;
+        }
         
         // 如果配置为只朗读AI回复部分
         if (!autoReadConfig.readFullContent && data.business_result && data.business_result.message) {
@@ -58,7 +100,7 @@ export class TTSService {
 
     // 自动朗读API响应内容
     async autoReadResponse(data) {
-        if (!this.config.autoRead.enabled || !this.isAvailable()) {
+        if (!this.config?.autoRead?.enabled || !this.isAvailable()) {
             return;
         }
 
@@ -87,7 +129,7 @@ export class TTSService {
     async speak(text) {
         if (!this.isAvailable()) {
             console.warn('TTS服务不可用');
-            if (this.config.errorHandling.fallbackToAlert) {
+            if (this.config?.errorHandling?.fallbackToAlert) {
                 alert(text);
             }
             return;
@@ -113,11 +155,11 @@ export class TTSService {
         } catch (error) {
             console.error('TTS朗读失败:', error);
             
-            if (this.config.errorHandling.showErrors) {
+            if (this.config?.errorHandling?.showErrors) {
                 console.error('朗读失败:', error.message);
             }
             
-            if (this.config.errorHandling.fallbackToAlert) {
+            if (this.config?.errorHandling?.fallbackToAlert) {
                 alert(text);
             }
         }
@@ -127,7 +169,12 @@ export class TTSService {
 
     // 调用TTS API
     async callAzureTTS(text) {
-        const voice = this.config.azure.voice;
+        const voice = this.config?.azure?.voice || {
+            name: 'zh-CN-XiaoxiaoNeural',
+            rate: '0%',
+            pitch: '0%',
+            volume: '0%'
+        };
         
         const response = await fetch('/api/tts', {
             method: 'POST',
@@ -230,5 +277,13 @@ export class TTSService {
     }
 }
 
-// 创建全局TTS服务实例
-window.ttsService = new TTSService();
+// 延迟创建全局TTS服务实例，确保配置已加载
+if (typeof window !== 'undefined') {
+    // 如果在浏览器环境中，延迟创建实例
+    setTimeout(() => {
+        if (!window.ttsService) {
+            window.ttsService = new TTSService();
+            console.log('TTS服务已初始化');
+        }
+    }, 100);
+}

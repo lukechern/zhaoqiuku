@@ -26,7 +26,7 @@
 ### 新增文件
 ```
 config/
-├── ttsConfit.js              # TTS配置文件
+├── ttsConfig.js              # TTS配置文件
 
 api/
 ├── tts.js                    # TTS服务端API
@@ -69,7 +69,7 @@ AZURE_SPEECH_KEY = your_azure_speech_subscription_key_here
 
 ### TTS配置文件
 ```javascript
-// config/ttsConfit.js
+// config/ttsConfig.js
 const ttsConfig = {
     enabled: true,
     autoRead: {
