@@ -1,14 +1,13 @@
 // Azure Speech Service TTS 配置
 const ttsConfig = {
     // Azure Speech Service 配置
-    // 注意: 实际的终结点和密钥通过Vercel环境变量配置
-    // 在Vercel项目设置中配置 AZURE_SPEECH_ENDPOINT 和 AZURE_SPEECH_KEY
+    // 注意: 只需要在Vercel项目设置中配置 AZURE_SPEECH_KEY
+    // 终结点会根据区域自动构建: https://[region].tts.speech.microsoft.com/cognitiveservices/v1
     azure: {
-        // Azure Speech Service 终结点 (由服务端环境变量提供)
-        // 格式: https://[region].tts.speech.microsoft.com/
-        endpoint: 'configured-via-vercel-env',
+        // Azure 区域设置 (修改为你的实际区域)
+        region: 'eastasia',
 
-        // Azure Speech Service 密钥 (由服务端环境变量提供)
+        // Azure Speech Service 密钥 (由服务端环境变量 AZURE_SPEECH_KEY 提供)
         subscriptionKey: 'configured-via-vercel-env',
 
         // 语音配置

@@ -17,20 +17,21 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: '缺少必需的text参数' });
         }
 
-        // 检查环境变量
-        const endpoint = process.env.AZURE_SPEECH_ENDPOINT;
+        // 检查环境变量 (只需要密钥，区域从配置文件读取)
         const subscriptionKey = process.env.AZURE_SPEECH_KEY;
+        
+        // 从配置文件读取区域设置
+        const region = 'eastasia'; // 可以从配置文件或环境变量读取
 
         console.log('TTS API调试信息:', {
-            hasEndpoint: !!endpoint,
             hasKey: !!subscriptionKey,
-            endpointPreview: endpoint ? endpoint.substring(0, 30) + '...' : 'undefined',
+            region: region,
             keyPreview: subscriptionKey ? subscriptionKey.substring(0, 8) + '...' : 'undefined'
         });
 
-        if (!endpoint || !subscriptionKey) {
-            console.error('Azure Speech Service 配置缺失');
-            return res.status(500).json({ error: 'TTS服务配置不完整' });
+        if (!subscriptionKey) {
+            console.error('Azure Speech Service 密钥缺失');
+            return res.status(500).json({ error: 'TTS服务配置不完整：缺少AZURE_SPEECH_KEY' });
         }
 
         // 构建SSML
@@ -49,21 +50,8 @@ export default async function handler(req, res) {
             </speak>
         `.trim();
 
-        // 调用Azure Speech API
-        const azureEndpoint = endpoint.replace(/\/$/, '');
-        // 根据不同的终结点格式构建正确的URL
-        let azureUrl;
-        if (azureEndpoint.includes('api.cognitive.microsoft.com')) {
-            // 新格式: https://eastasia.api.cognitive.microsoft.com/
-            // 对于Cognitive Services多服务终结点，TTS的正确路径
-            azureUrl = `${azureEndpoint}/cognitiveservices/v1`;
-        } else if (azureEndpoint.includes('tts.speech.microsoft.com')) {
-            // 专用TTS格式: https://region.tts.speech.microsoft.com/
-            azureUrl = `${azureEndpoint}/cognitiveservices/v1`;
-        } else {
-            // 通用Speech Services格式: https://region.cognitiveservices.azure.com/
-            azureUrl = `${azureEndpoint}/speechservices/v1`;
-        }
+        // 构建标准的Azure Speech Service TTS URL
+        const azureUrl = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
 
         console.log('调用Azure TTS API:', {
             url: azureUrl,

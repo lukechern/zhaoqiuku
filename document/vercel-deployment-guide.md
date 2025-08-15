@@ -57,7 +57,6 @@ SUPABASE_ANON_KEY = your_supabase_anon_key_here
 JWT_SECRET = your_super_secret_jwt_key_change_in_production_at_least_32_characters_long
 
 # Azure Speech Service (TTS功能)
-AZURE_SPEECH_ENDPOINT = https://your-region.tts.speech.microsoft.com/
 AZURE_SPEECH_KEY = your_azure_speech_subscription_key_here
 ```
 
@@ -144,11 +143,6 @@ curl -X POST https://your-domain.vercel.app/api/tts \
 - **用途**: JWT Token签名密钥
 - **生成**: `openssl rand -base64 32`
 - **要求**: 至少32位随机字符串
-
-### AZURE_SPEECH_ENDPOINT
-- **用途**: Azure Speech Service终结点
-- **获取**: Azure Portal → Speech Services → Keys and Endpoint
-- **格式**: `https://[region].tts.speech.microsoft.com/`
 
 ### AZURE_SPEECH_KEY
 - **用途**: Azure Speech Service订阅密钥

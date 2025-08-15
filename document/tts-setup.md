@@ -25,16 +25,16 @@
 4. 添加以下环境变量：
 
 ```
-AZURE_SPEECH_ENDPOINT = https://your-region.tts.speech.microsoft.com/
 AZURE_SPEECH_KEY = your_azure_speech_subscription_key_here
 ```
+
+**注意**: 不再需要配置 `AZURE_SPEECH_ENDPOINT`，系统会根据 `config/ttsConfit.js` 中的区域设置自动构建标准终结点。
 
 #### 本地开发配置（可选）：
 如果需要本地测试，可以在项目根目录创建 `.env.local` 文件：
 
 ```bash
 # Azure Speech Service TTS 配置（仅用于本地开发）
-AZURE_SPEECH_ENDPOINT=https://your-region.tts.speech.microsoft.com/
 AZURE_SPEECH_KEY=your_azure_speech_subscription_key_here
 ```
 
@@ -42,6 +42,7 @@ AZURE_SPEECH_KEY=your_azure_speech_subscription_key_here
 - 生产环境使用Vercel环境变量，确保密钥安全
 - 本地 `.env.local` 文件不会被提交到Git仓库
 - 环境变量只在服务端使用，前端无法直接访问
+- 终结点URL会根据配置文件中的区域自动构建为: `https://eastasia.tts.speech.microsoft.com/cognitiveservices/v1`
 
 ### 3. 修改TTS配置文件
 

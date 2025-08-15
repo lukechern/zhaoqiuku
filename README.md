@@ -198,7 +198,6 @@ const ttsConfig = {
    - `SUPABASE_URL` - Supabase项目URL
    - `SUPABASE_ANON_KEY` - Supabase匿名访问密钥
    - `JWT_SECRET` - JWT签名密钥（至少32位随机字符串）
-   - `AZURE_SPEECH_ENDPOINT` - Azure Speech Service终结点
    - `AZURE_SPEECH_KEY` - Azure Speech Service订阅密钥
 3. **初始化数据库**: 访问 `/api/init-database`
 4. **测试功能**: 访问 `/tts-test.html` 测试TTS功能
