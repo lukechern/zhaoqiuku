@@ -293,10 +293,25 @@ CREATE TRIGGER update_items_updated_at
 - **Endpoint**: 形如 `https://[region].tts.speech.microsoft.com/`
 - **Key**: 32位字符的订阅密钥（Key1 或 Key2）
 
-#### 3. 配置 Vercel 环境变量
-在 Vercel 项目设置的 Environment Variables 中添加：
-- `AZURE_SPEECH_ENDPOINT` - Azure Speech Service 终结点
-- `AZURE_SPEECH_KEY` - Azure Speech Service 订阅密钥
+#### 3. 配置环境变量
+开发环境和生产环境都需要配置以下环境变量：
+
+##### 本地开发配置
+1. 创建 `.env.local` 文件（如果不存在）
+2. 添加以下变量：
+   ```bash
+   AZURE_SPEECH_ENDPOINT=你的终结点
+   AZURE_SPEECH_KEY=你的订阅密钥
+   ```
+3. 重启开发服务器以使环境变量生效
+
+##### 生产环境配置（Vercel）
+1. 登录Vercel控制台
+2. 进入项目设置 → Environment Variables
+3. 添加以下变量：
+   - `AZURE_SPEECH_ENDPOINT` - Azure Speech Service 终结点
+   - `AZURE_SPEECH_KEY` - Azure Speech Service 订阅密钥
+4. 重新部署项目
 
 #### 4. 测试 TTS 功能
 - 访问 `/tts-test.html` 页面进行功能测试

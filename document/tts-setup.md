@@ -14,29 +14,21 @@
    - **Endpoint**: 形如 `https://[region].tts.speech.microsoft.com/`
    - **Key**: 32位字符的订阅密钥
 
-### 2. 配置Vercel环境变量
+### 2. 配置环境变量
 
-**重要**: 由于项目部署在Vercel上，需要在Vercel项目设置中配置环境变量，而不是本地文件。
-
-#### 在Vercel中配置环境变量：
-1. 登录 [Vercel Dashboard](https://vercel.com/dashboard)
-2. 选择你的项目
-3. 进入 "Settings" → "Environment Variables"
-4. 添加以下环境变量：
-
-```
-AZURE_SPEECH_KEY = your_azure_speech_subscription_key_here
-```
-
-**注意**: 不再需要配置 `AZURE_SPEECH_ENDPOINT`，系统会根据前端配置中的区域设置自动构建标准终结点。
-
-#### 本地开发配置（可选）：
+#### 本地开发配置：
 如果需要本地测试，可以在项目根目录创建 `.env.local` 文件：
 
 ```bash
 # Azure Speech Service TTS 配置（仅用于本地开发）
 AZURE_SPEECH_KEY=your_azure_speech_subscription_key_here
 ```
+
+将 `your_azure_speech_subscription_key_here` 替换为从Azure获取的实际密钥。
+
+#### Vercel部署配置（生产环境）：
+在Vercel项目设置的Environment Variables中添加：
+- `AZURE_SPEECH_KEY` - Azure Speech Service订阅密钥
 
 **注意**: 
 - 生产环境使用Vercel环境变量，确保密钥安全
@@ -46,10 +38,24 @@ AZURE_SPEECH_KEY=your_azure_speech_subscription_key_here
 
 ### 3. TTS配置说明
 
-TTS配置现在内置在前端代码中，默认设置如下：
+TTS配置现在完全由后端 [config/ttsConfig.js](file:///h:/TestProject/zhaoqiuku/v2/config/ttsConfig.js) 文件控制，包含以下设置：
 
 ```javascript
 const ttsConfig = {
+    // Azure Speech Service 配置
+    azure: {
+        // Azure 区域设置
+        region: 'eastasia',
+        
+        // 语音配置
+        voice: {
+            name: 'zh-CN-XiaoxiaoNeural',  // 语音角色
+            rate: '0%',                    // 语速
+            pitch: '0%',                   // 音调
+            volume: '0%'                   // 音量
+        }
+    },
+    
     // 功能开关
     enabled: true,
     
@@ -61,14 +67,10 @@ const ttsConfig = {
         readFullContent: false  // false=只朗读AI回复, true=朗读完整对话
     },
     
-    // 语音设置
-    azure: {
-        voice: {
-            name: 'zh-CN-XiaoxiaoNeural',  // 语音角色
-            rate: '0%',                    // 语速
-            pitch: '0%',                   // 音调
-            volume: '0%'                   // 音量
-        }
+    // 错误处理
+    errorHandling: {
+        showErrors: true,       // 是否显示错误信息
+        fallbackToAlert: false  // 出错时是否使用alert
     }
 };
 ```
@@ -175,7 +177,6 @@ const ttsConfig = {
 ### Vercel部署（推荐）
 1. **配置环境变量**：
    - 在Vercel项目设置的Environment Variables中添加：
-     - `AZURE_SPEECH_ENDPOINT` - Azure Speech Service终结点
      - `AZURE_SPEECH_KEY` - Azure Speech Service订阅密钥
    
 2. **部署后验证**：
@@ -184,31 +185,3 @@ const ttsConfig = {
 
 3. **环境变量生效**：
    - 配置环境变量后需要重新部署项目
-   - 可以通过触发新的Git提交来自动部署
-   - 或在Vercel Dashboard中手动触发重新部署
-
-### 其他平台部署
-如果部署到其他平台，确保：
-- 环境变量在生产环境中正确设置
-- Azure Speech Service在目标区域可用
-- 服务端API能够访问环境变量
-
-### 验证部署
-部署完成后，可以通过以下方式验证TTS功能：
-
-1. **API端点测试**：
-   ```bash
-   curl -X POST https://your-domain.com/api/tts \
-     -H "Content-Type: application/json" \
-     -d '{"text":"测试"}'
-   ```
-
-2. **前端测试**：
-   - 访问TTS测试页面
-   - 使用语音识别功能，观察是否自动朗读
-
-3. **控制台测试**：
-   ```javascript
-   // 在浏览器控制台运行
-   runAllTTSTests()
-   ```

@@ -3,7 +3,7 @@
  * 处理文本转语音请求
  */
 
-import config from '../config/ttsConfig.js';
+import ttsConfig from '../config/ttsConfig.js';
 
 export default async function handler(req, res) {
     // 只允许POST请求
@@ -23,11 +23,11 @@ export default async function handler(req, res) {
         const subscriptionKey = process.env.AZURE_SPEECH_KEY;
         
         // 从后端配置文件读取区域设置和其他参数
-        const region = config.azure.region;
-        const voiceName = config.azure.voice.name;
-        const speechRate = config.azure.voice.rate;
-        const speechPitch = config.azure.voice.pitch;
-        const speechVolume = config.azure.voice.volume;
+        const region = ttsConfig.azure.region;
+        const voiceName = ttsConfig.azure.voice.name;
+        const speechRate = ttsConfig.azure.voice.rate;
+        const speechPitch = ttsConfig.azure.voice.pitch;
+        const speechVolume = ttsConfig.azure.voice.volume;
 
         console.log('TTS API调试信息:', {
             hasKey: !!subscriptionKey,
@@ -36,9 +36,12 @@ export default async function handler(req, res) {
             keyPreview: subscriptionKey ? subscriptionKey.substring(0, 8) + '...' : 'undefined'
         });
 
-        if (!subscriptionKey) {
-            console.error('Azure Speech Service 密钥缺失');
-            return res.status(500).json({ error: 'TTS服务配置不完整：缺少AZURE_SPEECH_KEY' });
+        if (!subscriptionKey || subscriptionKey === 'configured-via-vercel-env') {
+            console.error('Azure Speech Service 密钥缺失或未正确配置');
+            return res.status(500).json({ 
+                error: 'TTS服务配置不完整：缺少AZURE_SPEECH_KEY环境变量',
+                details: '请在环境变量中设置有效的Azure Speech Service密钥'
+            });
         }
 
         // 构建SSML
