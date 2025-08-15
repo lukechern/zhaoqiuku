@@ -160,39 +160,7 @@ class AuthManager {
         }
     }
 
-    /**
-     * 用户登录
-     * @param {string} email - 邮箱地址
-     * @returns {Promise<Object>} 登录结果
-     */
-    async login(email) {
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email })
-            });
 
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                this.saveAuthState(result);
-                return { success: true, user: result.user };
-            } else {
-                return { 
-                    success: false, 
-                    error: result.error,
-                    code: result.code,
-                    message: result.message
-                };
-            }
-        } catch (error) {
-            console.error('登录请求失败:', error);
-            return { success: false, error: '网络错误，请重试' };
-        }
-    }
 
     /**
      * 用户登出

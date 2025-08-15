@@ -1,11 +1,5 @@
 {
   "functions": {
-    "api/send-verification-code.js": {
-      "maxDuration": 30
-    },
-    "api/verify-code.js": {
-      "maxDuration": 30
-    },
     "api/unified-auth.js": {
       "maxDuration": 30
     },
