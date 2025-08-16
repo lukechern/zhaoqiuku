@@ -32,20 +32,29 @@ class SwipeDeleteManager_7ree {
      */
     setupEventListeners() {
         // 使用事件委托监听历史记录容器
-        document.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+        document.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
         document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+        document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
         
         // 监听点击事件关闭已打开的滑动
         document.addEventListener('click', this.handleDocumentClick.bind(this));
+        
+        // 添加调试信息
+        console.log('SwipeDeleteManager_7ree: 事件监听器已设置');
     }
 
     /**
      * 处理触摸开始事件
      */
     handleTouchStart(e) {
+        console.log('SwipeDeleteManager_7ree: touchstart事件触发', e.target);
         const recordElement = e.target.closest('.history-record');
-        if (!recordElement) return;
+        if (!recordElement) {
+            console.log('SwipeDeleteManager_7ree: 未找到.history-record元素');
+            return;
+        }
+        
+        console.log('SwipeDeleteManager_7ree: 找到历史记录元素', recordElement);
 
         // 如果有其他项目正在滑动，先关闭它们
         this.closeAllSwipes();
@@ -75,6 +84,8 @@ class SwipeDeleteManager_7ree {
         const deltaY = this.currentY - this.startY;
         const absDeltaX = Math.abs(deltaX);
         const absDeltaY = Math.abs(deltaY);
+
+        console.log('SwipeDeleteManager_7ree: touchmove', { deltaX, deltaY, absDeltaX, absDeltaY });
 
         // 判断是否为垂直滚动
         if (!this.isDragging && absDeltaY > absDeltaX && absDeltaY > 10) {
@@ -153,12 +164,16 @@ class SwipeDeleteManager_7ree {
      * 确保记录元素有滑动容器结构
      */
     ensureSwipeStructure(recordElement) {
+        console.log('SwipeDeleteManager_7ree: ensureSwipeStructure被调用', recordElement);
+        
         if (recordElement.classList.contains('swipe-container_7ree')) {
+            console.log('SwipeDeleteManager_7ree: 元素已有滑动结构');
             return; // 已经有滑动结构
         }
 
         // 获取记录ID（从数据属性或其他方式）
         const recordId = this.extractRecordId(recordElement);
+        console.log('SwipeDeleteManager_7ree: 记录ID', recordId);
         
         // 包装现有内容
         const originalContent = recordElement.innerHTML;
@@ -191,6 +206,8 @@ class SwipeDeleteManager_7ree {
 
         recordElement.appendChild(swipeContent);
         recordElement.appendChild(swipeActions);
+        
+        console.log('SwipeDeleteManager_7ree: 滑动结构创建完成', recordElement);
     }
 
     /**
@@ -352,6 +369,11 @@ class SwipeDeleteManager_7ree {
      * 为新添加的记录元素设置滑动功能
      */
     setupSwipeForElement(recordElement) {
+        console.log('SwipeDeleteManager_7ree: setupSwipeForElement被调用', recordElement);
+        if (!recordElement) {
+            console.error('SwipeDeleteManager_7ree: recordElement为空');
+            return;
+        }
         this.ensureSwipeStructure(recordElement);
     }
 }
@@ -360,9 +382,26 @@ class SwipeDeleteManager_7ree {
 window.swipeDeleteManager_7ree = null;
 
 // 初始化滑动删除管理器
-document.addEventListener('DOMContentLoaded', () => {
-    window.swipeDeleteManager_7ree = new SwipeDeleteManager_7ree();
-});
+function initSwipeDeleteManager_7ree() {
+    if (!window.swipeDeleteManager_7ree) {
+        window.swipeDeleteManager_7ree = new SwipeDeleteManager_7ree();
+        console.log('SwipeDeleteManager_7ree: 管理器已初始化');
+    }
+}
+
+// 在DOMContentLoaded时初始化
+document.addEventListener('DOMContentLoaded', initSwipeDeleteManager_7ree);
+
+// 如果DOM已经加载完成，立即初始化
+if (document.readyState === 'loading') {
+    // DOM还在加载中，等待DOMContentLoaded事件
+} else {
+    // DOM已经加载完成，立即初始化
+    initSwipeDeleteManager_7ree();
+}
+
+// 暴露初始化函数供其他模块调用
+window.initSwipeDeleteManager_7ree = initSwipeDeleteManager_7ree;
 
 // 导出模块
 if (typeof module !== 'undefined' && module.exports) {

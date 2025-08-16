@@ -13,6 +13,8 @@
     overflow: hidden;
     width: 100%;
     background: #2a2a2a;
+    touch-action: pan-y;
+    user-select: none;
 }
 
 /* 滑动内容区域 */
@@ -22,6 +24,7 @@
     background: #2a2a2a;
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform;
+    touch-action: pan-y;
 }
 
 /* 删除操作区域 */

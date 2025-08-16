@@ -40,6 +40,17 @@
     border-right: none;
 }
 
+/* 当历史记录项变成滑动容器时，调整样式 */
+.history-record.swipe-container_7ree {
+    padding: 0;
+    overflow: hidden;
+}
+
+.history-record.swipe-container_7ree .swipe-content_7ree {
+    padding: 12px 16px;
+    background: #2a2a2a;
+}
+
 .history-record:first-child {
     border-top: 1px solid #404040;
 }
