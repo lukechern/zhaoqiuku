@@ -106,15 +106,13 @@ class SwipeDeleteManager_7ree {
             e.preventDefault();
             const swipeContent = this.activeSwipe.querySelector('.swipe-content_7ree');
             
-            if (deltaX < 0) {
+            // 限制滑动范围：向左最多滑动actionWidth，向右不能超过原位置
+            const translateX = Math.max(Math.min(deltaX, 0), -this.actionWidth);
+            swipeContent.style.transform = `translateX(${translateX}px)`;
+            
+            if (translateX < 0) {
                 // 向左滑动 - 显示删除按钮
-                const translateX = Math.max(deltaX, -this.actionWidth);
-                swipeContent.style.transform = `translateX(${translateX}px)`;
-                
-                // 显示删除操作区域
-                if (Math.abs(translateX) > 10) {
-                    this.activeSwipe.classList.add('show-actions_7ree');
-                }
+                this.activeSwipe.classList.add('show-actions_7ree');
                 
                 // 检查是否达到删除阈值
                 if (Math.abs(translateX) >= this.deleteThreshold) {
@@ -122,22 +120,10 @@ class SwipeDeleteManager_7ree {
                 } else {
                     this.activeSwipe.classList.remove('threshold-reached_7ree');
                 }
-            } else if (deltaX > 0) {
-                // 向右滑动 - 隐藏删除按钮
-                const currentTransform = swipeContent.style.transform;
-                const currentTranslateX = currentTransform.match(/translateX\((-?\d+)px\)/);
-                
-                if (currentTranslateX && parseInt(currentTranslateX[1]) < 0) {
-                    // 当前有向左的偏移，允许向右滑动来恢复
-                    const newTranslateX = Math.min(parseInt(currentTranslateX[1]) + deltaX, 0);
-                    swipeContent.style.transform = `translateX(${newTranslateX}px)`;
-                    
-                    // 如果滑动回到原位，清除相关类和样式
-                    if (newTranslateX >= -5) {
-                        swipeContent.style.transform = '';
-                        this.activeSwipe.classList.remove('show-actions_7ree', 'threshold-reached_7ree');
-                    }
-                }
+            } else {
+                // 向右滑动或回到原位 - 隐藏删除按钮
+                swipeContent.style.transform = '';
+                this.activeSwipe.classList.remove('show-actions_7ree', 'threshold-reached_7ree');
             }
         }
     }
@@ -333,7 +319,7 @@ class SwipeDeleteManager_7ree {
         
         const swipeContent = recordElement.querySelector('.swipe-content_7ree');
         if (swipeContent) {
-            swipeContent.style.transform = 'translateX(0)';
+            swipeContent.style.transform = '';
         }
         
         recordElement.classList.remove('show-actions_7ree', 'swiping_7ree', 'threshold-reached_7ree');
