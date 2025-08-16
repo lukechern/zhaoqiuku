@@ -143,16 +143,24 @@ class SwipeDeleteManager_7ree {
         this.activeSwipe.classList.remove('swiping_7ree');
         this.activeSwipe.classList.remove('threshold-reached_7ree');
 
+        const swipedItem = this.activeSwipe;
+        let keepOpen = false;
+
         // 判断是否达到删除阈值
         if (Math.abs(deltaX) >= this.deleteThreshold) {
             // 保持删除操作显示
             swipeContent.style.transform = `translateX(-${this.actionWidth}px)`;
+            keepOpen = true;
         } else {
             // 回弹到原位
             this.closeSwipe(this.activeSwipe);
         }
 
         this.resetSwipeState();
+
+        if (keepOpen) {
+            this.activeSwipe = swipedItem;
+        }
     }
 
     /**
@@ -333,6 +341,7 @@ class SwipeDeleteManager_7ree {
         swipeContainers.forEach(container => {
             this.closeSwipe(container);
         });
+        this.activeSwipe = null;  // 确保完全重置状态
     }
 
     /**
