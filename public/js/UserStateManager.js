@@ -141,6 +141,7 @@ export class UserStateManager {
 
         if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
             // 显示用户信息，隐藏登录链接
+            this.authLinks.innerHTML = ''; // 清空认证链接容器
             this.authLinks.style.display = 'none';
             this.authLinks.classList.add('hidden');
             this.userInfo.classList.remove('hidden');
@@ -152,6 +153,8 @@ export class UserStateManager {
             }
         } else {
             // 显示登录链接，隐藏用户信息
+            // 动态创建登录/注册链接
+            this.authLinks.innerHTML = '<a href="auth.html" class="auth-link">登录/注册</a>';
             this.authLinks.style.display = 'flex';
             this.authLinks.classList.remove('hidden');
             this.userInfo.classList.add('hidden');
