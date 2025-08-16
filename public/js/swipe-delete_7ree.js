@@ -85,7 +85,7 @@ class SwipeDeleteManager_7ree {
         const absDeltaX = Math.abs(deltaX);
         const absDeltaY = Math.abs(deltaY);
 
-        console.log('SwipeDeleteManager_7ree: touchmove', { deltaX, deltaY, absDeltaX, absDeltaY });
+        // console.log('SwipeDeleteManager_7ree: touchmove', { deltaX, deltaY, absDeltaX, absDeltaY });
 
         // 判断是否为垂直滚动
         if (!this.isDragging && absDeltaY > absDeltaX && absDeltaY > 10) {
@@ -109,6 +109,7 @@ class SwipeDeleteManager_7ree {
             // 限制滑动范围：向左最多滑动actionWidth，向右不能超过原位置
             const translateX = Math.max(Math.min(deltaX, 0), -this.actionWidth);
             swipeContent.style.transform = `translateX(${translateX}px)`;
+            console.log('SwipeDeleteManager_7ree: handleTouchMove - transform set to:', swipeContent.style.transform);
             
             if (translateX < 0) {
                 // 向左滑动 - 显示删除按钮
@@ -150,9 +151,11 @@ class SwipeDeleteManager_7ree {
         if (Math.abs(deltaX) >= this.deleteThreshold) {
             // 保持删除操作显示
             swipeContent.style.transform = `translateX(-${this.actionWidth}px)`;
+            console.log('SwipeDeleteManager_7ree: handleTouchEnd - Keeping swipe open. Transform:', swipeContent.style.transform);
             keepOpen = true;
         } else {
             // 回弹到原位
+            console.log('SwipeDeleteManager_7ree: handleTouchEnd - Closing swipe.');
             this.closeSwipe(this.activeSwipe);
         }
 
