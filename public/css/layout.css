@@ -47,7 +47,7 @@ body {
         min-height: calc(100vh - 40px);
         background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
         border-radius: 25px;
-        box-shadow: 
+        box-shadow:
             0 0 0 8px rgba(255, 255, 255, 0.1),
             0 0 0 12px rgba(0, 0, 0, 0.2),
             0 20px 60px rgba(0, 0, 0, 0.4);
@@ -55,6 +55,8 @@ body {
         overflow: hidden;
         margin: 0 auto;
         transition: all 0.3s ease;
+        /* 为index和history页面预留header-top组件的高度 */
+        padding-top: 60px;
     }
     
     .mobile-frame::before {
@@ -120,11 +122,6 @@ body {
         width: 100%;
     }
     
-    /* 为index和history页面预留header-top组件的高度 */
-    body[data-page="index"] .container,
-    body[data-page="history"] .container {
-        padding-top: 70px;
-    }
 }
 
 .main-content {
