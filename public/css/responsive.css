@@ -60,7 +60,7 @@
     }
     
     .header-top {
-        justify-content: center;
+        justify-content: flex-end;
     }
     
     .user-actions {
