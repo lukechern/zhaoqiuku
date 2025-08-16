@@ -102,23 +102,42 @@ class SwipeDeleteManager_7ree {
         }
 
         // 处理水平拖拽
-        if (this.isDragging && deltaX < 0) { // 只允许向左滑动
+        if (this.isDragging) {
             e.preventDefault();
             const swipeContent = this.activeSwipe.querySelector('.swipe-content_7ree');
-            const translateX = Math.max(deltaX, -this.actionWidth);
             
-            swipeContent.style.transform = `translateX(${translateX}px)`;
-            
-            // 显示删除操作区域
-            if (Math.abs(translateX) > 10) {
-                this.activeSwipe.classList.add('show-actions_7ree');
-            }
-            
-            // 检查是否达到删除阈值
-            if (Math.abs(translateX) >= this.deleteThreshold) {
-                this.activeSwipe.classList.add('threshold-reached_7ree');
-            } else {
-                this.activeSwipe.classList.remove('threshold-reached_7ree');
+            if (deltaX < 0) {
+                // 向左滑动 - 显示删除按钮
+                const translateX = Math.max(deltaX, -this.actionWidth);
+                swipeContent.style.transform = `translateX(${translateX}px)`;
+                
+                // 显示删除操作区域
+                if (Math.abs(translateX) > 10) {
+                    this.activeSwipe.classList.add('show-actions_7ree');
+                }
+                
+                // 检查是否达到删除阈值
+                if (Math.abs(translateX) >= this.deleteThreshold) {
+                    this.activeSwipe.classList.add('threshold-reached_7ree');
+                } else {
+                    this.activeSwipe.classList.remove('threshold-reached_7ree');
+                }
+            } else if (deltaX > 0) {
+                // 向右滑动 - 隐藏删除按钮
+                const currentTransform = swipeContent.style.transform;
+                const currentTranslateX = currentTransform.match(/translateX\((-?\d+)px\)/);
+                
+                if (currentTranslateX && parseInt(currentTranslateX[1]) < 0) {
+                    // 当前有向左的偏移，允许向右滑动来恢复
+                    const newTranslateX = Math.min(parseInt(currentTranslateX[1]) + deltaX, 0);
+                    swipeContent.style.transform = `translateX(${newTranslateX}px)`;
+                    
+                    // 如果滑动回到原位，清除相关类和样式
+                    if (newTranslateX >= -5) {
+                        swipeContent.style.transform = '';
+                        this.activeSwipe.classList.remove('show-actions_7ree', 'threshold-reached_7ree');
+                    }
+                }
             }
         }
     }
@@ -254,6 +273,9 @@ class SwipeDeleteManager_7ree {
                     recordElement.parentNode.removeChild(recordElement);
                 }
                 
+                // 显示成功提示
+                this.showToast('记录已删除', 'success');
+                
                 // 检查是否需要显示空状态
                 this.checkEmptyState();
             }, 300);
@@ -264,7 +286,7 @@ class SwipeDeleteManager_7ree {
             this.closeSwipe(recordElement);
             
             // 显示错误提示
-            this.showErrorMessage('删除失败，请重试');
+            this.showToast('删除失败，请重试', 'error');
         }
     }
 
@@ -354,15 +376,49 @@ class SwipeDeleteManager_7ree {
     }
 
     /**
-     * 显示错误消息
+     * 显示Toast提示
      */
-    showErrorMessage(message) {
-        // 触发历史管理器的错误显示
-        if (window.historyManager && window.historyManager.showError) {
-            window.historyManager.showError(message);
-        } else {
-            alert(message);
-        }
+    showToast(message, type = 'info') {
+        // 创建toast元素
+        const toast = document.createElement('div');
+        toast.className = `toast_7ree toast-${type}_7ree`;
+        toast.textContent = message;
+        
+        // 添加样式
+        Object.assign(toast.style, {
+            position: 'fixed',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3',
+            color: 'white',
+            padding: '12px 24px',
+            borderRadius: '6px',
+            fontSize: '14px',
+            fontWeight: '500',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            zIndex: '10000',
+            opacity: '0',
+            transition: 'opacity 0.3s ease-in-out'
+        });
+        
+        // 添加到页面
+        document.body.appendChild(toast);
+        
+        // 显示动画
+        setTimeout(() => {
+            toast.style.opacity = '1';
+        }, 10);
+        
+        // 自动隐藏
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
     }
 
     /**

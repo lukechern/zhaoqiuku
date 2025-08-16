@@ -140,15 +140,34 @@
             }, 100);
         }
         
-        // 模拟删除API
-        window.deleteRecordAPI_7ree = function(recordId) {
-            addDebugInfo(`模拟删除API调用: ${recordId}`);
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    addDebugInfo(`模拟删除成功: ${recordId}`);
-                    resolve({ success: true });
-                }, 500);
-            });
+        // 模拟删除API - 覆盖fetch函数以模拟API调用
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+            // 检查是否是删除API调用
+            if (url.includes('/api/user/history/') && options && options.method === 'DELETE') {
+                const recordId = url.split('/').pop();
+                addDebugInfo(`模拟删除API调用: ${recordId}`);
+                
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        addDebugInfo(`模拟删除成功: ${recordId}`);
+                        resolve({
+                            ok: true,
+                            json: () => Promise.resolve({ success: true })
+                        });
+                    }, 500);
+                });
+            }
+            
+            // 对于其他请求，使用原始fetch
+            return originalFetch.apply(this, arguments);
+        };
+        
+        // 模拟认证管理器
+        window.authManager = {
+            getAuthHeaders: () => ({
+                'Authorization': 'Bearer test-token'
+            })
         };
         
         // 监听滑动删除管理器的初始化
