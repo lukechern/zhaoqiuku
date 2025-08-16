@@ -28,48 +28,43 @@ function verifyToken(token) {
 export default async function handler(req, res) {
     // 设置CORS头
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
 
-    if (req.method !== 'GET') {
+    if (req.method === 'GET') {
+        return await handleGetHistory(req, res);
+    } else if (req.method === 'DELETE') {
+        return await handleDeleteRecord_7ree(req, res);
+    } else {
         return res.status(405).json({
             success: false,
             error: '方法不允许'
         });
     }
 
+}
+
+/**
+ * 处理获取历史记录请求
+ */
+async function handleGetHistory(req, res) {
     try {
         // 验证用户身份
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                success: false,
-                error: '未提供有效的认证令牌'
-            });
+        const authResult = await authenticateUser_7ree(req);
+        if (!authResult.success) {
+            return res.status(401).json(authResult);
         }
 
-        const token = authHeader.substring(7);
-        const decoded = verifyToken(token);
-        
-        if (!decoded || !decoded.userId) {
-            return res.status(401).json({
-                success: false,
-                error: '认证令牌无效或已过期'
-            });
-        }
-
-        const userId = decoded.userId;
+        const userId = authResult.userId;
 
         // 获取分页参数
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
         const offset = (page - 1) * limit;
-
-
 
         const supabase = await createSupabaseClient();
 
@@ -145,6 +140,114 @@ export default async function handler(req, res) {
             error: '服务器内部错误'
         });
     }
+}
+
+/**
+ * 处理删除记录请求
+ */
+async function handleDeleteRecord_7ree(req, res) {
+    try {
+        // 验证用户身份
+        const authResult = await authenticateUser_7ree(req);
+        if (!authResult.success) {
+            return res.status(401).json(authResult);
+        }
+
+        const userId = authResult.userId;
+
+        // 从URL路径中提取记录ID
+        const recordId = req.query.id || extractRecordIdFromPath_7ree(req.url);
+        
+        if (!recordId) {
+            return res.status(400).json({
+                success: false,
+                error: '缺少记录ID参数'
+            });
+        }
+
+        const supabase = await createSupabaseClient();
+
+        // 首先验证记录是否属于当前用户
+        const { data: existingRecord, error: fetchError } = await supabase
+            .from(ITEMS_TABLE)
+            .select('id, user_id')
+            .eq('id', recordId)
+            .eq('user_id', userId)
+            .single();
+
+        if (fetchError || !existingRecord) {
+            return res.status(404).json({
+                success: false,
+                error: '记录不存在或无权限删除'
+            });
+        }
+
+        // 执行删除操作
+        const { error: deleteError } = await supabase
+            .from(ITEMS_TABLE)
+            .delete()
+            .eq('id', recordId)
+            .eq('user_id', userId);
+
+        if (deleteError) {
+            return res.status(500).json({
+                success: false,
+                error: '删除记录失败'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: '记录删除成功'
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: '服务器内部错误'
+        });
+    }
+}
+
+/**
+ * 用户身份验证
+ */
+async function authenticateUser_7ree(req) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return {
+            success: false,
+            error: '未提供有效的认证令牌'
+        };
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+    
+    if (!decoded || !decoded.userId) {
+        return {
+            success: false,
+            error: '认证令牌无效或已过期'
+        };
+    }
+
+    return {
+        success: true,
+        userId: decoded.userId
+    };
+}
+
+/**
+ * 从URL路径中提取记录ID
+ */
+function extractRecordIdFromPath_7ree(url) {
+    // 处理类似 /api/user/history/123 的URL
+    const pathParts = url.split('/');
+    const historyIndex = pathParts.indexOf('history');
+    if (historyIndex !== -1 && historyIndex < pathParts.length - 1) {
+        return pathParts[historyIndex + 1].split('?')[0]; // 移除查询参数
+    }
+    return null;
 }
 
 /**

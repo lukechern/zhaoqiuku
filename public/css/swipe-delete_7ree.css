@@ -1,0 +1,178 @@
+/*
+ * ========================================
+ * 🗑️ 滑动删除功能样式
+ * ========================================
+ * 为历史记录项添加左滑删除功能的样式
+ */
+
+/* ==========================================
+   📱 滑动容器
+   ========================================== */
+.swipe-container_7ree {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    background: #2a2a2a;
+}
+
+/* 滑动内容区域 */
+.swipe-content_7ree {
+    position: relative;
+    z-index: 2;
+    background: #2a2a2a;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+}
+
+/* 删除操作区域 */
+.swipe-actions_7ree {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 80px;
+    background: #dc3545;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 删除按钮 */
+.delete-action_7ree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.delete-action_7ree:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.delete-action_7ree:active {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* 删除图标 */
+.delete-icon_7ree {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px;
+    fill: white;
+}
+
+/* 删除文字 */
+.delete-text_7ree {
+    font-size: 10px;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    line-height: 1;
+}
+
+/* ==========================================
+   🎯 滑动状态
+   ========================================== */
+
+/* 滑动中状态 */
+.swipe-container_7ree.swiping_7ree .swipe-content_7ree {
+    transition: none;
+}
+
+/* 显示删除操作 */
+.swipe-container_7ree.show-actions_7ree .swipe-actions_7ree {
+    opacity: 1;
+}
+
+/* 滑动到删除位置 */
+.swipe-container_7ree.show-actions_7ree .swipe-content_7ree {
+    transform: translateX(-80px);
+}
+
+/* ==========================================
+   🎨 删除确认动画
+   ========================================== */
+
+/* 删除动画 */
+.swipe-container_7ree.deleting_7ree {
+    animation: slideOutRight_7ree 0.3s ease-in-out forwards;
+    overflow: hidden;
+}
+
+@keyframes slideOutRight_7ree {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+        max-height: 200px;
+    }
+    50% {
+        transform: translateX(100%);
+        opacity: 0;
+        max-height: 200px;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+        max-height: 0;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+/* ==========================================
+   📱 响应式设计
+   ========================================== */
+@media (max-width: 480px) {
+    .swipe-actions_7ree {
+        width: 70px;
+    }
+    
+    .swipe-container_7ree.show-actions_7ree .swipe-content_7ree {
+        transform: translateX(-70px);
+    }
+    
+    .delete-icon_7ree {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .delete-text_7ree {
+        font-size: 9px;
+    }
+}
+
+/* ==========================================
+   🎯 触摸优化
+   ========================================== */
+
+/* 防止文本选择 */
+.swipe-container_7ree {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* 触摸反馈 */
+.swipe-container_7ree.swiping_7ree {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 滑动阈值指示器 */
+.swipe-container_7ree.threshold-reached_7ree .delete-action_7ree {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}

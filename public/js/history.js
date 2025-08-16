@@ -172,6 +172,11 @@ class HistoryManager {
     createRecordElement(record) {
         const div = document.createElement('div');
         div.className = 'history-record';
+        
+        // 添加记录ID数据属性
+        const recordId = record.id || record._id || this.generateRecordId_7ree(record);
+        div.setAttribute('data-record-id', recordId);
+        
         div.innerHTML = `
             <div class="record-header">
                 <div class="record-item">
@@ -194,7 +199,28 @@ class HistoryManager {
                 </div>
             ` : ''}
         `;
+        
+        // 设置滑动删除功能
+        setTimeout(() => {
+            if (window.swipeDeleteManager_7ree) {
+                window.swipeDeleteManager_7ree.setupSwipeForElement(div);
+            }
+        }, 0);
+        
         return div;
+    }
+
+    /**
+     * 生成记录ID
+     * @param {Object} record - 记录数据
+     * @returns {string} 生成的记录ID
+     */
+    generateRecordId_7ree(record) {
+        // 尝试使用时间戳和项目名称生成唯一ID
+        const timestamp = record.timestamp || record.createdAt || Date.now();
+        const itemName = record.itemName || 'unknown';
+        const hash = btoa(timestamp + itemName).replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
+        return `record_${hash}_${Math.random().toString(36).substr(2, 5)}`;
     }
 
     /**
