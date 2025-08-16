@@ -12,9 +12,9 @@ class HistoryManager {
         this.isLoading = false;
         this.hasMore = true;
         this.records = [];
-        
 
-        
+
+
         this.init();
     }
 
@@ -24,11 +24,11 @@ class HistoryManager {
     init() {
         // 检查用户登录状态
         this.checkAuthAndLoad();
-        
+
         // 监听认证状态变化
         window.addEventListener('authStateChange', (event) => {
             const { type, isAuthenticated } = event.detail;
-            
+
             if (type === 'logout' || !isAuthenticated) {
                 this.redirectToAuth();
             } else if (type === 'login' || type === 'restore') {
@@ -78,7 +78,7 @@ class HistoryManager {
         }
 
         this.isLoading = true;
-        
+
         try {
             if (reset) {
                 this.currentPage = 1;
@@ -131,7 +131,7 @@ class HistoryManager {
         } catch (error) {
             this.hideLoading();
             this.showError(error.message);
-            
+
             // 如果是认证错误，跳转到登录页
             if (error.message.includes('认证') || error.message.includes('登录')) {
                 setTimeout(() => this.redirectToAuth(), 2000);
@@ -148,7 +148,7 @@ class HistoryManager {
      */
     renderHistoryRecords(records, reset = false) {
         const container = this.getHistoryContainer();
-        
+
         if (reset) {
             container.innerHTML = '';
         }
@@ -246,21 +246,21 @@ class HistoryManager {
      */
     setupScrollListener() {
         let ticking = false;
-        
+
         const handleScroll = () => {
             if (!ticking) {
                 requestAnimationFrame(() => {
                     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                     const windowHeight = window.innerHeight;
                     const documentHeight = document.documentElement.scrollHeight;
-                    
+
                     // 当滚动到距离底部100px时开始加载
                     if (scrollTop + windowHeight >= documentHeight - 100) {
                         if (this.hasMore && !this.isLoading) {
                             this.loadHistoryRecords(false);
                         }
                     }
-                    
+
                     ticking = false;
                 });
                 ticking = true;
@@ -296,7 +296,7 @@ class HistoryManager {
     hideLoading() {
         const loadingIndicator = document.getElementById('loading-indicator');
         const loadMoreIndicator = document.getElementById('load-more-indicator');
-        
+
         if (loadingIndicator) {
             loadingIndicator.style.display = 'none';
         }
@@ -340,7 +340,7 @@ class HistoryManager {
         if (errorElement) {
             errorElement.textContent = message;
             errorElement.style.display = 'block';
-            
+
             // 3秒后自动隐藏
             setTimeout(() => {
                 errorElement.style.display = 'none';
@@ -356,7 +356,7 @@ class HistoryManager {
         if (container) {
             container.innerHTML = '';
         }
-        
+
         // 隐藏所有状态指示器
         const indicators = ['no-more-data', 'error-message'];
         indicators.forEach(id => {

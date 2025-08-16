@@ -137,7 +137,6 @@
     flex-direction: column;
     gap: 3px;
     padding: 6px 10px;
-    background: rgba(0, 123, 255, 0.1);
     border-radius: 6px;
     border-left: 2px solid var(--primary-color, #007bff);
 }
@@ -262,8 +261,9 @@
    ========================================== */
 @media (max-width: 480px) {
     .history-records {
+        margin-top: 20px;
         padding: 0;
-        gap: 0;
+        gap: 6px;
     }
     
     .history-record {
