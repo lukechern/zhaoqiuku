@@ -114,9 +114,7 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 6px;
-    padding: 6px 10px;
-    background: #1a1a1a;
-    border-radius: 6px;
+    padding: 4px 0px;
 }
 
 .location-label {
@@ -281,7 +279,6 @@
         font-size: 14px;
     }
     
-    .record-location,
     .record-transcript {
         padding: 5px 8px;
     }
