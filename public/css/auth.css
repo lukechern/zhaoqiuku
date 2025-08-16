@@ -43,7 +43,7 @@
 }
 
 .user-email {
-    color: var(--text-primary);
+    color: var(--text-secondary);
     font-size: 0.9rem;
     font-weight: 500;
 }

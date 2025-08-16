@@ -10,7 +10,11 @@
    ========================================== */
 .history-container {
     padding: 0;
+    width: 100%;
     max-width: 100%;
+    /* 确保记录容器从顶部开始，而不是垂直居中 */
+    margin-top: 0;
+    margin-bottom: auto;
 }
 
 .history-records {
