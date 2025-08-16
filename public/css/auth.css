@@ -154,9 +154,6 @@
 .auth-title {
     color: var(--text-primary);
     font-size: 0.9rem;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+    padding: 0.5rem 0.5rem;
     text-align: right;
 }

@@ -10,7 +10,6 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 0 1rem;
     margin-bottom: 1rem;
     background: var(--surface-light);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
