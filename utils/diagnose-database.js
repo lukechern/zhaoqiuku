@@ -28,7 +28,7 @@ async function diagnoseDatabaseIssues() {
 
         // 2. 检查表结构
         console.log('\n📋 检查items表结构...');
-        
+
         // 尝试查询表的第一条记录来了解字段结构
         const { data: sampleData, error: sampleError } = await supabase
             .from('items')
@@ -48,7 +48,7 @@ async function diagnoseDatabaseIssues() {
 
         // 3. 测试插入操作
         console.log('\n🧪 测试插入操作...');
-        
+
         const testData = {
             user_id: '00000000-0000-0000-0000-000000000000', // 测试UUID
             item_name: 'test_item',
@@ -71,7 +71,7 @@ async function diagnoseDatabaseIssues() {
             console.error('❌ 插入测试失败:', insertError.message);
             console.error('错误代码:', insertError.code);
             console.error('错误详情:', insertError.details);
-            
+
             // 检查是否是字段不存在的问题
             if (insertError.message.includes('item_type')) {
                 console.log('🔧 检测到item_type字段问题，可能需要数据库迁移');
@@ -81,7 +81,7 @@ async function diagnoseDatabaseIssues() {
             }
         } else {
             console.log('✅ 插入测试成功:', insertData);
-            
+
             // 清理测试数据
             await supabase
                 .from('items')
@@ -92,7 +92,7 @@ async function diagnoseDatabaseIssues() {
 
         // 4. 检查是否存在旧字段
         console.log('\n🔍 检查旧字段action_type...');
-        
+
         const { data: oldFieldTest, error: oldFieldError } = await supabase
             .from('items')
             .select('action_type')

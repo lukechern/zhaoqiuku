@@ -31,9 +31,11 @@ export async function handleItemStorage(transcriptionResult, userId, clientIP) {
     console.log('转录结果:', transcript);
     console.log('动作类型:', action);
     console.log('物品名称:', object);
+    console.log('物品类型:', type);
     console.log('存放位置:', location);
     console.log('用户ID:', userId);
     console.log('客户端IP:', clientIP);
+    console.log('完整转录对象:', JSON.stringify(transcriptionResult, null, 2));
     console.log('========================');
     
     try {
@@ -113,12 +115,21 @@ async function handlePutAction(object, location, userId, clientIP, transcript, t
         
         // 提供更具体的错误信息
         let specificMessage = '记录存储失败，请稍后重试';
-        if (error.message.includes('item_type')) {
-            specificMessage = '数据库表结构需要更新，请联系管理员执行数据库迁移';
-        } else if (error.message.includes('action_type')) {
+        
+        // 只有在真正的字段不存在错误时才提示迁移
+        if (error.message.includes('column "action_type" does not exist')) {
             specificMessage = '检测到旧的数据库结构，请执行数据库迁移脚本';
-        } else if (error.message.includes('column') && error.message.includes('does not exist')) {
+        } else if (error.message.includes('column "item_type" does not exist')) {
+            specificMessage = '数据库表结构需要更新，请联系管理员执行数据库迁移';
+        } else if (error.code === '42703') { // PostgreSQL 未定义列错误代码
             specificMessage = '数据库字段不存在，请检查表结构或执行迁移脚本';
+        } else if (error.code === '23502') { // NOT NULL 约束违反
+            specificMessage = '必填字段缺失，请检查数据完整性';
+        } else if (error.code === '23503') { // 外键约束违反
+            specificMessage = '用户ID无效，请重新登录';
+        } else {
+            // 对于其他错误，提供通用消息但包含具体错误信息用于调试
+            specificMessage = `存储失败: ${error.message}`;
         }
         
         return {
