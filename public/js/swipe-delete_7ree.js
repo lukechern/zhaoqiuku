@@ -40,7 +40,7 @@ class SwipeDeleteManager_7ree {
         document.addEventListener('click', this.handleDocumentClick.bind(this));
         
         // 添加调试信息
-        console.log('SwipeDeleteManager_7ree: 事件监听器已设置');
+        // console.log('SwipeDeleteManager_7ree: 事件监听器已设置');
     }
 
     /**
@@ -69,6 +69,21 @@ class SwipeDeleteManager_7ree {
 
         // 确保记录元素有滑动容器结构
         this.ensureSwipeStructure(recordElement);
+        
+        // 记录初始状态
+        const swipeContent = this.activeSwipe.querySelector('.swipe-content_7ree');
+        const computedStyle = window.getComputedStyle(swipeContent);
+        const transform = computedStyle.getPropertyValue('transform');
+        
+        if (transform && transform !== 'none') {
+            const matrix = new DOMMatrix(transform);
+            this.initialTranslateX = matrix.m41;
+        } else {
+            this.initialTranslateX = 0;
+        }
+        
+        // 移除过渡效果，以便拖拽
+        swipeContent.style.transition = 'none';
     }
 
     /**
@@ -106,25 +121,18 @@ class SwipeDeleteManager_7ree {
             e.preventDefault();
             const swipeContent = this.activeSwipe.querySelector('.swipe-content_7ree');
             
-            // 限制滑动范围：向左最多滑动actionWidth，向右不能超过原位置
-            const translateX = Math.max(Math.min(deltaX, 0), -this.actionWidth);
-            swipeContent.style.transform = `translateX(${translateX}px)`;
-            console.log('SwipeDeleteManager_7ree: handleTouchMove - transform set to:', swipeContent.style.transform);
+            // 基于初始位置计算新的translateX
+            const newTranslateX = this.initialTranslateX + deltaX;
             
-            if (translateX < 0) {
-                // 向左滑动 - 显示删除按钮
-                this.activeSwipe.classList.add('show-actions_7ree');
-                
-                // 检查是否达到删除阈值
-                if (Math.abs(translateX) >= this.deleteThreshold) {
-                    this.activeSwipe.classList.add('threshold-reached_7ree');
-                } else {
-                    this.activeSwipe.classList.remove('threshold-reached_7ree');
-                }
+            // 限制滑动范围
+            const translateX = Math.max(Math.min(newTranslateX, 0), -this.actionWidth);
+            swipeContent.style.transform = `translateX(${translateX}px)`;
+            
+            // 检查是否达到删除阈值
+            if (Math.abs(translateX) >= this.deleteThreshold) {
+                this.activeSwipe.classList.add('threshold-reached_7ree');
             } else {
-                // 向右滑动或回到原位 - 隐藏删除按钮
-                swipeContent.style.transform = '';
-                this.activeSwipe.classList.remove('show-actions_7ree', 'threshold-reached_7ree');
+                this.activeSwipe.classList.remove('threshold-reached_7ree');
             }
         }
     }
@@ -138,32 +146,25 @@ class SwipeDeleteManager_7ree {
             return;
         }
 
-        const deltaX = this.currentX - this.startX;
         const swipeContent = this.activeSwipe.querySelector('.swipe-content_7ree');
-        
-        this.activeSwipe.classList.remove('swiping_7ree');
-        this.activeSwipe.classList.remove('threshold-reached_7ree');
+        const currentTransform = new DOMMatrix(window.getComputedStyle(swipeContent).getPropertyValue('transform'));
+        const currentTranslateX = currentTransform.m41;
 
-        const swipedItem = this.activeSwipe;
-        let keepOpen = false;
+        // 恢复过渡效果
+        swipeContent.style.transition = 'transform 0.3s ease';
 
         // 判断是否达到删除阈值
-        if (Math.abs(deltaX) >= this.deleteThreshold) {
+        if (Math.abs(currentTranslateX) >= this.deleteThreshold) {
             // 保持删除操作显示
             swipeContent.style.transform = `translateX(-${this.actionWidth}px)`;
-            console.log('SwipeDeleteManager_7ree: handleTouchEnd - Keeping swipe open. Transform:', swipeContent.style.transform);
-            keepOpen = true;
+            this.activeSwipe.classList.add('show-actions_7ree');
         } else {
             // 回弹到原位
-            console.log('SwipeDeleteManager_7ree: handleTouchEnd - Closing swipe.');
             this.closeSwipe(this.activeSwipe);
         }
 
-        this.resetSwipeState();
-
-        if (keepOpen) {
-            this.activeSwipe = swipedItem;
-        }
+        this.isDragging = false;
+        this.isVerticalScroll = false;
     }
 
     /**
@@ -330,7 +331,17 @@ class SwipeDeleteManager_7ree {
         
         const swipeContent = recordElement.querySelector('.swipe-content_7ree');
         if (swipeContent) {
+            // 确保有过渡效果
+            swipeContent.style.transition = 'transform 0.3s ease';
+            // 清除transform样式
             swipeContent.style.transform = '';
+            
+            // 监听过渡结束事件
+            const transitionEndHandler = () => {
+                swipeContent.style.transition = '';
+                swipeContent.removeEventListener('transitionend', transitionEndHandler);
+            };
+            swipeContent.addEventListener('transitionend', transitionEndHandler);
         }
         
         recordElement.classList.remove('show-actions_7ree', 'swiping_7ree', 'threshold-reached_7ree');
