@@ -52,7 +52,7 @@ export const DATABASE_TABLES = {
             OPERATION_TIME: 'operation_time',
             CLIENT_IP: 'client_ip',
             TRANSCRIPT: 'transcript',
-            ACTION_TYPE: 'action_type',
+            ITEM_TYPE: 'item_type',
             CREATED_AT: 'created_at',
             UPDATED_AT: 'updated_at'
         }
@@ -148,7 +148,7 @@ export const SQL_QUERIES = {
             operation_time BIGINT NOT NULL,
             client_ip INET,
             transcript TEXT,
-            action_type VARCHAR(10) NOT NULL CHECK (action_type IN ('put', 'get')),
+            item_type VARCHAR(50),
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
@@ -158,7 +158,7 @@ export const SQL_QUERIES = {
         CREATE INDEX IF NOT EXISTS idx_items_item_name ON items(item_name);
         CREATE INDEX IF NOT EXISTS idx_items_user_item ON items(user_id, item_name);
         CREATE INDEX IF NOT EXISTS idx_items_operation_time ON items(operation_time);
-        CREATE INDEX IF NOT EXISTS idx_items_action_type ON items(action_type);
+        CREATE INDEX IF NOT EXISTS idx_items_item_type ON items(item_type);
 
         -- 创建更新时间触发器
         CREATE TRIGGER update_items_updated_at 
@@ -169,7 +169,7 @@ export const SQL_QUERIES = {
 
     // 插入物品记录
     INSERT_ITEM: `
-        INSERT INTO items (user_id, item_name, location, operation_time, client_ip, transcript, action_type)
+        INSERT INTO items (user_id, item_name, location, operation_time, client_ip, transcript, item_type)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *;
     `,
@@ -177,7 +177,7 @@ export const SQL_QUERIES = {
     // 查找用户的物品记录
     FIND_USER_ITEM: `
         SELECT * FROM items 
-        WHERE user_id = $1 AND item_name = $2 AND action_type = 'put'
+        WHERE user_id = $1 AND item_name = $2
         ORDER BY operation_time DESC 
         LIMIT 1;
     `,

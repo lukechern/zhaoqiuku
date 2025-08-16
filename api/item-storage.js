@@ -24,7 +24,7 @@ const ITEMS_TABLE = 'items';
  * @returns {Object} 处理结果
  */
 export async function handleItemStorage(transcriptionResult, userId, clientIP) {
-    const { action, object, location, transcript } = transcriptionResult;
+    const { action, object, location, transcript, type } = transcriptionResult;
     
     // 🔍 调试日志：分析结果分类
     console.log('=== 物品存储分析结果 ===');
@@ -40,7 +40,7 @@ export async function handleItemStorage(transcriptionResult, userId, clientIP) {
         switch (action) {
             case 'put':
                 console.log('🔄 执行存放操作 (PUT)');
-                return await handlePutAction(object, location, userId, clientIP, transcript);
+                return await handlePutAction(object, location, userId, clientIP, transcript, type);
             case 'get':
                 console.log('🔍 执行查找操作 (GET)');
                 return await handleGetAction(object, userId);
@@ -64,7 +64,7 @@ export async function handleItemStorage(transcriptionResult, userId, clientIP) {
 /**
  * 处理存放物品操作 (action: put)
  */
-async function handlePutAction(object, location, userId, clientIP, transcript) {
+async function handlePutAction(object, location, userId, clientIP, transcript, type) {
     console.log('📝 PUT操作 - 数据验证');
     console.log('物品名称:', object);
     console.log('存放位置:', location);
@@ -88,13 +88,13 @@ async function handlePutAction(object, location, userId, clientIP, transcript) {
         operation_time: currentTimestamp,
         client_ip: clientIP,
         transcript: transcript,
-        action_type: 'put'
+        item_type: type || null
     };
     
     console.log('📊 执行SQL INSERT操作');
     console.log('表名:', ITEMS_TABLE);
     console.log('插入数据:', insertData);
-    console.log('SQL等效语句:', `INSERT INTO ${ITEMS_TABLE} (user_id, item_name, location, operation_time, client_ip, transcript, action_type) VALUES ('${userId}', '${object}', '${location}', ${currentTimestamp}, '${clientIP}', '${transcript}', 'put')`);
+    console.log('SQL等效语句:', `INSERT INTO ${ITEMS_TABLE} (user_id, item_name, location, operation_time, client_ip, transcript, item_type) VALUES ('${userId}', '${object}', '${location}', ${currentTimestamp}, '${clientIP}', '${transcript}', '${type || null}')`);
 
     // 插入记录到数据库
     const { data, error } = await supabase
@@ -149,10 +149,9 @@ async function handleGetAction(object, userId) {
     console.log('表名:', ITEMS_TABLE);
     console.log('查询条件:', {
         user_id: userId,
-        item_name: object,
-        action_type: 'put'
+        item_name: object
     });
-    console.log('SQL等效语句:', `SELECT * FROM ${ITEMS_TABLE} WHERE user_id = '${userId}' AND item_name = '${object}' AND action_type = 'put' ORDER BY operation_time DESC LIMIT 1`);
+    console.log('SQL等效语句:', `SELECT * FROM ${ITEMS_TABLE} WHERE user_id = '${userId}' AND item_name = '${object}' ORDER BY operation_time DESC LIMIT 1`);
 
     // 查找最新的存放记录
     const { data, error } = await supabase
@@ -160,7 +159,6 @@ async function handleGetAction(object, userId) {
         .select('*')
         .eq('user_id', userId)
         .eq('item_name', object)
-        .eq('action_type', 'put')
         .order('operation_time', { ascending: false })
         .limit(1)
         .single();

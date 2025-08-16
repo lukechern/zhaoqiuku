@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS items (
     operation_time BIGINT NOT NULL,
     client_ip INET,
     transcript TEXT,
-    action_type VARCHAR(10) NOT NULL CHECK (action_type IN ('put', 'get')),
+    item_type VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -260,7 +260,7 @@ CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
 CREATE INDEX IF NOT EXISTS idx_items_item_name ON items(item_name);
 CREATE INDEX IF NOT EXISTS idx_items_user_item ON items(user_id, item_name);
 CREATE INDEX IF NOT EXISTS idx_items_operation_time ON items(operation_time);
-CREATE INDEX IF NOT EXISTS idx_items_action_type ON items(action_type);
+CREATE INDEX IF NOT EXISTS idx_items_item_type ON items(item_type);
 
 CREATE TRIGGER update_items_updated_at 
     BEFORE UPDATE ON items 
