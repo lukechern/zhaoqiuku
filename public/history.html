@@ -32,11 +32,11 @@
             document.write('<link rel="stylesheet" href="' + file + '?v=' + timestamp + '">');
         });
     </script>
-    
+
     <!-- 预加载底部导航 -->
     <script>
         // 预加载底部导航组件
-        (function() {
+        (function () {
             const preloadNav = async () => {
                 try {
                     const response = await fetch('components/bottom-nav.html');
@@ -57,8 +57,6 @@
             <header class="header">
                 <!-- header-top占位元素 -->
                 <div class="header-top-placeholder"></div>
-                <h1>记录</h1>
-                <p class="subtitle">查看历史记录和存储信息</p>
             </header>
 
             <main class="main-content">
@@ -110,28 +108,19 @@
             script.src = scripts[index] + '?v=' + jsTimestamp + '&t=' + Math.random();
             script.async = false;
             script.onload = function () {
-                console.log('脚本加载完成:', scripts[index]);
                 loadedScripts++;
                 loadNextScript(index + 1);
             };
             script.onerror = function () {
-                console.error('脚本加载失败:', scripts[index]);
                 loadNextScript(index + 1); // 继续加载下一个脚本
             };
             document.head.appendChild(script);
         }
 
         function loadHistoryScript() {
-            console.log('开始加载历史记录脚本...');
             const historyScript = document.createElement('script');
             historyScript.src = 'js/history.js?v=' + jsTimestamp + '&t=' + Math.random();
             historyScript.async = false;
-            historyScript.onload = function () {
-                console.log('历史记录脚本加载完成');
-            };
-            historyScript.onerror = function () {
-                console.error('历史记录脚本加载失败');
-            };
             document.head.appendChild(historyScript);
         }
 

@@ -16,13 +16,8 @@ const ITEMS_TABLE = 'items';
  */
 function verifyToken(token) {
     try {
-        console.log('验证JWT Token:', token.substring(0, 20) + '...');
-        console.log('JWT_SECRET存在:', !!JWT_SECRET);
-        const decoded = jwt.verify(token, JWT_SECRET);
-        console.log('JWT验证成功:', decoded);
-        return decoded;
+        return jwt.verify(token, JWT_SECRET);
     } catch (error) {
-        console.error('JWT验证失败:', error.message);
         return null;
     }
 }
@@ -48,17 +43,9 @@ export default async function handler(req, res) {
     }
 
     try {
-        console.log('=== 历史记录API请求开始 ===');
-        console.log('请求方法:', req.method);
-        console.log('请求头:', req.headers);
-        console.log('查询参数:', req.query);
-
         // 验证用户身份
         const authHeader = req.headers.authorization;
-        console.log('认证头:', authHeader ? authHeader.substring(0, 20) + '...' : '无');
-
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            console.log('认证失败: 未提供有效的认证令牌');
             return res.status(401).json({
                 success: false,
                 error: '未提供有效的认证令牌'
@@ -67,9 +54,8 @@ export default async function handler(req, res) {
 
         const token = authHeader.substring(7);
         const decoded = verifyToken(token);
-
+        
         if (!decoded || !decoded.userId) {
-            console.log('认证失败: 令牌无效或已过期');
             return res.status(401).json({
                 success: false,
                 error: '认证令牌无效或已过期'
@@ -77,19 +63,13 @@ export default async function handler(req, res) {
         }
 
         const userId = decoded.userId;
-        console.log('用户ID:', userId);
 
         // 获取分页参数
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
         const offset = (page - 1) * limit;
 
-        console.log('获取用户历史记录:', {
-            userId,
-            page,
-            limit,
-            offset
-        });
+
 
         const supabase = await createSupabaseClient();
 
@@ -100,7 +80,6 @@ export default async function handler(req, res) {
             .eq('user_id', userId);
 
         if (countError) {
-            console.error('获取记录总数失败:', countError);
             return res.status(500).json({
                 success: false,
                 error: '查询记录总数失败'
@@ -116,7 +95,6 @@ export default async function handler(req, res) {
             .range(offset, offset + limit - 1);
 
         if (error) {
-            console.error('获取历史记录失败:', error);
             return res.status(500).json({
                 success: false,
                 error: '查询历史记录失败'
@@ -147,14 +125,6 @@ export default async function handler(req, res) {
         const totalPages = Math.ceil(count / limit);
         const hasMore = page < totalPages;
 
-        console.log('历史记录查询成功:', {
-            total: count,
-            currentPage: page,
-            totalPages,
-            hasMore,
-            recordsReturned: formattedData.length
-        });
-
         return res.status(200).json({
             success: true,
             data: {
@@ -170,7 +140,6 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error('处理历史记录请求时出错:', error);
         return res.status(500).json({
             success: false,
             error: '服务器内部错误'
