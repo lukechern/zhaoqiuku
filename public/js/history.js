@@ -13,6 +13,10 @@ class HistoryManager {
         this.hasMore = true;
         this.records = [];
         
+        // 测试模式 - 可以通过URL参数启用
+        this.testMode = new URLSearchParams(window.location.search).get('test') === 'true';
+        console.log('历史记录管理器初始化 - 测试模式:', this.testMode);
+        
         this.init();
     }
 
@@ -45,11 +49,19 @@ class HistoryManager {
      * 检查认证状态并加载数据
      */
     checkAuthAndLoad() {
+        console.log('检查认证状态和加载数据...');
+        
         if (!window.authManager) {
             console.log('认证管理器未就绪，等待...');
-            setTimeout(() => this.checkAuthAndLoad(), 100);
+            setTimeout(() => this.checkAuthAndLoad(), 200);
             return;
         }
+
+        console.log('认证管理器状态:', {
+            isAuthenticated: window.authManager.isAuthenticated,
+            user: window.authManager.user,
+            hasTokens: !!window.authManager.tokens
+        });
 
         if (!window.authManager.isAuthenticated) {
             console.log('用户未登录，跳转到认证页面');
@@ -58,6 +70,7 @@ class HistoryManager {
         }
 
         console.log('用户已登录，开始加载历史记录');
+        console.log('用户信息:', window.authManager.user);
         this.loadHistoryRecords(true);
     }
 
@@ -98,22 +111,35 @@ class HistoryManager {
             }
 
             console.log(`加载历史记录 - 页码: ${this.currentPage}, 每页: ${this.limit}`);
+            
+            const authHeaders = window.authManager.getAuthHeaders();
+            console.log('请求头:', authHeaders);
+            
+            // 根据测试模式选择不同的API端点
+            const apiEndpoint = this.testMode ? '/api/test-history' : '/api/user/history';
+            const url = `${apiEndpoint}?page=${this.currentPage}&limit=${this.limit}`;
+            console.log('请求URL:', url, '(测试模式:', this.testMode + ')');
 
-            const response = await fetch(`/api/user/history?page=${this.currentPage}&limit=${this.limit}`, {
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...window.authManager.getAuthHeaders()
+                    ...authHeaders
                 }
             });
 
+            console.log('响应状态:', response.status, response.statusText);
+
             const result = await response.json();
+            console.log('响应数据:', result);
 
             if (!response.ok) {
-                throw new Error(result.error || '获取历史记录失败');
+                console.error('HTTP错误:', response.status, result);
+                throw new Error(result.error || `HTTP ${response.status}: 获取历史记录失败`);
             }
 
             if (!result.success) {
+                console.error('业务逻辑错误:', result);
                 throw new Error(result.error || '获取历史记录失败');
             }
 
@@ -395,7 +421,27 @@ class HistoryManager {
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
     console.log('历史记录页面DOM加载完成');
-    window.historyManager = new HistoryManager();
+    
+    // 延迟初始化，确保所有脚本都已加载
+    setTimeout(() => {
+        console.log('开始初始化历史记录管理器...');
+        window.historyManager = new HistoryManager();
+    }, 500);
+});
+
+// 额外的初始化检查
+window.addEventListener('load', () => {
+    console.log('页面完全加载完成');
+    
+    // 如果历史记录管理器还没有初始化，再次尝试
+    if (!window.historyManager) {
+        console.log('历史记录管理器未初始化，重新尝试...');
+        setTimeout(() => {
+            if (!window.historyManager) {
+                window.historyManager = new HistoryManager();
+            }
+        }, 1000);
+    }
 });
 
 // 导出类

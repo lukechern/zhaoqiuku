@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史记录调试页面</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .debug-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .auto-refresh {
+            background: #28a745;
+        }
+        .auto-refresh:hover {
+            background: #218838;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-ok { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+        .status-unknown { background: #6c757d; }
+    </style>
+</head>
+<body>
+    <h1>🔍 历史记录功能调试页面</h1>
+    
+    <div class="debug-section">
+        <h2>📊 系统状态总览</h2>
+        <div id="system-status">
+            <div><span class="status-indicator status-unknown"></span>认证管理器: 检查中...</div>
+            <div><span class="status-indicator status-unknown"></span>API连接: 检查中...</div>
+            <div><span class="status-indicator status-unknown"></span>用户登录: 检查中...</div>
+            <div><span class="status-indicator status-unknown"></span>历史记录API: 检查中...</div>
+        </div>
+        <button onclick="checkSystemStatus()" class="auto-refresh">刷新状态</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🔐 认证状态检查</h2>
+        <button onclick="checkAuthManager()">检查认证管理器</button>
+        <button onclick="checkUserLogin()">检查用户登录</button>
+        <button onclick="simulateLogin()">模拟登录</button>
+        <button onclick="clearAuth()">清除认证</button>
+        <div id="auth-debug-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🌐 API连接测试</h2>
+        <button onclick="testHealthApi()">健康检查API</button>
+        <button onclick="testHistoryApi()">历史记录API</button>
+        <button onclick="testHistoryApiWithMockAuth()">测试API(模拟认证)</button>
+        <div id="api-debug-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>📋 历史记录功能测试</h2>
+        <button onclick="testHistoryManager()">测试历史记录管理器</button>
+        <button onclick="openHistoryPage()">打开历史记录页面</button>
+        <button onclick="openHistoryPageTest()">打开历史记录页面(测试模式)</button>
+        <div id="history-debug-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>🔧 环境信息</h2>
+        <button onclick="showEnvironmentInfo()">显示环境信息</button>
+        <div id="env-debug-result"></div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+
+        // 显示结果的辅助函数
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="debug-result ${type}">${message}</div>`;
+        }
+
+        // 更新状态指示器
+        function updateStatusIndicator(index, status) {
+            const indicators = document.querySelectorAll('#system-status .status-indicator');
+            if (indicators[index]) {
+                indicators[index].className = `status-indicator status-${status}`;
+            }
+        }
+
+        // 检查系统状态
+        async function checkSystemStatus() {
+            console.log('检查系统状态...');
+            
+            // 检查认证管理器
+            const authManagerOk = !!window.authManager;
+            updateStatusIndicator(0, authManagerOk ? 'ok' : 'error');
+            document.querySelector('#system-status div:nth-child(1)').innerHTML = 
+                `<span class="status-indicator status-${authManagerOk ? 'ok' : 'error'}"></span>认证管理器: ${authManagerOk ? '已加载' : '未加载'}`;
+
+            // 检查API连接
+            try {
+                const response = await fetch('/api/health');
+                const apiOk = response.ok;
+                updateStatusIndicator(1, apiOk ? 'ok' : 'error');
+                document.querySelector('#system-status div:nth-child(2)').innerHTML = 
+                    `<span class="status-indicator status-${apiOk ? 'ok' : 'error'}"></span>API连接: ${apiOk ? '正常' : '异常'}`;
+            } catch (error) {
+                updateStatusIndicator(1, 'error');
+                document.querySelector('#system-status div:nth-child(2)').innerHTML = 
+                    `<span class="status-indicator status-error"></span>API连接: 异常 (${error.message})`;
+            }
+
+            // 检查用户登录
+            const userLoggedIn = authManagerOk && window.authManager.isAuthenticated;
+            updateStatusIndicator(2, userLoggedIn ? 'ok' : 'warning');
+            document.querySelector('#system-status div:nth-child(3)').innerHTML = 
+                `<span class="status-indicator status-${userLoggedIn ? 'ok' : 'warning'}"></span>用户登录: ${userLoggedIn ? '已登录' : '未登录'}`;
+
+            // 检查历史记录API
+            if (userLoggedIn) {
+                try {
+                    const response = await fetch('/api/test-history?page=1&limit=1', {
+                        headers: {
+                            'Authorization': `Bearer test-token`
+                        }
+                    });
+                    const historyApiOk = response.ok;
+                    updateStatusIndicator(3, historyApiOk ? 'ok' : 'error');
+                    document.querySelector('#system-status div:nth-child(4)').innerHTML = 
+                        `<span class="status-indicator status-${historyApiOk ? 'ok' : 'error'}"></span>历史记录API: ${historyApiOk ? '正常' : '异常'}`;
+                } catch (error) {
+                    updateStatusIndicator(3, 'error');
+                    document.querySelector('#system-status div:nth-child(4)').innerHTML = 
+                        `<span class="status-indicator status-error"></span>历史记录API: 异常 (${error.message})`;
+                }
+            } else {
+                updateStatusIndicator(3, 'warning');
+                document.querySelector('#system-status div:nth-child(4)').innerHTML = 
+                    `<span class="status-indicator status-warning"></span>历史记录API: 需要登录`;
+            }
+        }
+
+        // 检查认证管理器
+        function checkAuthManager() {
+            try {
+                const result = {
+                    exists: !!window.authManager,
+                    isAuthenticated: window.authManager ? window.authManager.isAuthenticated : false,
+                    user: window.authManager ? window.authManager.user : null,
+                    tokens: window.authManager ? !!window.authManager.tokens : false,
+                    storageKeys: window.authManager ? window.authManager.storageKeys : null
+                };
+
+                showResult('auth-debug-result', 
+                    `认证管理器状态:\n${JSON.stringify(result, null, 2)}`, 
+                    result.exists ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('auth-debug-result', 
+                    `检查认证管理器失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 检查用户登录状态
+        function checkUserLogin() {
+            try {
+                if (!window.authManager) {
+                    showResult('auth-debug-result', '认证管理器未加载', 'error');
+                    return;
+                }
+
+                const authState = window.authManager.getAuthState();
+                showResult('auth-debug-result', 
+                    `用户登录状态:\n${JSON.stringify(authState, null, 2)}`, 
+                    authState.isAuthenticated ? 'success' : 'warning'
+                );
+            } catch (error) {
+                showResult('auth-debug-result', 
+                    `检查用户登录状态失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 模拟登录
+        function simulateLogin() {
+            try {
+                if (!window.authManager) {
+                    showResult('auth-debug-result', '认证管理器未加载，无法模拟登录', 'error');
+                    return;
+                }
+
+                const mockAuthData = {
+                    user: {
+                        id: 'debug-user-' + Date.now(),
+                        email: 'debug@test.com'
+                    },
+                    tokens: {
+                        accessToken: 'debug-access-token-' + Date.now(),
+                        refreshToken: 'debug-refresh-token-' + Date.now(),
+                        tokenType: 'Bearer'
+                    }
+                };
+
+                window.authManager.saveAuthState(mockAuthData);
+                showResult('auth-debug-result', 
+                    `模拟登录成功:\n${JSON.stringify(mockAuthData, null, 2)}`, 
+                    'success'
+                );
+                
+                // 更新系统状态
+                setTimeout(checkSystemStatus, 100);
+            } catch (error) {
+                showResult('auth-debug-result', 
+                    `模拟登录失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 清除认证
+        function clearAuth() {
+            try {
+                if (!window.authManager) {
+                    showResult('auth-debug-result', '认证管理器未加载', 'error');
+                    return;
+                }
+
+                window.authManager.clearAuthState();
+                showResult('auth-debug-result', '认证状态已清除', 'success');
+                
+                // 更新系统状态
+                setTimeout(checkSystemStatus, 100);
+            } catch (error) {
+                showResult('auth-debug-result', 
+                    `清除认证失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 测试健康检查API
+        async function testHealthApi() {
+            try {
+                showResult('api-debug-result', '正在测试健康检查API...', 'info');
+                
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                showResult('api-debug-result', 
+                    `健康检查API测试结果:\n状态: ${response.status}\n响应: ${JSON.stringify(data, null, 2)}`, 
+                    response.ok ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('api-debug-result', 
+                    `健康检查API测试失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 测试历史记录API
+        async function testHistoryApi() {
+            try {
+                if (!window.authManager || !window.authManager.isAuthenticated) {
+                    showResult('api-debug-result', '需要先登录才能测试历史记录API', 'warning');
+                    return;
+                }
+
+                showResult('api-debug-result', '正在测试历史记录API...', 'info');
+                
+                const response = await fetch('/api/user/history?page=1&limit=5', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...window.authManager.getAuthHeaders()
+                    }
+                });
+                
+                const data = await response.json();
+                
+                showResult('api-debug-result', 
+                    `历史记录API测试结果:\n状态: ${response.status}\n响应: ${JSON.stringify(data, null, 2)}`, 
+                    response.ok ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('api-debug-result', 
+                    `历史记录API测试失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 测试历史记录API(模拟认证)
+        async function testHistoryApiWithMockAuth() {
+            try {
+                showResult('api-debug-result', '正在测试历史记录API(模拟认证)...', 'info');
+                
+                const response = await fetch('/api/test-history?page=1&limit=5', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer mock-token-for-testing'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                showResult('api-debug-result', 
+                    `测试历史记录API结果:\n状态: ${response.status}\n响应: ${JSON.stringify(data, null, 2)}`, 
+                    response.ok ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('api-debug-result', 
+                    `测试历史记录API失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 测试历史记录管理器
+        function testHistoryManager() {
+            try {
+                const result = {
+                    exists: !!window.historyManager,
+                    currentPage: window.historyManager ? window.historyManager.currentPage : null,
+                    isLoading: window.historyManager ? window.historyManager.isLoading : null,
+                    hasMore: window.historyManager ? window.historyManager.hasMore : null,
+                    recordsCount: window.historyManager ? window.historyManager.records.length : null,
+                    testMode: window.historyManager ? window.historyManager.testMode : null
+                };
+
+                showResult('history-debug-result', 
+                    `历史记录管理器状态:\n${JSON.stringify(result, null, 2)}`, 
+                    result.exists ? 'success' : 'error'
+                );
+            } catch (error) {
+                showResult('history-debug-result', 
+                    `测试历史记录管理器失败: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        // 打开历史记录页面
+        function openHistoryPage() {
+            window.open('history.html', '_blank');
+            showResult('history-debug-result', '历史记录页面已在新窗口打开', 'success');
+        }
+
+        // 打开历史记录页面(测试模式)
+        function openHistoryPageTest() {
+            window.open('history.html?test=true', '_blank');
+            showResult('history-debug-result', '历史记录页面(测试模式)已在新窗口打开', 'success');
+        }
+
+        // 显示环境信息
+        function showEnvironmentInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                url: window.location.href,
+                timestamp: new Date().toISOString(),
+                localStorage: {
+                    length: localStorage.length,
+                    keys: Object.keys(localStorage)
+                },
+                windowObjects: {
+                    authManager: !!window.authManager,
+                    historyManager: !!window.historyManager,
+                    apiConfig: !!window.apiConfig
+                }
+            };
+
+            showResult('env-debug-result', 
+                `环境信息:\n${JSON.stringify(info, null, 2)}`, 
+                'info'
+            );
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('调试页面加载完成');
+            
+            // 动态加载必要的脚本
+            const scripts = [
+                'js/api-config.js',
+                'js/auth-manager.js'
+            ];
+
+            let loadedScripts = 0;
+            scripts.forEach(src => {
+                const script = document.createElement('script');
+                script.src = src + '?v=' + Date.now();
+                script.onload = () => {
+                    loadedScripts++;
+                    console.log(`脚本加载完成: ${src} (${loadedScripts}/${scripts.length})`);
+                    if (loadedScripts === scripts.length) {
+                        console.log('所有脚本加载完成，开始系统检查');
+                        setTimeout(() => {
+                            checkSystemStatus();
+                        }, 500);
+                    }
+                };
+                script.onerror = () => {
+                    console.error('脚本加载失败:', src);
+                };
+                document.head.appendChild(script);
+            });
+        });
+    </script>
+</body>
+</html>

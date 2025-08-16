@@ -95,24 +95,48 @@
             'js/auth-debug.js'
         ];
 
-        scripts.forEach((src) => {
+        // 按顺序加载脚本，确保依赖关系正确
+        let loadedScripts = 0;
+        const totalScripts = scripts.length;
+
+        function loadNextScript(index) {
+            if (index >= totalScripts) {
+                // 所有基础脚本加载完成，加载历史记录脚本
+                loadHistoryScript();
+                return;
+            }
+
             const script = document.createElement('script');
-            script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
+            script.src = scripts[index] + '?v=' + jsTimestamp + '&t=' + Math.random();
             script.async = false;
+            script.onload = function () {
+                console.log('脚本加载完成:', scripts[index]);
+                loadedScripts++;
+                loadNextScript(index + 1);
+            };
             script.onerror = function () {
-                console.error('Failed to load script:', src);
+                console.error('脚本加载失败:', scripts[index]);
+                loadNextScript(index + 1); // 继续加载下一个脚本
             };
             document.head.appendChild(script);
-        });
+        }
 
-        // 加载历史记录页面专用脚本
-        const historyScript = document.createElement('script');
-        historyScript.src = 'js/history.js?v=' + jsTimestamp + '&t=' + Math.random();
-        historyScript.async = false;
-        historyScript.onerror = function () {
-            console.error('Failed to load history script');
-        };
-        document.head.appendChild(historyScript);
+        function loadHistoryScript() {
+            console.log('开始加载历史记录脚本...');
+            const historyScript = document.createElement('script');
+            historyScript.src = 'js/history.js?v=' + jsTimestamp + '&t=' + Math.random();
+            historyScript.async = false;
+            historyScript.onload = function () {
+                console.log('历史记录脚本加载完成');
+            };
+            historyScript.onerror = function () {
+                console.error('历史记录脚本加载失败');
+            };
+            document.head.appendChild(historyScript);
+        }
+
+        // 开始加载脚本
+        loadNextScript(0);
 
         // 页面加载完成后初始化用户状态
         document.addEventListener('DOMContentLoaded', function () {

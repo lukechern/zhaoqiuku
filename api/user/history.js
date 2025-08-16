@@ -16,8 +16,13 @@ const ITEMS_TABLE = 'items';
  */
 function verifyToken(token) {
     try {
-        return jwt.verify(token, JWT_SECRET);
+        console.log('验证JWT Token:', token.substring(0, 20) + '...');
+        console.log('JWT_SECRET存在:', !!JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
+        console.log('JWT验证成功:', decoded);
+        return decoded;
     } catch (error) {
+        console.error('JWT验证失败:', error.message);
         return null;
     }
 }
@@ -43,9 +48,17 @@ export default async function handler(req, res) {
     }
 
     try {
+        console.log('=== 历史记录API请求开始 ===');
+        console.log('请求方法:', req.method);
+        console.log('请求头:', req.headers);
+        console.log('查询参数:', req.query);
+
         // 验证用户身份
         const authHeader = req.headers.authorization;
+        console.log('认证头:', authHeader ? authHeader.substring(0, 20) + '...' : '无');
+
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            console.log('认证失败: 未提供有效的认证令牌');
             return res.status(401).json({
                 success: false,
                 error: '未提供有效的认证令牌'
@@ -54,8 +67,9 @@ export default async function handler(req, res) {
 
         const token = authHeader.substring(7);
         const decoded = verifyToken(token);
-        
+
         if (!decoded || !decoded.userId) {
+            console.log('认证失败: 令牌无效或已过期');
             return res.status(401).json({
                 success: false,
                 error: '认证令牌无效或已过期'
@@ -63,6 +77,7 @@ export default async function handler(req, res) {
         }
 
         const userId = decoded.userId;
+        console.log('用户ID:', userId);
 
         // 获取分页参数
         const page = parseInt(req.query.page) || 1;
@@ -169,13 +184,13 @@ export default async function handler(req, res) {
 function getRelativeTime(timestamp) {
     const now = Date.now();
     const diff = now - timestamp;
-    
+
     const minute = 60 * 1000;
     const hour = 60 * minute;
     const day = 24 * hour;
     const week = 7 * day;
     const month = 30 * day;
-    
+
     if (diff < minute) {
         return '刚刚';
     } else if (diff < hour) {

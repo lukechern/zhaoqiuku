@@ -5,6 +5,9 @@
     },
     "api/transcribe.js": {
       "maxDuration": 30
+    },
+    "api/user/history.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
