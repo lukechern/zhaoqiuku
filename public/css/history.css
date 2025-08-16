@@ -1,0 +1,354 @@
+/*
+ * ========================================
+ * 📋 历史记录页面样式
+ * ========================================
+ * 历史记录列表、加载状态和空状态的样式
+ */
+
+/* ==========================================
+   📋 历史记录容器
+   ========================================== */
+.history-container {
+    padding: 0;
+    max-width: 100%;
+}
+
+.history-records {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+}
+
+/* ==========================================
+   📝 历史记录项
+   ========================================== */
+.history-record {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.history-record:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.history-record:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 记录头部 */
+.record-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+}
+
+.record-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.item-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    word-break: break-word;
+    line-height: 1.3;
+}
+
+.item-type {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--background-secondary);
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    width: fit-content;
+}
+
+.record-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.relative-time {
+    font-size: 12px;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.absolute-time {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* 位置信息 */
+.record-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: var(--background-secondary);
+    border-radius: 8px;
+}
+
+.location-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.location-value {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+    word-break: break-word;
+}
+
+/* 转录文本 */
+.record-transcript {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(var(--primary-color-rgb), 0.05);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.transcript-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.transcript-value {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    word-break: break-word;
+    font-style: italic;
+}
+
+/* ==========================================
+   🔄 加载状态
+   ========================================== */
+.loading-indicator,
+.load-more-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 没有更多数据 */
+.no-more-data {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 16px;
+}
+
+/* ==========================================
+   📭 空状态
+   ========================================== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    min-height: 300px;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    max-width: 280px;
+}
+
+.empty-state .btn-primary {
+    margin-top: 16px;
+    padding: 12px 24px;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* ==========================================
+   ❌ 错误状态
+   ========================================== */
+.error-message {
+    background: rgba(var(--error-color-rgb, 220, 53, 69), 0.1);
+    color: var(--error-color, #dc3545);
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 16px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid rgba(var(--error-color-rgb, 220, 53, 69), 0.2);
+}
+
+/* ==========================================
+   📱 响应式设计
+   ========================================== */
+@media (max-width: 480px) {
+    .history-records {
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .history-record {
+        padding: 12px;
+    }
+    
+    .record-header {
+        margin-bottom: 10px;
+        gap: 8px;
+    }
+    
+    .item-name {
+        font-size: 15px;
+    }
+    
+    .record-location,
+    .record-transcript {
+        padding: 6px 10px;
+    }
+    
+    .location-value {
+        font-size: 13px;
+    }
+    
+    .transcript-value {
+        font-size: 12px;
+    }
+    
+    .empty-state {
+        padding: 32px 16px;
+        min-height: 250px;
+    }
+    
+    .empty-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+    
+    .empty-state h3 {
+        font-size: 18px;
+    }
+    
+    .empty-state p {
+        font-size: 13px;
+    }
+}
+
+/* ==========================================
+   🌙 深色模式适配
+   ========================================== */
+@media (prefers-color-scheme: dark) {
+    .history-record {
+        background: var(--card-background-dark, #2a2a2a);
+        border-color: var(--border-color-dark, #404040);
+    }
+    
+    .history-record:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .item-type {
+        background: var(--background-secondary-dark, #3a3a3a);
+    }
+    
+    .record-location {
+        background: var(--background-secondary-dark, #3a3a3a);
+    }
+    
+    .record-transcript {
+        background: rgba(var(--primary-color-rgb), 0.1);
+    }
+    
+    .loading-spinner {
+        border-color: var(--border-color-dark, #404040);
+        border-top-color: var(--primary-color);
+    }
+    
+    .no-more-data {
+        border-top-color: var(--border-color-dark, #404040);
+    }
+}
+
+/* ==========================================
+   🎨 主题色彩变量
+   ========================================== */
+:root {
+    --error-color-rgb: 220, 53, 69;
+    --error-color: #dc3545;
+}
+
+/* 确保与现有变量兼容 */
+.history-record {
+    --card-background: var(--background-primary, #ffffff);
+    --border-color: var(--border-light, #e0e0e0);
+    --text-primary: var(--color-text-primary, #333333);
+    --text-secondary: var(--color-text-secondary, #666666);
+    --background-secondary: var(--background-secondary, #f8f9fa);
+    --primary-color: var(--color-primary, #007bff);
+    --primary-color-rgb: 0, 123, 255;
+}

@@ -24,7 +24,8 @@
             'css/responsive.css',
             'css/microphone.css',
             'css/animations.css',
-            'css/navigation.css'
+            'css/navigation.css',
+            'css/history.css'
         ];
 
         cssFiles.forEach(file => {
@@ -61,12 +62,22 @@
             </header>
 
             <main class="main-content">
-                <div class="placeholder-content">
-                    <div class="placeholder-icon">
-                        <img src="img/history.svg" alt="记录图标">
+                <div class="history-container">
+                    <div id="history-records" class="history-records">
+                        <!-- 历史记录将在这里动态加载 -->
                     </div>
-                    <h2>记录页面</h2>
-                    <p>此页面内容将在后续开发中添加</p>
+                    <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <span>加载中...</span>
+                    </div>
+                    <div id="load-more-indicator" class="load-more-indicator" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <span>加载更多...</span>
+                    </div>
+                    <div id="no-more-data" class="no-more-data" style="display: none;">
+                        <span>没有更多记录了</span>
+                    </div>
+                    <div id="error-message" class="error-message" style="display: none;"></div>
                 </div>
             </main>
         </div>
@@ -93,6 +104,15 @@
             };
             document.head.appendChild(script);
         });
+
+        // 加载历史记录页面专用脚本
+        const historyScript = document.createElement('script');
+        historyScript.src = 'js/history.js?v=' + jsTimestamp + '&t=' + Math.random();
+        historyScript.async = false;
+        historyScript.onerror = function () {
+            console.error('Failed to load history script');
+        };
+        document.head.appendChild(historyScript);
 
         // 页面加载完成后初始化用户状态
         document.addEventListener('DOMContentLoaded', function () {
