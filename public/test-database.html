@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据库测试 - 在线诊断工具</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .test-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+        }
+        
+        .results {
+            margin-top: 30px;
+        }
+        
+        .summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .test-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ddd;
+        }
+        
+        .test-passed {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .test-failed {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .test-message {
+            margin-bottom: 15px;
+        }
+        
+        .test-details {
+            background: rgba(0,0,0,0.05);
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        
+        .timestamp {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 数据库在线测试工具</h1>
+        <p style="text-align: center; color: #666;">
+            点击下方按钮测试数据库连接、表结构和数据操作功能
+        </p>
+        
+        <button id="testButton" class="test-button" onclick="runTest()">
+            开始测试
+        </button>
+        
+        <div id="loading" class="loading" style="display: none;">
+            🔄 正在测试数据库功能，请稍候...
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="results" class="results" style="display: none;">
+            <div id="summary" class="summary"></div>
+            <div id="testItems"></div>
+            <div id="timestamp" class="timestamp"></div>
+        </div>
+    </div>
+
+    <script>
+        async function runTest() {
+            const button = document.getElementById('testButton');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
+            
+            // 重置状态
+            button.disabled = true;
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            results.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/test-database');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.results);
+                } else {
+                    showError(`测试失败: ${data.message}`);
+                }
+            } catch (err) {
+                showError(`请求失败: ${err.message}`);
+            } finally {
+                button.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        function displayResults(testResults) {
+            const results = document.getElementById('results');
+            const summary = document.getElementById('summary');
+            const testItems = document.getElementById('testItems');
+            const timestamp = document.getElementById('timestamp');
+            
+            // 显示摘要
+            summary.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-number">${testResults.summary.total}</div>
+                    <div class="summary-label">总测试数</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number" style="color: #28a745;">${testResults.summary.passed}</div>
+                    <div class="summary-label">通过</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number" style="color: #dc3545;">${testResults.summary.failed}</div>
+                    <div class="summary-label">失败</div>
+                </div>
+            `;
+            
+            // 显示测试项目
+            testItems.innerHTML = testResults.tests.map(test => `
+                <div class="test-item ${test.status === 'passed' ? 'test-passed' : 'test-failed'}">
+                    <div class="test-name">
+                        ${test.status === 'passed' ? '✅' : '❌'} ${test.name}
+                    </div>
+                    <div class="test-message">${test.message}</div>
+                    <div class="test-details">${JSON.stringify(test.details, null, 2)}</div>
+                </div>
+            `).join('');
+            
+            // 显示时间戳
+            timestamp.textContent = `测试时间: ${new Date(testResults.timestamp).toLocaleString('zh-CN')}`;
+            
+            results.style.display = 'block';
+        }
+        
+        function showError(message) {
+            const error = document.getElementById('error');
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+        
+        // 页面加载时自动运行测试
+        window.addEventListener('load', () => {
+            setTimeout(runTest, 1000);
+        });
+    </script>
+</body>
+</html>

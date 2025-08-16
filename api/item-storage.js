@@ -90,6 +90,7 @@ async function handlePutAction(object, location, userId, clientIP, transcript, t
         operation_time: currentTimestamp,
         client_ip: clientIP,
         transcript: transcript,
+        action_type: 'put', // 临时兼容旧字段
         item_type: type || null
     };
     
@@ -97,7 +98,7 @@ async function handlePutAction(object, location, userId, clientIP, transcript, t
     console.log('表名:', ITEMS_TABLE);
     console.log('插入数据:', insertData);
     console.log('物品类型 (type):', type);
-    console.log('SQL等效语句:', `INSERT INTO ${ITEMS_TABLE} (user_id, item_name, location, operation_time, client_ip, transcript, item_type) VALUES ('${userId}', '${object}', '${location}', ${currentTimestamp}, '${clientIP}', '${transcript}', '${type || null}')`);
+    console.log('SQL等效语句:', `INSERT INTO ${ITEMS_TABLE} (user_id, item_name, location, operation_time, client_ip, transcript, action_type, item_type) VALUES ('${userId}', '${object}', '${location}', ${currentTimestamp}, '${clientIP}', '${transcript}', 'put', '${type || null}')`);
 
     // 插入记录到数据库
     const { data, error } = await supabase
@@ -179,7 +180,7 @@ async function handleGetAction(object, userId) {
         user_id: userId,
         item_name: object
     });
-    console.log('SQL等效语句:', `SELECT * FROM ${ITEMS_TABLE} WHERE user_id = '${userId}' AND item_name = '${object}' ORDER BY operation_time DESC LIMIT 1`);
+    console.log('SQL等效语句:', `SELECT * FROM ${ITEMS_TABLE} WHERE user_id = '${userId}' AND item_name = '${object}' AND action_type = 'put' ORDER BY operation_time DESC LIMIT 1`);
 
     // 查找最新的存放记录
     const { data, error } = await supabase
@@ -187,6 +188,7 @@ async function handleGetAction(object, userId) {
         .select('*')
         .eq('user_id', userId)
         .eq('item_name', object)
+        .eq('action_type', 'put') // 临时保持旧的查询逻辑
         .order('operation_time', { ascending: false })
         .limit(1)
         .single();
