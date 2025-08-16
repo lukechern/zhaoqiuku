@@ -252,7 +252,9 @@ class SwipeDeleteManager_7ree {
             // 显示确认对话框
             const confirmed = await this.showDeleteConfirmation();
             if (!confirmed) {
-                return; // 如果用户取消，则不关闭，保持打开状态
+                // 如果用户取消，则关闭滑动区域回弹
+                this.closeSwipe(recordElement);
+                return;
             }
 
             // 添加删除动画
