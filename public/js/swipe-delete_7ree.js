@@ -53,8 +53,13 @@ class SwipeDeleteManager_7ree {
         
         console.log('SwipeDeleteManager_7ree: 找到历史记录元素', recordElement);
 
-        // 如果有其他项目正在滑动，先关闭它们
-        this.closeAllSwipes();
+        // 如果有其他项目正在滑动，先关闭“其他”项，当前项保持不变
+        const openedContainers = document.querySelectorAll('.swipe-container_7ree.show-actions_7ree');
+        openedContainers.forEach(container => {
+            if (container !== recordElement) {
+                this.closeSwipe(container);
+            }
+        });
 
         this.startX = e.touches[0].clientX;
         this.startY = e.touches[0].clientY;
@@ -139,6 +144,11 @@ class SwipeDeleteManager_7ree {
      */
     handleTouchEnd(e) {
         if (!this.activeSwipe || !this.isDragging) {
+            // 如果没有发生拖拽，也需要恢复过渡效果，避免点击后 transition 一直为 none
+            if (this.activeSwipe) {
+                const sc = this.activeSwipe.querySelector('.swipe-content_7ree');
+                if (sc) sc.style.transition = '';
+            }
             this.resetSwipeState();
             return;
         }
@@ -162,16 +172,6 @@ class SwipeDeleteManager_7ree {
 
         this.isDragging = false;
         this.isVerticalScroll = false;
-    }
-
-    /**
-     * 处理文档点击事件
-     */
-    handleDocumentClick(e) {
-        // 如果点击的不是删除按钮，关闭所有滑动
-        if (!e.target.closest('.delete-action_7ree')) {
-            this.closeAllSwipes();
-        }
     }
 
     /**
@@ -277,7 +277,7 @@ class SwipeDeleteManager_7ree {
         } catch (error) {
             console.error('删除记录失败:', error);
             recordElement.classList.remove('deleting_7ree');
-            this.closeSwipe(recordElement);
+            // 删除失败时不关闭滑动区域，保持打开状态供用户重试
             
             // 显示错误提示
             this.showToast('删除失败，请重试', 'error');
