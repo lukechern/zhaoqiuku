@@ -94,6 +94,7 @@ async function handlePutAction(object, location, userId, clientIP, transcript, t
     console.log('📊 执行SQL INSERT操作');
     console.log('表名:', ITEMS_TABLE);
     console.log('插入数据:', insertData);
+    console.log('物品类型 (type):', type);
     console.log('SQL等效语句:', `INSERT INTO ${ITEMS_TABLE} (user_id, item_name, location, operation_time, client_ip, transcript, item_type) VALUES ('${userId}', '${object}', '${location}', ${currentTimestamp}, '${clientIP}', '${transcript}', '${type || null}')`);
 
     // 插入记录到数据库
@@ -106,9 +107,25 @@ async function handlePutAction(object, location, userId, clientIP, transcript, t
     if (error) {
         console.error('❌ SQL INSERT失败:', error);
         console.error('错误详情:', error.message);
+        console.error('错误代码:', error.code);
+        console.error('错误提示:', error.hint);
+        console.error('错误详细信息:', error.details);
+        
+        // 提供更具体的错误信息
+        let specificMessage = '记录存储失败，请稍后重试';
+        if (error.message.includes('item_type')) {
+            specificMessage = '数据库表结构需要更新，请联系管理员执行数据库迁移';
+        } else if (error.message.includes('action_type')) {
+            specificMessage = '检测到旧的数据库结构，请执行数据库迁移脚本';
+        } else if (error.message.includes('column') && error.message.includes('does not exist')) {
+            specificMessage = '数据库字段不存在，请检查表结构或执行迁移脚本';
+        }
+        
         return {
             success: false,
-            message: '记录存储失败，请稍后重试'
+            message: specificMessage,
+            error: error.message,
+            errorCode: error.code
         };
     }
 

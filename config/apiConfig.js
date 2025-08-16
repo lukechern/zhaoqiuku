@@ -40,7 +40,7 @@ export const PROMPTS = {
   "transcript": "完整的转写文本",
   "action": "put" | "get" | "unknown",
   "object": "物品关键词",
-  "type": "物品类型"
+  "type": "物品类型",
   "location": "存放位置关键词",
   "confidence": 0.95
 }

@@ -48,11 +48,11 @@ export const DATABASE_TABLES = {
             ID: 'id',
             USER_ID: 'user_id',
             ITEM_NAME: 'item_name',
+            ITEM_TYPE: 'item_type',
             LOCATION: 'location',
             OPERATION_TIME: 'operation_time',
             CLIENT_IP: 'client_ip',
             TRANSCRIPT: 'transcript',
-            ITEM_TYPE: 'item_type',
             CREATED_AT: 'created_at',
             UPDATED_AT: 'updated_at'
         }
@@ -144,11 +144,11 @@ export const SQL_QUERIES = {
             id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
             user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
             item_name VARCHAR(255) NOT NULL,
+            item_type VARCHAR(50),
             location VARCHAR(255) NOT NULL,
             operation_time BIGINT NOT NULL,
             client_ip INET,
             transcript TEXT,
-            item_type VARCHAR(50),
             created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
