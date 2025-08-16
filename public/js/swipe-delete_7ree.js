@@ -36,9 +36,6 @@ class SwipeDeleteManager_7ree {
         document.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
         document.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
         
-        // 监听点击事件关闭已打开的滑动
-        document.addEventListener('click', this.handleDocumentClick.bind(this));
-        
         // 添加调试信息
         // console.log('SwipeDeleteManager_7ree: 事件监听器已设置');
     }
@@ -255,8 +252,7 @@ class SwipeDeleteManager_7ree {
             // 显示确认对话框
             const confirmed = await this.showDeleteConfirmation();
             if (!confirmed) {
-                this.closeSwipe(recordElement);
-                return;
+                return; // 如果用户取消，则不关闭，保持打开状态
             }
 
             // 添加删除动画
