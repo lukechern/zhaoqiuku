@@ -252,3 +252,6 @@ export class UserStateManager {
         }
     }
 }
+
+// 默认导出
+export default UserStateManager;

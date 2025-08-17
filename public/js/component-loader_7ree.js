@@ -139,7 +139,8 @@ async function loadScripts_7ree(scripts, isPageRefresh = false) {
 
     // 需要作为模块加载的脚本
     const moduleScripts = new Set([
-        'js/main.js'
+        'js/main.js',
+        'js/UserStateManager.js'
     ]);
 
     // 强制清除缓存并加载脚本
@@ -180,6 +181,12 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
         return;
     }
 
+    // 需要作为模块加载的脚本
+    const moduleScripts = new Set([
+        'js/main.js',
+        'js/UserStateManager.js'
+    ]);
+
     // 动态加载JavaScript文件，防止缓存
     const jsTimestamp = Date.now();
     let loadedCount = 0;
@@ -190,6 +197,10 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
+            // 如果是模块脚本，设置type="module"
+            if (moduleScripts.has(src)) {
+                script.type = 'module';
+            }
             script.async = false; // 确保按顺序加载
             
             script.onerror = function () {

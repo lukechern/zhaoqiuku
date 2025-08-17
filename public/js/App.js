@@ -5,7 +5,7 @@ import { UIController } from './ui-controller.js';
 import { APIClient } from './api-client.js';
 
 // 用户状态管理模块
-import { UserStateManager } from './UserStateManager.js';
+import UserStateManager from './UserStateManager.js';
 
 // 应用初始化模块
 import { AppInitializer } from './AppInitializer.js';
