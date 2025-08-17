@@ -35,7 +35,7 @@
     margin: 0 auto;
     width: 96%;
     box-sizing: border-box;
-    transition: all 0.2s ease;
+    /* transition: all 0.2s ease; 注释掉展开动画 */
     border-left: none;
     border-right: none;
 }
@@ -55,10 +55,6 @@
     border-top: 1px solid #404040;
 }
 
-.history-record:hover {
-    background: #333333;
-    border-color: var(--primary-color, #007bff);
-}
 
 .history-record:active {
     background: #2a2a2a;
