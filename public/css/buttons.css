@@ -67,15 +67,7 @@
     color: var(--primary-color);
 }
 
-.loading::after {
-    content: '';
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--border);
-    border-top: 2px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
+/* 转圈图标已移至 register.css 中的 .spinner 元素实现 */
 
 @keyframes spin {
     0% { transform: rotate(0deg); }

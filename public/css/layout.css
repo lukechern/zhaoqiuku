@@ -135,7 +135,6 @@ body {
 /* WebView环境优化 */
 .webview-environment {
     -webkit-user-select: none;
-    -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
 }

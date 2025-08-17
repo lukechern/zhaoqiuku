@@ -1,15 +1,4 @@
-/* 用户认证链接样式 */
-.header-top {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-}
-
-.user-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
+/* 用户认证链接样式 - 基础样式已在 header.css 中定义 */
 
 .auth-links {
     display: flex;

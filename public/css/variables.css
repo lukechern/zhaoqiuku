@@ -14,4 +14,11 @@
     --error: #f56565;
     --border: #2d3748;
     --shadow: rgba(0, 0, 0, 0.3);
+    
+    /* 错误相关变量 */
+    --error-color-rgb: 245, 101, 101;
+    --error-color: #f56565;
+    
+    /* 边框颜色变量 */
+    --border-color: #2d3748;
 }
