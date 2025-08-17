@@ -112,11 +112,13 @@
         margin: 1rem;
     }
     
+    /* 修改为左右布局，保持取消在左、确认在右 */
     .confirm-dialog-buttons_7ree {
-        flex-direction: column;
+        flex-direction: row;
     }
     
+    /* 取消全宽，使用自适应宽度 */
     .confirm-dialog-btn_7ree {
-        width: 100%;
+        width: auto;
     }
 }

@@ -250,22 +250,34 @@ class SwipeDeleteManager_7ree {
     async handleDeleteClick(recordId, recordElement) {
         // 防止重复点击
         if (recordElement.classList.contains('deleting_7ree') || recordElement.dataset.deleting === 'true') {
+            console.log('删除操作正在进行中，忽略重复点击');
             return;
         }
         
         try {
             // 标记正在处理删除
             recordElement.dataset.deleting = 'true';
+            console.log('开始删除操作，recordId:', recordId);
             
             // 显示确认对话框
             const confirmed = await this.showDeleteConfirmation();
+            
             if (!confirmed) {
-                // 如果用户取消，则关闭滑动区域回弹并清除标记
+                // 如果用户取消，则彻底清除所有删除相关标记和状态
+                console.log('用户取消删除操作');
                 recordElement.dataset.deleting = 'false';
+                recordElement.classList.remove('deleting_7ree');
+                
+                // 确保完全清除删除状态
+                setTimeout(() => {
+                    recordElement.removeAttribute('data-deleting');
+                }, 50);
+                
                 this.closeSwipe(recordElement);
                 return;
             }
 
+            console.log('用户确认删除操作');
             // 添加删除动画
             recordElement.classList.add('deleting_7ree');
 
@@ -287,8 +299,12 @@ class SwipeDeleteManager_7ree {
 
         } catch (error) {
             console.error('删除记录失败:', error);
+            
+            // 删除失败时完全清除删除状态
             recordElement.classList.remove('deleting_7ree');
             recordElement.dataset.deleting = 'false';
+            recordElement.removeAttribute('data-deleting');
+            
             // 删除失败时不关闭滑动区域，保持打开状态供用户重试
             
             // 显示错误提示

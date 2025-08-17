@@ -75,20 +75,22 @@ class ConfirmDialog_7ree {
             this.dialog.querySelector('.confirm-dialog-title_7ree').textContent = title;
             this.dialog.querySelector('.confirm-dialog-message_7ree').textContent = message;
             
-            // 设置按钮文本
+            // 设置按钮文本（使用更稳健的选择器，避免因类名切换导致无法获取元素）
             const cancelBtn = this.dialog.querySelector('.cancel');
-            const confirmBtn = this.dialog.querySelector('.confirm');
+            const confirmBtn = this.dialog.querySelector('.confirm-dialog-btn_7ree.confirm, .confirm-dialog-btn_7ree.danger');
             
-            cancelBtn.textContent = cancelText;
-            confirmBtn.textContent = confirmText;
+            if (cancelBtn) cancelBtn.textContent = cancelText;
+            if (confirmBtn) confirmBtn.textContent = confirmText;
             
-            // 设置危险样式
-            if (isDanger) {
-                confirmBtn.classList.add('danger');
-                confirmBtn.classList.remove('confirm');
-            } else {
-                confirmBtn.classList.add('confirm');
-                confirmBtn.classList.remove('danger');
+            // 设置危险样式（确保类名切换一致且元素存在）
+            if (confirmBtn) {
+                if (isDanger) {
+                    confirmBtn.classList.add('danger');
+                    confirmBtn.classList.remove('confirm');
+                } else {
+                    confirmBtn.classList.add('confirm');
+                    confirmBtn.classList.remove('danger');
+                }
             }
             
             // 显示对话框
@@ -96,7 +98,7 @@ class ConfirmDialog_7ree {
             
             // 聚焦到确认按钮
             setTimeout(() => {
-                confirmBtn.focus();
+                if (confirmBtn) confirmBtn.focus();
             }, 100);
         });
     }
