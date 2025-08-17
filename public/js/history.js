@@ -184,12 +184,12 @@ class HistoryManager {
                     <span class="item-name">${this.escapeHtml(record.itemName)}</span>
                 </div>
                 <div class="record-time">
-                    <span class="relative-time">${record.relativeTime}</span>
                     <span class="absolute-time">${record.formattedTime}</span>
+                    <span class="relative-time">${record.relativeTime}</span>
                 </div>
             </div>
             <div class="record-location">
-                <span class="location-label">位置:</span>
+                <span class="location-label">存放位置:</span>
                 <span class="location-value">${this.escapeHtml(record.location)}</span>
             </div>
             ${record.transcript ? `
