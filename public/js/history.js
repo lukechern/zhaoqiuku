@@ -1,3 +1,4 @@
+
 /*
  * ========================================
  * 📋 历史记录页面管理器
@@ -440,6 +441,43 @@ function initHistoryManager_7ree() {
 document.addEventListener('DOMContentLoaded', () => {
     // 延迟初始化，确保所有脚本都已加载
     setTimeout(initHistoryManager_7ree, 500);
+
+    // 使用事件委托处理登出按钮点击
+    document.body.addEventListener('click', (event) => {
+        const logoutBtn = event.target.closest('#logoutBtn');
+        if (logoutBtn) {
+            console.log('登出按钮被点击');
+            
+            // 显示确认对话框
+            if (window.showConfirmDialog_7ree) {
+                window.showConfirmDialog_7ree({
+                    title: '确认退出',
+                    message: '您确定要退出登录吗？',
+                    confirmText: '退出',
+                    cancelText: '取消',
+                    onConfirm: async () => {
+                        console.log('用户确认退出');
+                        if (window.authManager) {
+                            await window.authManager.logout();
+                            // 登出后可以刷新页面或跳转到登录页
+                            window.location.reload();
+                        }
+                    },
+                    onCancel: () => {
+                        console.log('用户取消退出');
+                    }
+                });
+            } else {
+                console.error('确认对话框函数 showConfirmDialog_7ree 未找到');
+                // Fallback to a simple confirm
+                if (confirm('您确定要退出登录吗？')) {
+                    if (window.authManager) {
+                        window.authManager.logout().then(() => window.location.reload());
+                    }
+                }
+            }
+        }
+    });
 });
 
 // 额外的初始化检查
