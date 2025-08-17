@@ -27,7 +27,8 @@
             'css/navigation.css',
             'css/history.css',
             'css/swipe-delete_7ree.css',
-            'css/frame-layout.css'
+            'css/frame-layout.css',
+            'css/confirm-dialog_7ree.css'
         ];
 
         cssFiles.forEach(file => {
@@ -99,6 +100,7 @@
 
         // 需要加载的JavaScript文件列表
         const scriptsToLoad_7ree = [
+            'js/confirm-dialog_7ree.js', // 优先加载确认对话框组件
             'js/navigation.js', // 优先加载导航组件
             'js/debug-config.js',
             'js/api-config.js',

@@ -289,11 +289,14 @@ class SwipeDeleteManager_7ree {
     /**
      * 显示删除确认对话框
      */
-    showDeleteConfirmation() {
-        return new Promise((resolve) => {
-            const confirmed = confirm('确定要删除这条记录吗？');
-            resolve(confirmed);
+    async showDeleteConfirmation() {
+        const confirmed = await customConfirm_7ree('确定要删除这条记录吗？', {
+            title: '删除记录',
+            confirmText: '删除',
+            cancelText: '取消',
+            danger: true
         });
+        return confirmed;
     }
 
     /**

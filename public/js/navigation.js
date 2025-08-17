@@ -63,7 +63,12 @@ class ComponentManager {
                 e.preventDefault();
                 
                 // 显示确认对话框
-                const confirmed = confirm('确定要退出登录吗？');
+                const confirmed = await customConfirm_7ree('确定要退出登录吗？', {
+                    title: '退出登录',
+                    confirmText: '退出',
+                    cancelText: '取消',
+                    danger: true
+                });
                 if (!confirmed) {
                     return; // 用户取消登出
                 }

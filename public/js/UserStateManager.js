@@ -202,7 +202,13 @@ export class UserStateManager {
             const userEmail = window.authManager?.user?.email || '当前用户';
             const confirmMessage = `确定要退出登录吗？\n\n当前登录用户：${userEmail}`;
 
-            if (!confirm(confirmMessage)) {
+            const confirmed = await customConfirm_7ree(confirmMessage, {
+                title: '退出登录',
+                confirmText: '退出',
+                cancelText: '取消',
+                danger: true
+            });
+            if (!confirmed) {
                 return;
             }
 

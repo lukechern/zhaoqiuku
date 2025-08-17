@@ -206,11 +206,10 @@
 /* 没有更多数据 */
 .no-more-data {
     text-align: center;
-    padding: 20px;
+    padding: 30px;
     margin-top: 20px;
     color: #888888;
     font-size: 13px;
-    border-top: 1px solid #404040;
     background: #1a1a1a;
 }
 
