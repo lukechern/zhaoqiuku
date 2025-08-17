@@ -94,18 +94,37 @@
         .header-top-fixed_7ree .auth-links .auth-link:hover,
         .header-top-fixed_7ree .logout-btn:hover {
             color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .header-top-fixed_7ree .logout-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 6px;
+            margin-left: 8px;
         }
         
         .header-top-fixed_7ree .user-info {
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.05) !important;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-top-fixed_7ree .user-info:not(.hidden) {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         
         .header-top-fixed_7ree .user-email {
             font-size: 0.9rem;
-            color: var(--text-secondary);
+            color: var(--text-primary) !important;
+            font-weight: 500;
         }
         
         .header-top-fixed_7ree .logout-icon {
