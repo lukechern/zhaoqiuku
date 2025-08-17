@@ -107,7 +107,6 @@ body {
 .container {
     max-width: 100%;
     margin: 0 auto;
-    margin-top:60px;
     padding: 20px;
     min-height: 100vh;
     display: flex;
@@ -117,7 +116,6 @@ body {
 /* PC端容器样式 */
 @media (min-width: 769px) {
     .container {
-        padding: 30px 20px 20px;
         min-height: calc(100vh - 40px);
         max-width: 375px;
         width: 100%;
