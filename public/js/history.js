@@ -196,7 +196,7 @@ class HistoryManager {
             </div>
             ${record.transcript ? `
                 <div class="record-transcript">
-                    <span class="transcript-label">原始语音:</span><span class="transcript-value">${this.escapeHtml(record.transcript)}</span>
+                    <span class="transcript-label">原始语音</span><span class="transcript-value">${this.escapeHtml(record.transcript)}</span>
                 </div>
             ` : ''}
         `;
