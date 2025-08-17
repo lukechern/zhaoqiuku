@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=contain">
+    <title>记录 - 找秋裤</title>
+
+    <!-- 防缓存设置 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <script>
+        // 动态添加版本号防止CSS缓存
+        const timestamp = Date.now();
+        const cssFiles = [
+            'css/variables.css',
+            'css/layout.css',
+            'css/header.css',
+            'css/buttons.css',
+            'css/results.css',
+            'css/auth.css',
+            'css/responsive.css',
+            'css/microphone.css',
+            'css/animations.css',
+            'css/navigation.css',
+            'css/history.css',
+            'css/swipe-delete_7ree.css',
+            'css/frame-layout.css'
+        ];
+
+        cssFiles.forEach(file => {
+            document.write('<link rel="stylesheet" href="' + file + '?v=' + timestamp + '">');
+        });
+    </script>
+
+    <!-- 预加载底部导航 -->
+    <script>
+        // 预加载底部导航组件
+        (function () {
+            const preloadNav = async () => {
+                try {
+                    const response = await fetch('components/bottom-nav.html');
+                    const navHtml = await response.text();
+                    window.preloadedNavHtml = navHtml;
+                } catch (error) {
+                    console.error('Failed to preload navigation:', error);
+                }
+            };
+            preloadNav();
+        })();
+    </script>
+</head>
+
+<body data-page="history">
+    <div class="mobile-frame">
+        <div class="container">
+            <header class="header">
+                <!-- header-top占位元素 -->
+                <div class="header-top-placeholder"></div>
+            </header>
+
+            <main class="main-content">
+                <div class="history-container">
+                    <div id="history-records" class="history-records">
+                        <!-- 历史记录将在这里动态加载 -->
+                    </div>
+                    <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <span>加载中...</span>
+                    </div>
+                    <div id="load-more-indicator" class="load-more-indicator" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <span>加载更多...</span>
+                    </div>
+                    <div id="no-more-data" class="no-more-data" style="display: none;">
+                        <span>没有更多记录了</span>
+                    </div>
+                    <div id="error-message" class="error-message" style="display: none;"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // 动态加载JavaScript文件，防止缓存
+        const jsTimestamp = Date.now();
+        const scripts = [
+            'js/navigation.js', // 优先加载导航组件
+            'js/debug-config.js',
+            'js/api-config.js',
+            'js/auth-manager.js',
+            'js/state-sync.js',
+            'js/auth-debug.js',
+            'js/swipe-delete_7ree.js'
+        ];
+
+        // 按顺序加载脚本，确保依赖关系正确
+        let loadedScripts = 0;
+        const totalScripts = scripts.length;
+
+        function loadNextScript(index) {
+            if (index >= totalScripts) {
+                // 所有基础脚本加载完成，加载历史记录脚本
+                loadHistoryScript();
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = scripts[index] + '?v=' + jsTimestamp + '&t=' + Math.random();
+            script.async = false;
+            script.onload = function () {
+                loadedScripts++;
+                loadNextScript(index + 1);
+            };
+            script.onerror = function () {
+                loadNextScript(index + 1); // 继续加载下一个脚本
+            };
+            document.head.appendChild(script);
+        }
+
+        function loadHistoryScript() {
+            const historyScript = document.createElement('script');
+            historyScript.src = 'js/history.js?v=' + jsTimestamp + '&t=' + Math.random();
+            historyScript.async = false;
+            document.head.appendChild(historyScript);
+        }
+
+        // 开始加载脚本
+        loadNextScript(0);
+
+        // 页面加载完成后初始化用户状态
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.forceUpdateUserDisplay) {
+                window.forceUpdateUserDisplay();
+            }
+        });
+    </script>
+</body>
+
+</html>

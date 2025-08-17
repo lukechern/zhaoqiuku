@@ -26,7 +26,8 @@
             'css/animations.css',
             'css/navigation.css',
             'css/history.css',
-            'css/swipe-delete_7ree.css'
+            'css/swipe-delete_7ree.css',
+            'css/frame-layout.css'
         ];
 
         cssFiles.forEach(file => {
@@ -34,107 +35,91 @@
         });
     </script>
 
-    <!-- 预加载底部导航 -->
+    <!-- 预加载组件 -->
     <script>
-        // 预加载底部导航组件
+        // 预加载所有组件
         (function () {
-            const preloadNav = async () => {
+            const preloadComponents = async () => {
                 try {
-                    const response = await fetch('components/bottom-nav.html');
-                    const navHtml = await response.text();
-                    window.preloadedNavHtml = navHtml;
+                    const [headerResponse, navResponse, historyResponse] = await Promise.all([
+                        fetch('components/header-top.html'),
+                        fetch('components/bottom-nav.html'),
+                        fetch('components/history-records_7ree.html')
+                    ]);
+                    
+                    window.preloadedHeaderHtml = await headerResponse.text();
+                    window.preloadedNavHtml = await navResponse.text();
+                    window.preloadedHistoryHtml = await historyResponse.text();
                 } catch (error) {
-                    console.error('Failed to preload navigation:', error);
+                    console.error('Failed to preload components:', error);
                 }
             };
-            preloadNav();
+            preloadComponents();
         })();
     </script>
 </head>
 
-<body data-page="history">
-    <div class="mobile-frame">
-        <div class="container">
-            <header class="header">
-                <!-- header-top占位元素 -->
-                <div class="header-top-placeholder"></div>
-            </header>
+<body data-page="history" style="overflow: hidden; touch-action: none;">
+    <div class="layout-container_7ree">
+        <div class="mobile-frame">
+            <!-- 固定顶部标题栏 -->
+            <div class="header-top-fixed_7ree" id="headerTopContainer_7ree">
+                <!-- header-top组件将在这里加载 -->
+            </div>
 
-            <main class="main-content">
-                <div class="history-container">
-                    <div id="history-records" class="history-records">
-                        <!-- 历史记录将在这里动态加载 -->
+            <!-- 中间主要内容区域 -->
+            <div class="main-content-area_7ree">
+                <div class="container">
+                    <div id="historyContentContainer_7ree">
+                        <!-- history-records组件将在这里加载 -->
                     </div>
-                    <div id="loading-indicator" class="loading-indicator" style="display: none;">
-                        <div class="loading-spinner"></div>
-                        <span>加载中...</span>
-                    </div>
-                    <div id="load-more-indicator" class="load-more-indicator" style="display: none;">
-                        <div class="loading-spinner"></div>
-                        <span>加载更多...</span>
-                    </div>
-                    <div id="no-more-data" class="no-more-data" style="display: none;">
-                        <span>没有更多记录了</span>
-                    </div>
-                    <div id="error-message" class="error-message" style="display: none;"></div>
                 </div>
-            </main>
+            </div>
+
+            <!-- 固定底部导航栏 -->
+            <div class="bottom-nav-fixed_7ree" id="bottomNavContainer_7ree">
+                <!-- bottom-nav组件将在这里加载 -->
+            </div>
         </div>
     </div>
 
     <script>
-        // 动态加载JavaScript文件，防止缓存
-        const jsTimestamp = Date.now();
-        const scripts = [
+        // 页面刷新检测和状态恢复
+        window.addEventListener('beforeunload', function () {
+            // 标记页面即将刷新
+            sessionStorage.setItem('page_refreshing', 'true');
+        });
+
+        // 检查是否是页面刷新
+        const isPageRefresh = sessionStorage.getItem('page_refreshing') === 'true';
+        if (isPageRefresh) {
+            console.log('检测到页面刷新，准备恢复状态...');
+            sessionStorage.removeItem('page_refreshing');
+        }
+
+        // 需要加载的JavaScript文件列表
+        const scriptsToLoad_7ree = [
             'js/navigation.js', // 优先加载导航组件
             'js/debug-config.js',
             'js/api-config.js',
             'js/auth-manager.js',
             'js/state-sync.js',
             'js/auth-debug.js',
-            'js/swipe-delete_7ree.js'
+            'js/swipe-delete_7ree.js',
+            'js/history.js'
         ];
 
-        // 按顺序加载脚本，确保依赖关系正确
-        let loadedScripts = 0;
-        const totalScripts = scripts.length;
-
-        function loadNextScript(index) {
-            if (index >= totalScripts) {
-                // 所有基础脚本加载完成，加载历史记录脚本
-                loadHistoryScript();
-                return;
-            }
-
-            const script = document.createElement('script');
-            script.src = scripts[index] + '?v=' + jsTimestamp + '&t=' + Math.random();
-            script.async = false;
-            script.onload = function () {
-                loadedScripts++;
-                loadNextScript(index + 1);
-            };
-            script.onerror = function () {
-                loadNextScript(index + 1); // 继续加载下一个脚本
-            };
-            document.head.appendChild(script);
-        }
-
-        function loadHistoryScript() {
-            const historyScript = document.createElement('script');
-            historyScript.src = 'js/history.js?v=' + jsTimestamp + '&t=' + Math.random();
-            historyScript.async = false;
-            document.head.appendChild(historyScript);
-        }
-
-        // 开始加载脚本
-        loadNextScript(0);
-
-        // 页面加载完成后初始化用户状态
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.forceUpdateUserDisplay) {
-                window.forceUpdateUserDisplay();
-            }
-        });
+        // 加载组件加载器并初始化
+        const componentLoaderScript = document.createElement('script');
+        componentLoaderScript.src = 'js/component-loader_7ree.js';
+        componentLoaderScript.onload = function() {
+            // 组件加载器加载完成后，初始化组件加载流程
+            window.initHistoryComponentLoader_7ree(scriptsToLoad_7ree);
+        };
+        componentLoaderScript.onerror = function() {
+            console.error('Failed to load component loader');
+        };
+        document.head.appendChild(componentLoaderScript);
     </script>
 </body>
 
