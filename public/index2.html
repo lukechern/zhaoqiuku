@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=contain">
+    <title>找秋裤 - AI语音寻物助手</title>
+
+    <!-- 防缓存设置 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <script>
+        // 动态添加版本号防止CSS缓存
+        const timestamp = Date.now();
+        const cssFiles = [
+            'css/variables.css',
+            'css/layout.css',
+            'css/header.css',
+            'css/buttons.css',
+            'css/results.css',
+            'css/auth.css',
+            'css/responsive.css',
+            'css/microphone.css',
+            'css/animations.css',
+            'css/navigation.css'
+        ];
+
+        cssFiles.forEach(file => {
+            document.write('<link rel="stylesheet" href="' + file + '?v=' + timestamp + '">');
+        });
+    </script>
+
+    <!-- 新布局样式 -->
+    <style>
+        /* 新布局样式 */
+        .layout-container_7ree {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header-top-fixed_7ree {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-color, #ffffff);
+            border-bottom: 1px solid var(--border-color, #e0e0e0);
+            height: 60px;
+        }
+
+        .bottom-nav-fixed_7ree {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--bg-color, #ffffff);
+            border-top: 1px solid var(--border-color, #e0e0e0);
+            height: 80px;
+        }
+
+        .main-content-area_7ree {
+            flex: 1;
+            margin-top: 60px;
+            margin-bottom: 80px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mobile-frame {
+            width: 100%;
+            height: 100%;
+            max-width: 414px;
+            margin: 0 auto;
+            background: var(--bg-color, #ffffff);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* PC版样式调整 */
+        @media (min-width: 768px) {
+            .layout-container_7ree {
+                justify-content: center;
+                align-items: center;
+                background: var(--desktop-bg, #f5f5f5);
+            }
+
+            .mobile-frame {
+                max-width: 414px;
+                height: 896px;
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                overflow: hidden;
+            }
+
+            .header-top-fixed_7ree {
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            .bottom-nav-fixed_7ree {
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+        }
+
+        /* 确保内容不会跳动 */
+        .main-content-wrapper_7ree {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+    </style>
+
+    <!-- 预加载组件 -->
+    <script>
+        // 预加载所有组件
+        (function () {
+            const preloadComponents = async () => {
+                try {
+                    const [headerResponse, navResponse, mainResponse] = await Promise.all([
+                        fetch('components/header-top.html'),
+                        fetch('components/bottom-nav.html'),
+                        fetch('components/main.html')
+                    ]);
+                    
+                    window.preloadedHeaderHtml = await headerResponse.text();
+                    window.preloadedNavHtml = await navResponse.text();
+                    window.preloadedMainHtml = await mainResponse.text();
+                } catch (error) {
+                    console.error('Failed to preload components:', error);
+                }
+            };
+            preloadComponents();
+        })();
+    </script>
+</head>
+
+<body data-page="index" style="overflow: hidden; touch-action: none;">
+    <div class="layout-container_7ree">
+        <div class="mobile-frame">
+            <!-- 固定顶部标题栏 -->
+            <div class="header-top-fixed_7ree" id="headerTopContainer_7ree">
+                <!-- header-top组件将在这里加载 -->
+            </div>
+
+            <!-- 中间主要内容区域 -->
+            <div class="main-content-area_7ree">
+                <div class="container">
+                    <div id="mainContentContainer_7ree">
+                        <!-- main组件将在这里加载 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 固定底部导航栏 -->
+            <div class="bottom-nav-fixed_7ree" id="bottomNavContainer_7ree">
+                <!-- bottom-nav组件将在这里加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面刷新检测和状态恢复
+        window.addEventListener('beforeunload', function () {
+            // 标记页面即将刷新
+            sessionStorage.setItem('page_refreshing', 'true');
+        });
+
+        // 检查是否是页面刷新
+        const isPageRefresh = sessionStorage.getItem('page_refreshing') === 'true';
+        if (isPageRefresh) {
+            console.log('检测到页面刷新，准备恢复状态...');
+            sessionStorage.removeItem('page_refreshing');
+        }
+
+        // 组件加载函数
+        function loadComponents_7ree() {
+            return new Promise((resolve) => {
+                // 加载header-top组件
+                if (window.preloadedHeaderHtml) {
+                    document.getElementById('headerTopContainer_7ree').innerHTML = window.preloadedHeaderHtml;
+                }
+
+                // 加载main组件
+                if (window.preloadedMainHtml) {
+                    document.getElementById('mainContentContainer_7ree').innerHTML = window.preloadedMainHtml;
+                }
+
+                // 加载bottom-nav组件
+                if (window.preloadedNavHtml) {
+                    document.getElementById('bottomNavContainer_7ree').innerHTML = window.preloadedNavHtml;
+                }
+
+                // 确保DOM更新完成
+                setTimeout(resolve, 100);
+            });
+        }
+
+        // 等待组件加载完成的函数
+        async function waitForComponents_7ree() {
+            let attempts = 0;
+            const maxAttempts = 50;
+            
+            while (attempts < maxAttempts) {
+                if (window.preloadedHeaderHtml && window.preloadedMainHtml && window.preloadedNavHtml) {
+                    await loadComponents_7ree();
+                    return true;
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            return false;
+        }
+
+        // 动态加载JavaScript文件的函数
+        async function loadScripts_7ree() {
+            // 先等待组件加载完成
+            const componentsLoaded = await waitForComponents_7ree();
+            if (!componentsLoaded) {
+                console.error('组件加载超时');
+                return;
+            }
+
+            // 动态加载JavaScript文件，防止缓存
+            const jsTimestamp = Date.now();
+            const scripts = [
+                'js/navigation.js', // 优先加载导航组件
+                'js/debug-config.js',
+                'js/api-config.js',
+                'js/auth-manager.js',
+                'js/state-sync.js',
+                'js/auth-debug.js',
+                // 模块脚本将通过main.js加载
+                'js/main.js'
+            ];
+
+            // 需要作为模块加载的脚本
+            const moduleScripts = new Set([
+                'js/main.js'
+            ]);
+
+            // 强制清除缓存并加载脚本
+            scripts.forEach((src, index) => {
+                const script = document.createElement('script');
+                script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
+                // 如果是模块脚本，设置type="module"
+                if (moduleScripts.has(src)) {
+                    script.type = 'module';
+                }
+                script.async = false; // 确保按顺序加载
+                script.onerror = function () {
+                    console.error('Failed to load script:', src);
+                };
+                script.onload = function () {
+                    console.log('Loaded script:', src);
+
+                    // 如果是最后一个脚本且是页面刷新，延迟恢复状态
+                    if (index === scripts.length - 1 && isPageRefresh) {
+                        setTimeout(() => {
+                            console.log('页面刷新后恢复用户状态...');
+                            if (window.forceUpdateUserDisplay) {
+                                window.forceUpdateUserDisplay();
+                            }
+                        }, 500);
+                    }
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        // DOM加载完成后开始加载流程
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScripts_7ree();
+        });
+
+        // 如果DOM已经加载完成，立即开始
+        if (document.readyState === 'loading') {
+            // DOM还在加载中，等待DOMContentLoaded事件
+        } else {
+            // DOM已经加载完成，立即开始
+            loadScripts_7ree();
+        }
+    </script>
+</body>
+
+</html>
