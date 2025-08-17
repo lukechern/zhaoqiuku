@@ -180,8 +180,8 @@ class HistoryManager {
         div.innerHTML = `
             <div class="record-header">
                 <div class="record-item">
-                    <span class="item-name">${this.escapeHtml(record.itemName)}</span>
                     ${record.itemType ? `<span class="item-type">${this.escapeHtml(record.itemType)}</span>` : ''}
+                    <span class="item-name">${this.escapeHtml(record.itemName)}</span>
                 </div>
                 <div class="record-time">
                     <span class="relative-time">${record.relativeTime}</span>
@@ -194,8 +194,7 @@ class HistoryManager {
             </div>
             ${record.transcript ? `
                 <div class="record-transcript">
-                    <span class="transcript-label">原始语音:</span>
-                    <span class="transcript-value">${this.escapeHtml(record.transcript)}</span>
+                    <span class="transcript-label">原始语音:</span><span class="transcript-value">${this.escapeHtml(record.transcript)}</span>
                 </div>
             ` : ''}
         `;

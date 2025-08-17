@@ -141,8 +141,8 @@
 /* 转录文本 */
 .record-transcript {
     display: flex;
-    flex-direction: column;
-    gap: 3px;
+    flex-direction: row;
+    gap: 6px;
     padding: 6px 10px;
     border-radius: 6px;
     border-left: 2px solid var(--primary-color, #007bff);
