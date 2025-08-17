@@ -120,9 +120,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
     margin-bottom: 6px;
     padding: 4px 0px;
+}
+
+.location-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
 }
 
 .location-label {
@@ -163,9 +170,8 @@
 }
 
 .transcript-value {
-    font-size: 12px;
+    font-size: 10px;
     color: #bbbbbb;
-    line-height: 1.4;
     word-break: break-word;
     font-style: italic;
 }
