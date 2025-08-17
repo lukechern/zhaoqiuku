@@ -48,7 +48,7 @@
 
 .history-record.swipe-container_7ree .swipe-content_7ree {
     padding: 12px 16px;
-    background: #2a2a2a;
+    background: #1a1a1a;
 }
 
 .history-record:first-child {
@@ -207,6 +207,7 @@
 .no-more-data {
     text-align: center;
     padding: 20px;
+    margin-top: 20px;
     color: #888888;
     font-size: 13px;
     border-top: 1px solid #404040;
@@ -274,18 +275,5 @@
 }
 
 /* 响应式样式已移至 responsive.css 文件中统一管理 */
-
-/* ==========================================
-   🌙 深色模式适配 (已默认应用暗色主题)
-   ========================================== */
-.loading-spinner {
-    border-color: #404040;
-    border-top-color: var(--primary-color, #007bff);
-}
-
-.no-more-data {
-    border-top-color: #404040;
-    color: #888888;
-}
 
 /* 主题色彩变量已统一到 variables.css 文件中 */
