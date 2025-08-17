@@ -44,14 +44,14 @@ class SwipeDeleteManager_7ree {
      * 处理触摸开始事件
      */
     handleTouchStart(e) {
-        console.log('SwipeDeleteManager_7ree: touchstart事件触发', e.target);
+        // console.log('SwipeDeleteManager_7ree: touchstart事件触发', e.target);
         const recordElement = e.target.closest('.history-record');
         if (!recordElement) {
-            console.log('SwipeDeleteManager_7ree: 未找到.history-record元素');
+            // console.log('SwipeDeleteManager_7ree: 未找到.history-record元素');
             return;
         }
         
-        console.log('SwipeDeleteManager_7ree: 找到历史记录元素', recordElement);
+        // console.log('SwipeDeleteManager_7ree: 找到历史记录元素', recordElement);
 
         // 如果有其他项目正在滑动，先关闭“其他”项，当前项保持不变
         const openedContainers = document.querySelectorAll('.swipe-container_7ree.show-actions_7ree');
@@ -178,16 +178,16 @@ class SwipeDeleteManager_7ree {
      * 确保记录元素有滑动容器结构
      */
     ensureSwipeStructure(recordElement) {
-        console.log('SwipeDeleteManager_7ree: ensureSwipeStructure被调用', recordElement);
+        // console.log('SwipeDeleteManager_7ree: ensureSwipeStructure被调用', recordElement);
         
         if (recordElement.classList.contains('swipe-container_7ree')) {
-            console.log('SwipeDeleteManager_7ree: 元素已有滑动结构');
+            // console.log('SwipeDeleteManager_7ree: 元素已有滑动结构');
             return; // 已经有滑动结构
         }
 
         // 获取记录ID（从数据属性或其他方式）
         const recordId = this.extractRecordId(recordElement);
-        console.log('SwipeDeleteManager_7ree: 记录ID', recordId);
+        // console.log('SwipeDeleteManager_7ree: 记录ID', recordId);
         
         // 包装现有内容
         const originalContent = recordElement.innerHTML;
@@ -221,7 +221,7 @@ class SwipeDeleteManager_7ree {
         recordElement.appendChild(swipeContent);
         recordElement.appendChild(swipeActions);
         
-        console.log('SwipeDeleteManager_7ree: 滑动结构创建完成', recordElement);
+        // console.log('SwipeDeleteManager_7ree: 滑动结构创建完成', recordElement);
     }
 
     /**
@@ -432,9 +432,9 @@ class SwipeDeleteManager_7ree {
      * 为新添加的记录元素设置滑动功能
      */
     setupSwipeForElement(recordElement) {
-        console.log('SwipeDeleteManager_7ree: setupSwipeForElement被调用', recordElement);
+        // console.log('SwipeDeleteManager_7ree: setupSwipeForElement被调用', recordElement);
         if (!recordElement) {
-            console.error('SwipeDeleteManager_7ree: recordElement为空');
+            // console.error('SwipeDeleteManager_7ree: recordElement为空');
             return;
         }
         this.ensureSwipeStructure(recordElement);
@@ -448,7 +448,7 @@ window.swipeDeleteManager_7ree = null;
 function initSwipeDeleteManager_7ree() {
     if (!window.swipeDeleteManager_7ree) {
         window.swipeDeleteManager_7ree = new SwipeDeleteManager_7ree();
-        console.log('SwipeDeleteManager_7ree: 管理器已初始化');
+        // console.log('SwipeDeleteManager_7ree: 管理器已初始化');
     }
 }
 

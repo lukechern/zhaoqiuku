@@ -209,14 +209,14 @@ class HistoryManager {
             
             if (window.swipeDeleteManager_7ree) {
                 window.swipeDeleteManager_7ree.setupSwipeForElement(div);
-                console.log('SwipeDeleteManager_7ree: 为记录元素设置滑动功能', div);
+                // console.log('SwipeDeleteManager_7ree: 为记录元素设置滑动功能', div);
             } else {
-                console.error('SwipeDeleteManager_7ree: 滑动删除管理器未找到');
+                // console.error('SwipeDeleteManager_7ree: 滑动删除管理器未找到');
                 // 如果滑动删除管理器还没有初始化，等待一段时间后重试
                 setTimeout(() => {
                     if (window.swipeDeleteManager_7ree) {
                         window.swipeDeleteManager_7ree.setupSwipeForElement(div);
-                        console.log('SwipeDeleteManager_7ree: 延迟为记录元素设置滑动功能', div);
+                        // console.log('SwipeDeleteManager_7ree: 延迟为记录元素设置滑动功能', div);
                     }
                 }, 100);
             }
