@@ -47,6 +47,40 @@ function loadHistoryComponents_7ree() {
     });
 }
 
+// 强制加载缺失的组件
+async function forceLoadMissingComponents_7ree() {
+    const loadComponent = async (url, varName) => {
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                const html = await response.text();
+                window[varName] = html;
+                console.log(`强制加载组件成功: ${url}`);
+                return true;
+            }
+        } catch (error) {
+            console.error(`强制加载组件失败: ${url}`, error);
+        }
+        return false;
+    };
+    
+    const promises = [];
+    
+    if (!window.preloadedHeaderHtml) {
+        promises.push(loadComponent('components/header-top.html', 'preloadedHeaderHtml'));
+    }
+    
+    if (!window.preloadedHistoryHtml) {
+        promises.push(loadComponent('components/history-records_7ree.html', 'preloadedHistoryHtml'));
+    }
+    
+    if (!window.preloadedNavHtml) {
+        promises.push(loadComponent('components/bottom-nav.html', 'preloadedNavHtml'));
+    }
+    
+    await Promise.all(promises);
+}
+
 // 等待组件加载完成的函数
 async function waitForComponents_7ree() {
     let attempts = 0;
@@ -76,7 +110,19 @@ async function waitForHistoryComponents_7ree() {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
     }
-    return false;
+    
+    // 超时后尝试强制加载组件
+    console.warn('组件预加载超时，尝试强制加载组件...');
+    console.log('预加载状态:', {
+        header: !!window.preloadedHeaderHtml,
+        history: !!window.preloadedHistoryHtml,
+        nav: !!window.preloadedNavHtml
+    });
+    
+    // 强制加载缺失的组件
+    await forceLoadMissingComponents_7ree();
+    await loadHistoryComponents_7ree();
+    return true;
 }
 
 // 动态加载JavaScript文件的函数
@@ -136,30 +182,73 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
 
     // 动态加载JavaScript文件，防止缓存
     const jsTimestamp = Date.now();
+    let loadedCount = 0;
+    let hasError = false;
 
-    // 强制清除缓存并加载脚本
-    scripts.forEach((src, index) => {
-        const script = document.createElement('script');
-        script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
-        script.async = false; // 确保按顺序加载
-        script.onerror = function () {
-            console.error('Failed to load script:', src);
-        };
-        script.onload = function () {
-            console.log('Loaded script:', src);
-
-            // 如果是最后一个脚本且是页面刷新，延迟恢复状态
-            if (index === scripts.length - 1 && isPageRefresh) {
-                setTimeout(() => {
-                    console.log('页面刷新后恢复用户状态...');
-                    if (window.forceUpdateUserDisplay) {
-                        window.forceUpdateUserDisplay();
-                    }
-                }, 500);
-            }
-        };
-        document.head.appendChild(script);
+    // 创建Promise来跟踪所有脚本的加载状态
+    const scriptPromises = scripts.map((src, index) => {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src + '?v=' + jsTimestamp + '&t=' + Math.random();
+            script.async = false; // 确保按顺序加载
+            
+            script.onerror = function () {
+                console.error('Failed to load script:', src);
+                hasError = true;
+                reject(new Error(`Failed to load script: ${src}`));
+            };
+            
+            script.onload = function () {
+                console.log('Loaded script:', src);
+                loadedCount++;
+                resolve();
+            };
+            
+            document.head.appendChild(script);
+        });
     });
+
+    try {
+        // 等待所有脚本加载完成
+        await Promise.all(scriptPromises);
+        console.log(`所有历史页面脚本加载完成 (${loadedCount}/${scripts.length})`);
+        
+        // 确保HistoryManager正确初始化
+        setTimeout(() => {
+            if (!window.historyManager) {
+                if (window.initHistoryManager_7ree) {
+                    console.log('调用专用初始化函数...');
+                    window.initHistoryManager_7ree();
+                } else if (window.HistoryManager) {
+                    console.log('手动初始化HistoryManager...');
+                    window.historyManager = new window.HistoryManager();
+                }
+            }
+            
+            // 如果是页面刷新，延迟恢复状态
+            if (isPageRefresh) {
+                console.log('页面刷新后恢复用户状态...');
+                if (window.forceUpdateUserDisplay) {
+                    window.forceUpdateUserDisplay();
+                }
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.error('脚本加载失败:', error);
+        // 即使有脚本加载失败，也尝试初始化已加载的功能
+        setTimeout(() => {
+            if (!window.historyManager) {
+                if (window.initHistoryManager_7ree) {
+                    console.log('部分脚本加载失败，调用专用初始化函数...');
+                    window.initHistoryManager_7ree();
+                } else if (window.HistoryManager) {
+                    console.log('部分脚本加载失败，尝试初始化HistoryManager...');
+                    window.historyManager = new window.HistoryManager();
+                }
+            }
+        }, 200);
+    }
 }
 
 // 初始化组件加载器
