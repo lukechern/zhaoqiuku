@@ -42,12 +42,6 @@
     display: flex !important;
 }
 
-.user-email {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
 .auth-link {
     color: var(--text-secondary);
     text-decoration: none;

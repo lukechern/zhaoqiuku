@@ -61,6 +61,13 @@ class ComponentManager {
         if (logoutBtn) {
             logoutBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
+                
+                // 显示确认对话框
+                const confirmed = confirm('确定要退出登录吗？');
+                if (!confirmed) {
+                    return; // 用户取消登出
+                }
+                
                 try {
                     if (window.authManager) {
                         console.log('执行登出操作...');
