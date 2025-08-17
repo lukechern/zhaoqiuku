@@ -34,10 +34,10 @@ export class UserStateManager {
                 this.logoutBtn.replaceWith(this.logoutBtn.cloneNode(true));
                 this.logoutBtn = document.getElementById('logoutBtn');
 
-                this.logoutBtn.addEventListener('click', (e) => {
+                this.logoutBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    this.handleLogout();
+                    await this.handleLogout();
                 });
             }
 

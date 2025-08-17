@@ -213,9 +213,9 @@ class SwipeDeleteManager_7ree {
 
         // 添加删除按钮点击事件
         const deleteButton = swipeActions.querySelector('.delete-action_7ree');
-        deleteButton.addEventListener('click', (e) => {
+        deleteButton.addEventListener('click', async (e) => {
             e.stopPropagation();
-            this.handleDeleteClick(recordId, recordElement);
+            await this.handleDeleteClick(recordId, recordElement);
         });
 
         recordElement.appendChild(swipeContent);
@@ -248,11 +248,20 @@ class SwipeDeleteManager_7ree {
      * 处理删除按钮点击
      */
     async handleDeleteClick(recordId, recordElement) {
+        // 防止重复点击
+        if (recordElement.classList.contains('deleting_7ree') || recordElement.dataset.deleting === 'true') {
+            return;
+        }
+        
         try {
+            // 标记正在处理删除
+            recordElement.dataset.deleting = 'true';
+            
             // 显示确认对话框
             const confirmed = await this.showDeleteConfirmation();
             if (!confirmed) {
-                // 如果用户取消，则关闭滑动区域回弹
+                // 如果用户取消，则关闭滑动区域回弹并清除标记
+                recordElement.dataset.deleting = 'false';
                 this.closeSwipe(recordElement);
                 return;
             }
@@ -279,6 +288,7 @@ class SwipeDeleteManager_7ree {
         } catch (error) {
             console.error('删除记录失败:', error);
             recordElement.classList.remove('deleting_7ree');
+            recordElement.dataset.deleting = 'false';
             // 删除失败时不关闭滑动区域，保持打开状态供用户重试
             
             // 显示错误提示
