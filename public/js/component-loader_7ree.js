@@ -32,6 +32,21 @@ function loadHistoryComponents_7ree() {
         if (window.preloadedHeaderHtml) {
             console.log('加载header-top组件');
             document.getElementById('headerTopContainer_7ree').innerHTML = window.preloadedHeaderHtml;
+            console.log('header-top组件加载完成，触发登出按钮事件监听器绑定');
+            // 触发登出按钮事件监听器的绑定
+            setTimeout(() => {
+                // 直接调用setupLogoutHandler而不是创建新的ComponentManager实例
+                if (window.ComponentManager) {
+                    // 创建ComponentManager实例并调用setupLogoutHandler
+                    const componentManager = new window.ComponentManager();
+                    // 延迟调用setupLogoutHandler，确保DOM已经更新
+                    setTimeout(() => {
+                        componentManager.setupLogoutHandler();
+                    }, 100);
+                } else {
+                    console.log('ComponentManager未找到，无法绑定登出按钮事件');
+                }
+            }, 0);
         } else {
             console.log('header-top组件未预加载');
         }

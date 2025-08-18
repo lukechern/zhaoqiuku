@@ -57,19 +57,30 @@ class ComponentManager {
     }
 
     setupLogoutHandler() {
+        console.log('设置登出按钮事件监听器');
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', async (e) => {
+            console.log('找到登出按钮，绑定点击事件');
+            // 移除可能存在的旧事件监听器
+            const newLogoutBtn = logoutBtn.cloneNode(true);
+            logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+            
+            newLogoutBtn.addEventListener('click', async (e) => {
+                console.log('登出按钮被点击(ComponentManager)');
                 e.preventDefault();
+                e.stopPropagation();
                 
                 // 显示确认对话框
+                console.log('显示确认对话框');
                 const confirmed = await customConfirm_7ree('确定要退出登录吗？', {
                     title: '退出登录',
                     confirmText: '退出',
                     cancelText: '取消',
                     danger: true
                 });
+                console.log('确认对话框结果:', confirmed);
                 if (!confirmed) {
+                    console.log('用户取消登出');
                     return; // 用户取消登出
                 }
                 
@@ -88,6 +99,8 @@ class ComponentManager {
                     console.error('登出失败:', error);
                 }
             });
+        } else {
+            console.log('未找到登出按钮元素');
         }
     }
 
@@ -196,6 +209,9 @@ class ComponentManager {
         }
     }
 }
+
+// 导出ComponentManager类到全局作用域
+window.ComponentManager = ComponentManager;
 
 // 等待页面和脚本完全加载后再初始化组件管理器
 const initComponentManager = () => {
