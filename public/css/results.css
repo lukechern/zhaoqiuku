@@ -56,6 +56,7 @@
     background-repeat: no-repeat;
     transform: rotate(180deg);
     filter: invert(50%) sepia(90%) saturate(400%) hue-rotate(220deg);
+    z-index: 10;
 }
 
 .ai-reply {
@@ -85,6 +86,7 @@
     background-image: url('../img/sound.svg');
     background-size: contain;
     background-repeat: no-repeat;
+    z-index: 10;
 }
 
 .user-ai-dialog .user-say,
@@ -181,9 +183,10 @@
     background: #BB80FF;
     border-radius: 50%;
     animation: border-circle_7ree 4s linear infinite;
-    offset-path: inset(0 round 12px);
+    offset-path: inset(0 round 12px 2px 12px 12px);
     offset-rotate: 0deg;
     box-shadow: 0 0 8px #BB80FF;
+    z-index: 1;
 }
 
 .playing.ai-reply::after {
@@ -194,9 +197,10 @@
     background: #38bdf8;
     border-radius: 50%;
     animation: border-circle_7ree 4s linear infinite;
-    offset-path: inset(0 round 12px);
+    offset-path: inset(0 round 2px 12px 12px 12px);
     offset-rotate: 0deg;
     box-shadow: 0 0 8px #38bdf8;
+    z-index: 1;
 }
 
 @keyframes border-circle_7ree {
