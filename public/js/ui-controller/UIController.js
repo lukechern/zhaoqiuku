@@ -23,6 +23,10 @@ export class UIController {
         this.cancelThreshold = 80; // 向上滑动80px取消
         this.isCanceling = false;
         this.lastResultData = null;
+        
+        // 播放状态追踪_7ree
+        this.currentPlayingElement_7ree = null;  // 当前正在播放的气泡元素
+        this.currentPlayingAudio_7ree = null;    // 当前播放的音频对象(用于用户气泡)
     }
 
     // 初始化UI事件
@@ -322,26 +326,54 @@ export class UIController {
                 // 阻止事件冒泡
                 event.stopPropagation();
                 
+                // 如果当前已有播放
+                if (this.currentPlayingElement_7ree) {
+                    // 再次点击同一气泡：停止播放并返回
+                    if (this.currentPlayingElement_7ree === element) {
+                        this.stopCurrentPlaying_7ree();
+                        return;
+                    }
+                    // 点击了另一个气泡：先停止当前，再继续后续流程
+                    this.stopCurrentPlaying_7ree();
+                }
+
                 // 添加播放状态样式
                 element.classList.add('playing');
+                this.currentPlayingElement_7ree = element;
                 
                 // 检查是用户气泡还是AI气泡
                 if (element.classList.contains('user-say')) {
                     // 点击的是用户气泡，播放本地录音
                     if (window.app && window.app.audioRecorder && window.app.audioRecorder.audioUrl) {
                         const audio = new Audio(window.app.audioRecorder.audioUrl);
+                        this.currentPlayingAudio_7ree = audio; // 记录引用_7ree
                         audio.play().then(() => {
                             // 播放成功，监听播放结束事件
                             audio.onended = () => {
                                 element.classList.remove('playing');
+                                if (this.currentPlayingElement_7ree === element) {
+                                    this.currentPlayingElement_7ree = null;
+                                }
+                                if (this.currentPlayingAudio_7ree === audio) {
+                                    this.currentPlayingAudio_7ree = null;
+                                }
                             };
                         }).catch(() => {
                             // 播放出错，立即移除播放状态样式
                             element.classList.remove('playing');
+                            if (this.currentPlayingElement_7ree === element) {
+                                this.currentPlayingElement_7ree = null;
+                            }
+                            if (this.currentPlayingAudio_7ree === audio) {
+                                this.currentPlayingAudio_7ree = null;
+                            }
                         });
                     } else {
                         // 如果没有录音播放功能，立即移除播放状态样式
                         element.classList.remove('playing');
+                        if (this.currentPlayingElement_7ree === element) {
+                            this.currentPlayingElement_7ree = null;
+                        }
                     }
                 } else if (element.classList.contains('ai-reply')) {
                     // 点击的是AI气泡，播放TTS缓存
@@ -359,27 +391,45 @@ export class UIController {
                             window.ttsService.playAudio(window.ttsService.cachedAudioData).then(() => {
                                 // 播放完成，移除播放状态样式
                                 element.classList.remove('playing');
+                                if (this.currentPlayingElement_7ree === element) {
+                                    this.currentPlayingElement_7ree = null;
+                                }
                             }).catch(() => {
                                 // 播放出错，移除播放状态样式
                                 element.classList.remove('playing');
+                                if (this.currentPlayingElement_7ree === element) {
+                                    this.currentPlayingElement_7ree = null;
+                                }
                             });
                         } catch (error) {
                             console.error('播放缓存TTS失败:', error);
                             element.classList.remove('playing');
+                            if (this.currentPlayingElement_7ree === element) {
+                                this.currentPlayingElement_7ree = null;
+                            }
                         }
                     } else if (message && window.ttsService && window.ttsService.isAvailable()) {
                         // 如果没有缓存或消息不匹配，重新生成TTS
                         window.ttsService.speak(message).then(() => {
                             // 播放完成，移除播放状态样式
                             element.classList.remove('playing');
+                            if (this.currentPlayingElement_7ree === element) {
+                                this.currentPlayingElement_7ree = null;
+                            }
                         }).catch(() => {
                             // 播放出错，移除播放状态样式
                             element.classList.remove('playing');
+                            if (this.currentPlayingElement_7ree === element) {
+                                this.currentPlayingElement_7ree = null;
+                            }
                         });
                     } else {
                         // 如果没有TTS功能，立即移除播放状态样式
                         setTimeout(() => {
                             element.classList.remove('playing');
+                            if (this.currentPlayingElement_7ree === element) {
+                                this.currentPlayingElement_7ree = null;
+                            }
                         }, 1000);
                     }
                 }
@@ -440,6 +490,28 @@ export class UIController {
     vibrate(pattern = [100]) {
         if ('vibrate' in navigator) {
             navigator.vibrate(pattern);
+        }
+    }
+
+    // 停止当前播放_7ree
+    stopCurrentPlaying_7ree() {
+        try {
+            // 移除playing样式
+            if (this.currentPlayingElement_7ree) {
+                this.currentPlayingElement_7ree.classList.remove('playing');
+            }
+            // 停止用户气泡的本地音频
+            if (this.currentPlayingAudio_7ree) {
+                try { this.currentPlayingAudio_7ree.pause(); } catch (_) {}
+                try { this.currentPlayingAudio_7ree.currentTime = 0; } catch (_) {}
+                this.currentPlayingAudio_7ree = null;
+            }
+            // 停止TTS播放
+            if (window.ttsService && window.ttsService.isPlaying) {
+                try { window.ttsService.stop(); } catch (_) {}
+            }
+        } finally {
+            this.currentPlayingElement_7ree = null;
         }
     }
 }
