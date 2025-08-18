@@ -28,15 +28,16 @@
 }
 
 .user-say {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: white;
-    padding: 8px 10px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    color: #a78bfa;
+    border: 1px solid #a78bfa;
+    padding: 18px 24px;
     border-radius: 12px 2px 12px 12px;
-    font-size: 1.1rem; 
-    line-height: 1.6; /* 调整行高 */
+    font-size: 1.425rem; 
+    line-height: 1.6;
     max-width: 85%;
     align-self: flex-end;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
     position: relative;
     font-weight: 500;
     margin-right: 40px;
@@ -52,7 +53,8 @@
     background-image: url('../img/sound.svg');
     background-size: contain;
     background-repeat: no-repeat;
-    transform: rotate(180deg); /* 旋转180度，使其和左边的对称 */
+    transform: rotate(180deg);
+    filter: invert(50%) sepia(90%) saturate(400%) hue-rotate(220deg);
 }
 
 .ai-reply {
