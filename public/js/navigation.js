@@ -57,50 +57,55 @@ class ComponentManager {
     }
 
     setupLogoutHandler() {
-        console.log('设置登出按钮事件监听器');
+        // console.log('设置登出按钮事件监/听器');
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
-            console.log('找到登出按钮，绑定点击事件');
+            // console.log('找到登出按钮，绑定点击事件');
             // 移除可能存在的旧事件监听器
             const newLogoutBtn = logoutBtn.cloneNode(true);
             logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
             
             newLogoutBtn.addEventListener('click', async (e) => {
-                console.log('登出按钮被点击(ComponentManager)');
+                // console.log('登出按钮被点击(ComponentManager)');
                 e.preventDefault();
                 e.stopPropagation();
                 
                 // 显示确认对话框
-                console.log('显示确认对话框');
-                const confirmed = await customConfirm_7ree('确定要退出登录吗？', {
+                // console.log('显示确认对话框');
+                // 获取当前用户email并添加到确认消息中
+                const currentUser = window.authManager?.user;
+                const confirmMessage = currentUser?.email 
+                    ? `确定要退出登录吗？\n${currentUser.email}` 
+                    : '确定要退出登录吗？';
+                const confirmed = await customConfirm_7ree(confirmMessage, {
                     title: '退出登录',
                     confirmText: '退出',
                     cancelText: '取消',
                     danger: true
                 });
-                console.log('确认对话框结果:', confirmed);
+                // console.log('确认对话框结果:', confirmed);
                 if (!confirmed) {
-                    console.log('用户取消登出');
+                    // console.log('用户取消登出');
                     return; // 用户取消登出
                 }
                 
                 try {
                     if (window.authManager) {
-                        console.log('执行登出操作...');
+                        // console.log('执行登出操作...');
                         await window.authManager.logout();
-                        console.log('登出成功');
+                        // console.log('登出成功');
                         
                         // 可选：重定向到首页或登录页
                         // window.location.href = 'index.html';
                     } else {
-                        console.error('认证管理器未找到');
+                        // console.error('认证管理器未找到');
                     }
                 } catch (error) {
-                    console.error('登出失败:', error);
+                    // console.error('登出失败:', error);
                 }
             });
         } else {
-            console.log('未找到登出按钮元素');
+            // console.log('未找到登出按钮元素');
         }
     }
 
