@@ -130,34 +130,36 @@ export class TTSService {
 
     // 播放音频数据
     async playAudio(audioData) {
-        try {
-            this.isPlaying = true;
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.isPlaying = true;
 
-            // 创建音频缓冲区
-            const audioBuffer = await this.audioContext.decodeAudioData(audioData.slice(0));
+                // 创建音频缓冲区
+                const audioBuffer = await this.audioContext.decodeAudioData(audioData.slice(0));
 
-            // 创建音频源
-            const source = this.audioContext.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(this.audioContext.destination);
+                // 创建音频源
+                const source = this.audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(this.audioContext.destination);
 
-            // 播放完成处理
-            source.onended = () => {
+                // 播放完成处理（在播放结束时才resolve）
+                source.onended = () => {
+                    this.isPlaying = false;
+                    this.currentAudio = null;
+                    resolve();
+                };
+
+                // 保存引用以便停止
+                this.currentAudio = source;
+
+                // 开始播放
+                source.start();
+            } catch (error) {
                 this.isPlaying = false;
                 this.currentAudio = null;
-            };
-
-            // 保存引用以便停止
-            this.currentAudio = source;
-
-            // 开始播放
-            source.start();
-
-        } catch (error) {
-            this.isPlaying = false;
-            this.currentAudio = null;
-            throw new Error(`播放音频失败: ${error.message}`);
-        }
+                reject(new Error(`播放音频失败: ${error.message}`));
+            }
+        });
     }
 
     // 停止播放
