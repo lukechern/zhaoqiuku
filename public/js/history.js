@@ -447,9 +447,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('点击事件触发，检查是否点击了登出按钮');
         const logoutBtn = event.target.closest('#logoutBtn');
         if (logoutBtn) {
-            console.log('登出按钮被点击');
-            console.log('事件对象:', event);
-            console.log('登出按钮元素:', logoutBtn);
+            // console.log('登出按钮被点击');
+            // console.log('事件对象:', event);
+            // console.log('登出按钮元素:', logoutBtn);
             
             // 阻止事件冒泡和默认行为
             event.preventDefault();
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 显示确认对话框
             if (window.showConfirmDialog_7ree) {
-                console.log('使用自定义确认对话框');
+                // console.log('使用自定义确认对话框');
                 window.showConfirmDialog_7ree({
                     title: '确认退出',
                     message: '您确定要退出登录吗？',

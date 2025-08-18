@@ -29,19 +29,19 @@ export class UserStateManager {
 
             // 绑定登出事件
             if (this.logoutBtn) {
-                console.log('找到登出按钮，绑定点击事件');
+                // console.log('找到登出按钮，绑定点击事件');
                 // 移除可能存在的旧事件监听器
                 this.logoutBtn.replaceWith(this.logoutBtn.cloneNode(true));
                 this.logoutBtn = document.getElementById('logoutBtn');
 
                 this.logoutBtn.addEventListener('click', async (e) => {
-                    console.log('登出按钮被点击(UserStateManager)');
+                    // console.log('登出按钮被点击(UserStateManager)');
                     e.preventDefault();
                     e.stopPropagation();
                     await this.handleLogout();
                 });
             } else {
-                console.log('未找到登出按钮元素');
+                // console.log('未找到登出按钮元素');
             }
 
             // 监听认证状态变化
@@ -70,7 +70,7 @@ export class UserStateManager {
             attempts++;
 
             if (window.authManager) {
-                console.log('认证管理器已就绪，初始化用户状态显示');
+                // console.log('认证管理器已就绪，初始化用户状态显示');
                 this.updateUserDisplay();
 
                 // 设置定期检查，确保状态同步
@@ -184,7 +184,7 @@ export class UserStateManager {
             
             // 添加新的事件监听器
             newLogoutBtn.addEventListener('click', async (e) => {
-                console.log('登出按钮被点击(setupLogoutHandler)');
+                // console.log('登出按钮被点击(setupLogoutHandler)');
                 e.preventDefault();
                 e.stopPropagation();
                 await this.handleLogout();

@@ -149,7 +149,7 @@ function ensureLogoutButtonHandler() {
             
             // 添加新的事件监听器
             newLogoutBtn.addEventListener('click', async (e) => {
-                console.log('登出按钮被点击(ensureLogoutButtonHandler)');
+                // console.log('登出按钮被点击(ensureLogoutButtonHandler)');
                 e.preventDefault();
                 e.stopPropagation();
                 
