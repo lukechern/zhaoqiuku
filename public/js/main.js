@@ -6,7 +6,6 @@ import { AudioRecorder } from './audio-recorder.js';
 import { UIController } from './ui-controller.js';  // 确保使用默认导出
 import { APIClient } from './api-client.js';
 import { TTSService } from './tts-service.js';
-import { RunnerEffect_7ree } from './runner-effect_7ree.js';
 
 // 将类暴露到全局作用域，以便class-check.js可以检测到
 window.AudioRecorder = AudioRecorder;
@@ -14,7 +13,6 @@ window.UIController = UIController;
 window.APIClient = APIClient;
 window.VoiceRecognitionApp = VoiceRecognitionApp;
 window.TTSService = TTSService;
-window.RunnerEffect_7ree = RunnerEffect_7ree;
 
 // 应用启动函数
 async function startApp() {
