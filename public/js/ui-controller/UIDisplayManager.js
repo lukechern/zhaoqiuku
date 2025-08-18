@@ -43,9 +43,9 @@ export class UIDisplayManager {
                 userSay = '没有听清你说了什么';
             }
             
-            html += `<div class="user-ai-dialog" data-transcript="${this.uiController.escapeHtml(data.transcript || '')}">
-                <span class="user-say">${this.uiController.escapeHtml(userSay)}</span>
-                <span class="ai-reply">${this.uiController.escapeHtml(business.message)}</span>
+            html += `<div class="user-ai-dialog">
+                <span class="user-say playable" data-transcript="${this.uiController.escapeHtml(data.transcript || '')}">${this.uiController.escapeHtml(userSay)}</span>
+                <span class="ai-reply playable" data-message="${this.uiController.escapeHtml(business.message)}">${this.uiController.escapeHtml(business.message)}</span>
             </div>`;
         } else if (debugConfig.showTranscript && data.transcript && data.action !== 'unknown') {
             // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果

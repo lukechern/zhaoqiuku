@@ -315,38 +315,65 @@ export class UIController {
             container.innerHTML = `<div class="results-json">${formattedData}</div>`;
         }
 
-        // 添加点击事件监听器到 user-ai-dialog 元素
-        const userAiDialogs = container.querySelectorAll('.user-ai-dialog');
-        userAiDialogs.forEach(dialog => {
-            dialog.addEventListener('click', (event) => {
+        // 添加点击事件监听器到可播放的元素
+        const playableElements = container.querySelectorAll('.playable');
+        playableElements.forEach(element => {
+            element.addEventListener('click', (event) => {
                 // 阻止事件冒泡
                 event.stopPropagation();
                 
-                // 播放本地录音
-                if (window.app && window.app.audioRecorder && window.app.audioRecorder.playRecording) {
-                    window.app.audioRecorder.playRecording();
-                }
+                // 添加播放状态样式
+                element.classList.add('playing');
                 
-                // 播放 TTS 音频（如果可用）
-                if (window.ttsService && window.ttsService.isPlaying) {
-                    window.ttsService.stop();
-                }
-                
-                // 从 dialog 元素获取 transcript 数据
-                const transcript = dialog.getAttribute('data-transcript');
-                
-                // 如果有 transcript 数据，尝试播放 TTS
-                if (transcript && window.ttsService && window.ttsService.isAvailable()) {
-                    // 创建一个模拟的数据对象用于 TTS 播放
-                    const ttsData = {
-                        business_result: {
-                            message: dialog.querySelector('.ai-reply').textContent
-                        },
-                        transcript: transcript
-                    };
+                // 检查是用户气泡还是AI气泡
+                if (element.classList.contains('user-say')) {
+                    // 点击的是用户气泡，播放本地录音
+                    if (window.app && window.app.audioRecorder && window.app.audioRecorder.audioUrl) {
+                        const audio = new Audio(window.app.audioRecorder.audioUrl);
+                        audio.play().then(() => {
+                            // 播放成功，监听播放结束事件
+                            audio.onended = () => {
+                                element.classList.remove('playing');
+                            };
+                        }).catch(() => {
+                            // 播放出错，立即移除播放状态样式
+                            element.classList.remove('playing');
+                        });
+                    } else {
+                        // 如果没有录音播放功能，立即移除播放状态样式
+                        element.classList.remove('playing');
+                    }
+                } else if (element.classList.contains('ai-reply')) {
+                    // 点击的是AI气泡，播放TTS
+                    if (window.ttsService && window.ttsService.isPlaying) {
+                        window.ttsService.stop();
+                    }
                     
-                    // 播放 TTS
-                    window.ttsService.autoReadResponse(ttsData);
+                    // 从元素获取数据
+                    const message = element.getAttribute('data-message');
+                    
+                    // 如果有消息数据，尝试播放TTS
+                    if (message && window.ttsService && window.ttsService.isAvailable()) {
+                        // 创建一个模拟的数据对象用于TTS播放
+                        const ttsData = {
+                            business_result: {
+                                message: message
+                            }
+                        };
+                        
+                        // 播放TTS并在播放结束后移除播放状态样式
+                        window.ttsService.autoReadResponse(ttsData).then(() => {
+                            // 等待一小段时间确保播放完成后再移除样式
+                            setTimeout(() => {
+                                element.classList.remove('playing');
+                            }, 1000);
+                        }).catch(() => {
+                            element.classList.remove('playing');
+                        });
+                    } else {
+                        // 如果没有TTS功能，立即移除播放状态样式
+                        element.classList.remove('playing');
+                    }
                 }
             });
         });
@@ -363,7 +390,24 @@ export class UIController {
         try {
             // 检查TTS服务是否可用
             if (window.ttsService && window.ttsService.isAvailable()) {
-                await window.ttsService.autoReadResponse(data);
+                // 提取需要朗读的消息内容
+                let message = '';
+                
+                // 根据数据结构提取消息
+                if (typeof data === 'string') {
+                    message = data;
+                } else if (data.business_result && data.business_result.message) {
+                    message = data.business_result.message;
+                } else if (data.message) {
+                    message = data.message;
+                }
+                
+                // 如果有消息内容，调用TTS服务朗读
+                if (message) {
+                    await window.ttsService.speak(message);
+                } else {
+                    console.log('没有可朗读的消息内容');
+                }
             } else {
                 console.log('TTS服务不可用或未配置');
             }
