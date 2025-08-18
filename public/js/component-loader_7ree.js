@@ -33,20 +33,6 @@ function loadHistoryComponents_7ree() {
             console.log('加载header-top组件');
             document.getElementById('headerTopContainer_7ree').innerHTML = window.preloadedHeaderHtml;
             console.log('header-top组件加载完成，触发登出按钮事件监听器绑定');
-            // 触发登出按钮事件监听器的绑定
-            setTimeout(() => {
-                // 直接调用setupLogoutHandler而不是创建新的ComponentManager实例
-                if (window.ComponentManager) {
-                    // 创建ComponentManager实例并调用setupLogoutHandler
-                    const componentManager = new window.ComponentManager();
-                    // 延迟调用setupLogoutHandler，确保DOM已经更新
-                    setTimeout(() => {
-                        componentManager.setupLogoutHandler();
-                    }, 100);
-                } else {
-                    console.log('ComponentManager未找到，无法绑定登出按钮事件');
-                }
-            }, 0);
         } else {
             console.log('header-top组件未预加载');
         }
@@ -151,6 +137,60 @@ async function waitForHistoryComponents_7ree() {
     return true;
 }
 
+// 确保登出按钮事件监听器正确绑定
+function ensureLogoutButtonHandler() {
+    // 等待DOM更新完成
+    setTimeout(() => {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            // 移除所有已有的事件监听器
+            const newLogoutBtn = logoutBtn.cloneNode(true);
+            logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+            
+            // 添加新的事件监听器
+            newLogoutBtn.addEventListener('click', async (e) => {
+                console.log('登出按钮被点击(ensureLogoutButtonHandler)');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 调用UserStateManager中的登出处理函数
+                if (window.userStateManager) {
+                    await window.userStateManager.handleLogout();
+                } else {
+                    // 如果UserStateManager不可用，使用备选方案
+                    try {
+                        const userEmail = window.authManager?.user?.email || '当前用户';
+                        const confirmMessage = `确定要退出登录吗？\n\n当前登录用户：${userEmail}`;
+                        
+                        const confirmed = await customConfirm_7ree(confirmMessage, {
+                            title: '退出登录',
+                            confirmText: '退出',
+                            cancelText: '取消',
+                            danger: true
+                        });
+                        
+                        if (confirmed) {
+                            const success = await window.authManager.logout();
+                            if (success) {
+                                alert('已成功退出登录');
+                                // 刷新页面以更新状态
+                                location.reload();
+                            } else {
+                                alert('退出登录失败，请重试');
+                            }
+                        }
+                    } catch (error) {
+                        alert('退出登录时发生错误：' + error.message);
+                    }
+                }
+            });
+            console.log('登出按钮事件监听器绑定完成');
+        } else {
+            console.log('未找到登出按钮元素');
+        }
+    }, 100);
+}
+
 // 动态加载JavaScript文件的函数
 async function loadScripts_7ree(scripts, isPageRefresh = false) {
     // 先等待组件加载完成
@@ -207,6 +247,9 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
         return;
     }
 
+    // 确保登出按钮事件监听器正确绑定
+    ensureLogoutButtonHandler();
+
     // 需要作为模块加载的脚本
     const moduleScripts = new Set([
         'js/main.js',
@@ -249,6 +292,9 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
         // 等待所有脚本加载完成
         await Promise.all(scriptPromises);
         console.log(`所有历史页面脚本加载完成 (${loadedCount}/${scripts.length})`);
+        
+        // 再次确保登出按钮事件监听器正确绑定
+        ensureLogoutButtonHandler();
         
         // 确保HistoryManager正确初始化
         setTimeout(() => {
@@ -331,3 +377,4 @@ window.loadScripts_7ree = loadScripts_7ree;
 window.loadHistoryScripts_7ree = loadHistoryScripts_7ree;
 window.initComponentLoader_7ree = initComponentLoader_7ree;
 window.initHistoryComponentLoader_7ree = initHistoryComponentLoader_7ree;
+window.ensureLogoutButtonHandler = ensureLogoutButtonHandler;
