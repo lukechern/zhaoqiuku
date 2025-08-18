@@ -344,7 +344,7 @@ export class UIController {
                         element.classList.remove('playing');
                     }
                 } else if (element.classList.contains('ai-reply')) {
-                    // 点击的是AI气泡，播放TTS
+                    // 点击的是AI气泡，播放TTS缓存
                     if (window.ttsService && window.ttsService.isPlaying) {
                         window.ttsService.stop();
                     }
@@ -352,27 +352,35 @@ export class UIController {
                     // 从元素获取数据
                     const message = element.getAttribute('data-message');
                     
-                    // 如果有消息数据，尝试播放TTS
-                    if (message && window.ttsService && window.ttsService.isAvailable()) {
-                        // 创建一个模拟的数据对象用于TTS播放
-                        const ttsData = {
-                            business_result: {
-                                message: message
-                            }
-                        };
-                        
-                        // 播放TTS并在播放结束后移除播放状态样式
-                        window.ttsService.autoReadResponse(ttsData).then(() => {
-                            // 等待一小段时间确保播放完成后再移除样式
-                            setTimeout(() => {
+                    // 检查是否有缓存的TTS音频数据
+                    if (window.ttsService && window.ttsService.cachedAudioData && window.ttsService.cachedText === message) {
+                        // 播放缓存的TTS音频
+                        try {
+                            window.ttsService.playAudio(window.ttsService.cachedAudioData).then(() => {
+                                // 播放完成，移除播放状态样式
                                 element.classList.remove('playing');
-                            }, 1000);
+                            }).catch(() => {
+                                // 播放出错，移除播放状态样式
+                                element.classList.remove('playing');
+                            });
+                        } catch (error) {
+                            console.error('播放缓存TTS失败:', error);
+                            element.classList.remove('playing');
+                        }
+                    } else if (message && window.ttsService && window.ttsService.isAvailable()) {
+                        // 如果没有缓存或消息不匹配，重新生成TTS
+                        window.ttsService.speak(message).then(() => {
+                            // 播放完成，移除播放状态样式
+                            element.classList.remove('playing');
                         }).catch(() => {
+                            // 播放出错，移除播放状态样式
                             element.classList.remove('playing');
                         });
                     } else {
                         // 如果没有TTS功能，立即移除播放状态样式
-                        element.classList.remove('playing');
+                        setTimeout(() => {
+                            element.classList.remove('playing');
+                        }, 1000);
                     }
                 }
             });

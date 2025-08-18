@@ -4,6 +4,8 @@ export class TTSService {
         this.isPlaying = false;
         this.currentAudio = null;
         this.audioContext = null;
+        this.cachedAudioData = null;  // 添加缓存音频数据
+        this.cachedText = null;       // 添加缓存文本
 
         // 初始化音频上下文
         this.initAudioContext();
@@ -68,6 +70,14 @@ export class TTSService {
                 processedText = text.substring(0, 500) + '...';
             }
 
+            // 检查是否有缓存
+            if (this.cachedText === processedText && this.cachedAudioData) {
+                // 使用缓存的音频数据
+                console.log('使用缓存的TTS音频');
+                await this.playAudio(this.cachedAudioData);
+                return;
+            }
+
             // 调用TTS API（只传递文本，参数由后端决定）
             const audioData = await this.callAzureTTS(processedText);
 
@@ -77,6 +87,10 @@ export class TTSService {
                 return;
             }
 
+            // 缓存音频数据和文本
+            this.cachedAudioData = audioData;
+            this.cachedText = processedText;
+
             // 播放音频
             await this.playAudio(audioData);
 
@@ -85,8 +99,6 @@ export class TTSService {
             console.error('朗读失败:', error.message);
         }
     }
-
-
 
     // 调用TTS API
     async callAzureTTS(text) {
