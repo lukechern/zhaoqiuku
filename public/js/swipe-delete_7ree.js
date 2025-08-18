@@ -318,10 +318,12 @@ class SwipeDeleteManager_7ree {
     async showDeleteConfirmation(recordElement) {
         // 从记录元素中获取物品名称
         const itemNameElement = recordElement.querySelector('.item-name');
+        const itemTypeElement = recordElement.querySelector('.item-type');
         const itemName = itemNameElement ? itemNameElement.textContent : '未知物品';
+        const itemType = itemTypeElement ? itemTypeElement.textContent : '物品';
         
         // 构造确认消息，包含物品名称并支持换行
-        const confirmMessage = `确定要删除这条记录吗？\n物品：${itemName}`;
+        const confirmMessage = `确定要删除这条记录吗？\n${itemType}：${itemName}`;
         
         const confirmed = await customConfirm_7ree(confirmMessage, {
             title: '删除记录',
