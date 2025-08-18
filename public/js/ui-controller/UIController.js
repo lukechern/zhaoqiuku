@@ -315,6 +315,42 @@ export class UIController {
             container.innerHTML = `<div class="results-json">${formattedData}</div>`;
         }
 
+        // 添加点击事件监听器到 user-ai-dialog 元素
+        const userAiDialogs = container.querySelectorAll('.user-ai-dialog');
+        userAiDialogs.forEach(dialog => {
+            dialog.addEventListener('click', (event) => {
+                // 阻止事件冒泡
+                event.stopPropagation();
+                
+                // 播放本地录音
+                if (window.app && window.app.audioRecorder && window.app.audioRecorder.playRecording) {
+                    window.app.audioRecorder.playRecording();
+                }
+                
+                // 播放 TTS 音频（如果可用）
+                if (window.ttsService && window.ttsService.isPlaying) {
+                    window.ttsService.stop();
+                }
+                
+                // 从 dialog 元素获取 transcript 数据
+                const transcript = dialog.getAttribute('data-transcript');
+                
+                // 如果有 transcript 数据，尝试播放 TTS
+                if (transcript && window.ttsService && window.ttsService.isAvailable()) {
+                    // 创建一个模拟的数据对象用于 TTS 播放
+                    const ttsData = {
+                        business_result: {
+                            message: dialog.querySelector('.ai-reply').textContent
+                        },
+                        transcript: transcript
+                    };
+                    
+                    // 播放 TTS
+                    window.ttsService.autoReadResponse(ttsData);
+                }
+            });
+        });
+
         // 自动滚动到顶部
         container.scrollTop = 0;
 

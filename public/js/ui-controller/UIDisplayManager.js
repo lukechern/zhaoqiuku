@@ -43,7 +43,7 @@ export class UIDisplayManager {
                 userSay = '没有听清你说了什么';
             }
             
-            html += `<div class="user-ai-dialog">
+            html += `<div class="user-ai-dialog" data-transcript="${this.uiController.escapeHtml(data.transcript || '')}">
                 <span class="user-say">${this.uiController.escapeHtml(userSay)}</span>
                 <span class="ai-reply">${this.uiController.escapeHtml(business.message)}</span>
             </div>`;
@@ -102,14 +102,10 @@ export class UIDisplayManager {
 
             // 显示解析后的API响应
             if (data.raw_response) {
-                // 使用传统方式检查，避免可选链操作符导致的兼容性问题
-                let rawResponse = data.raw_response;
-                if (rawResponse !== undefined && rawResponse !== null) {
-                    html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
-                        📋 API 响应内容:
-                    </div>`;
-                    html += `<pre style="font-size: 0.85rem; color: var(--text-primary); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px;">${JSON.stringify(rawResponse, null, 2)}</pre>`;
-                }
+                html += `<div style="color: var(--text-secondary); margin: 15px 0 5px 0; font-weight: bold;">
+                    📋 API 响应内容:
+                </div>`;
+                html += `<pre style="font-size: 0.85rem; color: var(--text-primary); background: var(--background); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px;">${JSON.stringify(data.raw_response, null, 2)}</pre>`;
             }
         }
 
