@@ -78,6 +78,15 @@ function forceUpdateUserDisplay() {
         userInfo.style.display = 'none';
         console.log('已显示登录链接');
     }
+    
+    // 确保登出按钮事件监听器仍然绑定
+    setTimeout(() => {
+        if (window.ComponentManager) {
+            console.log('重新绑定登出按钮事件监听器');
+            const componentManager = new window.ComponentManager();
+            componentManager.setupLogoutHandler();
+        }
+    }, 100);
 }
 
 // 模拟登录
