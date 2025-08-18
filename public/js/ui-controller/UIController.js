@@ -322,8 +322,11 @@ export class UIController {
                 // 阻止事件冒泡
                 event.stopPropagation();
                 
-                // 添加播放状态样式
+                // 添加播放状态样式和跑马灯效果
                 element.classList.add('playing');
+                if (window.runnerEffect_7ree) {
+                    window.runnerEffect_7ree.addRunner(element);
+                }
                 
                 // 检查是用户气泡还是AI气泡
                 if (element.classList.contains('user-say')) {
@@ -334,14 +337,23 @@ export class UIController {
                             // 播放成功，监听播放结束事件
                             audio.onended = () => {
                                 element.classList.remove('playing');
+                                if (window.runnerEffect_7ree) {
+                                    window.runnerEffect_7ree.removeRunner(element);
+                                }
                             };
                         }).catch(() => {
-                            // 播放出错，立即移除播放状态样式
+                            // 播放出错，立即移除播放状态样式和跑马灯效果
                             element.classList.remove('playing');
+                            if (window.runnerEffect_7ree) {
+                                window.runnerEffect_7ree.removeRunner(element);
+                            }
                         });
                     } else {
-                        // 如果没有录音播放功能，立即移除播放状态样式
+                        // 如果没有录音播放功能，立即移除播放状态样式和跑马灯效果
                         element.classList.remove('playing');
+                        if (window.runnerEffect_7ree) {
+                            window.runnerEffect_7ree.removeRunner(element);
+                        }
                     }
                 } else if (element.classList.contains('ai-reply')) {
                     // 点击的是AI气泡，播放TTS缓存
@@ -357,29 +369,47 @@ export class UIController {
                         // 播放缓存的TTS音频
                         try {
                             window.ttsService.playAudio(window.ttsService.cachedAudioData).then(() => {
-                                // 播放完成，移除播放状态样式
+                                // 播放完成，移除播放状态样式和跑马灯效果
                                 element.classList.remove('playing');
+                                if (window.runnerEffect_7ree) {
+                                    window.runnerEffect_7ree.removeRunner(element);
+                                }
                             }).catch(() => {
-                                // 播放出错，移除播放状态样式
+                                // 播放出错，移除播放状态样式和跑马灯效果
                                 element.classList.remove('playing');
+                                if (window.runnerEffect_7ree) {
+                                    window.runnerEffect_7ree.removeRunner(element);
+                                }
                             });
                         } catch (error) {
                             console.error('播放缓存TTS失败:', error);
                             element.classList.remove('playing');
+                            if (window.runnerEffect_7ree) {
+                                window.runnerEffect_7ree.removeRunner(element);
+                            }
                         }
                     } else if (message && window.ttsService && window.ttsService.isAvailable()) {
                         // 如果没有缓存或消息不匹配，重新生成TTS
                         window.ttsService.speak(message).then(() => {
-                            // 播放完成，移除播放状态样式
+                            // 播放完成，移除播放状态样式和跑马灯效果
                             element.classList.remove('playing');
+                            if (window.runnerEffect_7ree) {
+                                window.runnerEffect_7ree.removeRunner(element);
+                            }
                         }).catch(() => {
-                            // 播放出错，移除播放状态样式
+                            // 播放出错，移除播放状态样式和跑马灯效果
                             element.classList.remove('playing');
+                            if (window.runnerEffect_7ree) {
+                                window.runnerEffect_7ree.removeRunner(element);
+                            }
                         });
                     } else {
-                        // 如果没有TTS功能，立即移除播放状态样式
+                        // 如果没有TTS功能，立即移除播放状态样式和跑马灯效果
                         setTimeout(() => {
                             element.classList.remove('playing');
+                            if (window.runnerEffect_7ree) {
+                                window.runnerEffect_7ree.removeRunner(element);
+                            }
                         }, 1000);
                     }
                 }

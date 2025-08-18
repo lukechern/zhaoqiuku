@@ -41,6 +41,10 @@
     position: relative;
     font-weight: 500;
     margin-right: 40px;
+    --runner-color: #BB80FF;
+    --runner-speed: 4s;
+    --runner-size: 2.25;
+    --runner-glow: 10px;
 }
 
 .user-say::before {
@@ -71,6 +75,10 @@
     font-weight: 500;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
     margin-left: 40px;
+    --runner-color: #38bdf8;
+    --runner-speed: 4s;
+    --runner-size: 2.25;
+    --runner-glow: 10px;
 }
 
 .ai-reply::before {
@@ -160,62 +168,61 @@
     }
 }
 
-/* 走马灯边框动画 */
-@keyframes border-marquee {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
-}
+/* ====== Running glow dot using SVG stroke-dashoffset (robust across browsers) ====== */
 
-/* 播放状态样式 */
-.playing.user-say,
-.playing.ai-reply {
-    position: relative;
-    overflow: hidden;
-}
-
-.playing.user-say::after,
-.playing.ai-reply::after {
-    content: '';
+/* The SVG overlay that draws a 100x100 logical box on top of the bubble */
+.runner {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-        from 0deg at 50% 50%,
-        rgba(255, 255, 255, 0) 0deg,
-        rgba(255, 255, 255, 0.8) 60deg,
-        rgba(255, 255, 255, 0) 120deg,
-        rgba(255, 255, 255, 0) 360deg
-    );
-    animation: spotlight-rotate 1.5s linear infinite;
-    z-index: 1;
+    inset: 0;
     pointer-events: none;
+    display: block;
 }
 
-.playing.user-say::before,
-.playing.ai-reply::before {
-    z-index: 2;
+/* The path uses a normalized length: pathLength="100" so dashoffset 0→100 loops once */
+.runner rect {
+    fill: none;
+    stroke: var(--runner-color);
+    stroke-width: 2px;               /* visual size of the dot (height) */
+    stroke-linecap: round;            /* round cap so the short dash looks like a dot */
+    pathLength: 100;                  /* normalize to 0..100 */
+    stroke-dasharray: var(--runner-size) 100;  /* one small dash + long gap */
+    animation: runner-spin var(--runner-speed) linear infinite, runner-breathe 2.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 calc(var(--runner-glow)*0.5) var(--runner-color)) 
+            drop-shadow(0 0 var(--runner-glow) var(--runner-color));
+    mix-blend-mode: screen;
 }
 
-.playing.user-say > *,
-.playing.ai-reply > * {
-    position: relative;
-    z-index: 2;
+/* To place the track on the BORDER MIDLINE, we inset by half the border width (~0.5px here in user space). */
+/* We draw inside a 100x100 viewBox; 2.5 gives a nice offset from edges and respects rounded corners. */
+.runner__track {
+    x: 2.5;
+    y: 2.5;
+    width: 95;
+    height: 95;
+    rx: 12;
+    ry: 12; /* rx/ry approximates your rounded corners */
 }
 
-@keyframes spotlight-rotate {
-    0% {
-        transform: rotate(0deg);
+/* Animation definitions */
+@keyframes runner-spin {
+    from { stroke-dashoffset: 0; }
+    to   { stroke-dashoffset: -100; }
+}
+
+@keyframes runner-breathe {
+    0%, 100% { 
+        opacity: .8; 
+        filter: drop-shadow(0 0 calc(var(--runner-glow)*0.4) var(--runner-color)) drop-shadow(0 0 var(--runner-glow) var(--runner-color)); 
     }
-    100% {
-        transform: rotate(360deg);
+    50% { 
+        opacity: 1;  
+        filter: drop-shadow(0 0 var(--runner-glow) var(--runner-color)) drop-shadow(0 0 calc(var(--runner-glow)*1.6) var(--runner-color)); 
     }
 }
+
+/* Optional: respect each bubble's asymmetric radii by slightly tweaking on a per-bubble basis */
+.user-say .runner rect { rx: 12; ry: 12; }
+.ai-reply .runner rect { rx: 12; ry: 12; }
 
 /* TTS 控制按钮样式 */
 .tts-controls {
