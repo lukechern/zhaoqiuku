@@ -1,6 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-</svg>
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1755525586831" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10695" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32"><path d="M512.128 64.512c247.04 0 448 200.96 448 448s-200.96 448-448 448-448-200.96-448-448 200.96-448 448-448z m85.248 200.512a32 32 0 1 0-44.544 45.952A277.76 277.76 0 0 1 639.104 512c0 75.776-30.656 147.2-86.272 200.96a32 32 0 0 0 44.544 46.08 341.44 341.44 0 0 0 0-494.016z m-95.424 64a32 32 0 0 0-46.016 44.544c35.456 36.672 55.04 85.76 55.04 138.496 0 51.904-19.2 100.608-53.888 137.216a32 32 0 1 0 46.336 44.096A261.696 261.696 0 0 0 574.912 512a261.312 261.312 0 0 0-72.96-183.04zM404.992 436.096a32 32 0 1 0-39.936 49.984c12.672 10.112 19.904 24.32 19.904 39.04a49.728 49.728 0 0 1-19.968 38.976 32 32 0 1 0 39.936 49.984c28.032-22.336 44.032-54.784 44.032-88.96a113.92 113.92 0 0 0-43.968-89.024z" fill="#bfbfbf" p-id="10696" data-spm-anchor-id="a313x.search_index.0.i0.35233a8130xRLo" class="selected"></path></svg>

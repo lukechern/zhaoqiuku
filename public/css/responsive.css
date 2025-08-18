@@ -54,11 +54,6 @@
         font-size: 0.85rem;
     }
     
-    .user-ai-dialog .user-say,
-    .user-ai-dialog .ai-reply {
-        padding: 1px 0;
-    }
-    
     .header-top {
         justify-content: flex-end;
     }
