@@ -76,7 +76,8 @@ class ConfirmDialog_7ree {
             const isDanger = options.danger || false;
             
             this.dialog.querySelector('.confirm-dialog-title_7ree').textContent = title;
-            this.dialog.querySelector('.confirm-dialog-message_7ree').textContent = message;
+            // 使用innerHTML替代textContent以支持换行
+            this.dialog.querySelector('.confirm-dialog-message_7ree').innerHTML = message.replace(/\n/g, '<br>');
             
             // 设置按钮文本（使用更稳健的选择器，避免因类名切换导致无法获取元素）
             const cancelBtn = this.dialog.querySelector('.cancel');

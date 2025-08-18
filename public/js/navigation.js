@@ -75,7 +75,7 @@ class ComponentManager {
                 // 获取当前用户email并添加到确认消息中
                 const currentUser = window.authManager?.user;
                 const confirmMessage = currentUser?.email 
-                    ? `确定要退出登录吗？<br>${currentUser.email}` 
+                    ? `确定要退出登录吗？\n${currentUser.email}` 
                     : '确定要退出登录吗？';
                 const confirmed = await customConfirm_7ree(confirmMessage, {
                     title: '退出登录',
