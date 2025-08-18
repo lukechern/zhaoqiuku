@@ -260,7 +260,7 @@ class SwipeDeleteManager_7ree {
             console.log('开始删除操作，recordId:', recordId);
             
             // 显示确认对话框
-            const confirmed = await this.showDeleteConfirmation();
+            const confirmed = await this.showDeleteConfirmation(recordElement);
             
             if (!confirmed) {
                 // 如果用户取消，则彻底清除所有删除相关标记和状态
@@ -315,8 +315,15 @@ class SwipeDeleteManager_7ree {
     /**
      * 显示删除确认对话框
      */
-    async showDeleteConfirmation() {
-        const confirmed = await customConfirm_7ree('确定要删除这条记录吗？', {
+    async showDeleteConfirmation(recordElement) {
+        // 从记录元素中获取物品名称
+        const itemNameElement = recordElement.querySelector('.item-name');
+        const itemName = itemNameElement ? itemNameElement.textContent : '未知物品';
+        
+        // 构造确认消息，包含物品名称并支持换行
+        const confirmMessage = `确定要删除这条记录吗？\n物品：${itemName}`;
+        
+        const confirmed = await customConfirm_7ree(confirmMessage, {
             title: '删除记录',
             confirmText: '删除',
             cancelText: '取消',

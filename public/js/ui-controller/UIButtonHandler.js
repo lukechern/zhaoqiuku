@@ -27,7 +27,7 @@ export class UIButtonHandler {
     // 处理刷新按钮点击
     async handleRefresh() {
         // 添加一个简单的确认提示
-        const confirmed = await customConfirm_7ree('确定要刷新页面吗？未保存的数据将丢失。', {
+        const confirmed = await customConfirm_7ree('确定要刷新页面吗？\n未保存的数据将丢失。', {
             title: '刷新页面',
             confirmText: '刷新',
             cancelText: '取消',
