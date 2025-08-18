@@ -30,15 +30,19 @@ export class UserStateManager {
 
             // 绑定登出事件
             if (this.logoutBtn) {
+                console.log('找到登出按钮，绑定点击事件');
                 // 移除可能存在的旧事件监听器
                 this.logoutBtn.replaceWith(this.logoutBtn.cloneNode(true));
                 this.logoutBtn = document.getElementById('logoutBtn');
 
                 this.logoutBtn.addEventListener('click', async (e) => {
+                    console.log('登出按钮被点击(UserStateManager)');
                     e.preventDefault();
                     e.stopPropagation();
                     await this.handleLogout();
                 });
+            } else {
+                console.log('未找到登出按钮元素');
             }
 
             // 监听认证状态变化

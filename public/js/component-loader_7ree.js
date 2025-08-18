@@ -27,22 +27,33 @@ function loadComponents_7ree() {
 // 历史页面组件加载函数
 function loadHistoryComponents_7ree() {
     return new Promise((resolve) => {
+        console.log('开始加载历史页面组件...');
         // 加载header-top组件
         if (window.preloadedHeaderHtml) {
+            console.log('加载header-top组件');
             document.getElementById('headerTopContainer_7ree').innerHTML = window.preloadedHeaderHtml;
+        } else {
+            console.log('header-top组件未预加载');
         }
 
         // 加载history-records组件
         if (window.preloadedHistoryHtml) {
+            console.log('加载history-records组件');
             document.getElementById('historyContentContainer_7ree').innerHTML = window.preloadedHistoryHtml;
+        } else {
+            console.log('history-records组件未预加载');
         }
 
         // 加载bottom-nav组件
         if (window.preloadedNavHtml) {
+            console.log('加载bottom-nav组件');
             document.getElementById('bottomNavContainer_7ree').innerHTML = window.preloadedNavHtml;
+        } else {
+            console.log('bottom-nav组件未预加载');
         }
 
         // 确保DOM更新完成
+        console.log('历史页面组件加载完成');
         setTimeout(resolve, 100);
     });
 }

@@ -11,10 +11,12 @@ class ConfirmDialog_7ree {
     }
 
     init() {
+        console.log('初始化确认对话框组件');
         // 创建对话框HTML结构
         this.createDialogHTML();
         // 绑定事件
         this.bindEvents();
+        console.log('确认对话框组件初始化完成');
     }
 
     createDialogHTML() {
@@ -63,6 +65,7 @@ class ConfirmDialog_7ree {
     }
 
     show(message, options = {}) {
+        console.log('显示确认对话框:', { message, options });
         return new Promise((resolve) => {
             this.currentResolve = resolve;
             
@@ -95,6 +98,7 @@ class ConfirmDialog_7ree {
             
             // 显示对话框
             this.overlay.classList.add('show');
+            console.log('确认对话框已显示');
             
             // 聚焦到确认按钮
             setTimeout(() => {
@@ -104,12 +108,14 @@ class ConfirmDialog_7ree {
     }
 
     close(result) {
+        console.log('关闭确认对话框，结果:', result);
         this.overlay.classList.remove('show');
         
         if (this.currentResolve) {
             this.currentResolve(result);
             this.currentResolve = null;
         }
+        console.log('确认对话框已关闭');
     }
 
     destroy() {

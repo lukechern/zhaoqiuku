@@ -171,6 +171,7 @@ class AuthManager {
             console.log('开始登出流程...');
             
             // 调用登出API
+            console.log('准备调用登出API');
             const response = await fetch('/api/logout', {
                 method: 'POST',
                 headers: {
@@ -178,6 +179,7 @@ class AuthManager {
                     'Authorization': `Bearer ${this.tokens?.accessToken}`
                 }
             });
+            console.log('登出API响应状态:', response.status);
 
             if (response.ok) {
                 console.log('登出API调用成功');
@@ -186,6 +188,7 @@ class AuthManager {
             }
 
             // 清除本地状态
+            console.log('清除本地认证状态');
             this.clearAuthState();
             console.log('登出流程完成');
             return true;
@@ -193,6 +196,7 @@ class AuthManager {
         } catch (error) {
             console.error('登出请求失败:', error);
             // 即使API调用失败，也清除本地状态
+            console.log('清除本地认证状态（API调用失败）');
             this.clearAuthState();
             console.log('登出流程完成（API调用失败但本地状态已清除）');
             return true; // 改为返回true，因为本地状态已清除
