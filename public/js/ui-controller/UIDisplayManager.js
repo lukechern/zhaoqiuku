@@ -40,7 +40,7 @@ export class UIDisplayManager {
             // 增强健壮性：如果 transcript 为空或 action 为 unknown，则显示"没有听清你说了什么"
             let userSay = data.transcript;
             if (!userSay || (data.action && data.action === 'unknown')) {
-                userSay = '没有听清你说了什么';
+                userSay = '抱歉，没有听清你说了什么';
             }
             
             html += `<div class="user-ai-dialog">
