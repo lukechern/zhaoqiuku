@@ -31,9 +31,9 @@
     background: linear-gradient(135deg, #1e293b, #0f172a);
     color: #a78bfa;
     border: 1px solid #a78bfa;
-    padding: 18px 24px;
+    padding: 8px 10px;
     border-radius: 12px 2px 12px 12px;
-    font-size: 1.425rem; 
+    font-size: 1.1rem; 
     line-height: 1.6;
     max-width: 85%;
     align-self: flex-end;
@@ -88,11 +88,6 @@
 .user-ai-dialog .user-say,
 .user-ai-dialog .ai-reply {
     display: block;
-}
-
-.user-ai-dialog .user-say {
-    color: white;
-    margin-bottom: 2px;
 }
 
 .user-ai-dialog .ai-reply {

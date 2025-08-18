@@ -119,7 +119,7 @@ export class UIDisplayManager {
         // 如果是正常模式但没有识别结果，显示简单提示
         if (debugConfig.currentLevel === 'normal' && !data.transcript) {
             html = `<div style="color: var(--text-muted); text-align: center; font-style: italic;">
-                未能识别语音内容，请重试
+                没有听清你说了什么
             </div>`;
         }
 
