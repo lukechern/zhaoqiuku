@@ -85,12 +85,6 @@
     opacity: 1 !important;
 }
 
-.header-top-fixed_7ree .user-email {
-    font-size: 0.9rem;
-    color: var(--text-primary) !important;
-    font-weight: 500;
-}
-
 .header-top-fixed_7ree .logout-icon {
     width: 18px;
     height: 18px;

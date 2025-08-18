@@ -7,29 +7,29 @@
 
 // 调试函数：检查认证状态
 function debugAuthState() {
-    console.log('=== 认证状态调试 ===');
+    // console.log('=== 认证状态调试 ===');
 
     // 检查认证管理器
-    console.log('1. 认证管理器状态:');
-    console.log('   - 存在:', !!window.authManager);
+    // console.log('1. 认证管理器状态:');
+    // console.log('   - 存在:', !!window.authManager);
     if (window.authManager) {
-        console.log('   - 已认证:', window.authManager.isAuthenticated);
-        console.log('   - 用户信息:', window.authManager.user);
-        console.log('   - Token存在:', !!window.authManager.tokens);
+        // console.log('   - 已认证:', window.authManager.isAuthenticated);
+        // console.log('   - 用户信息:', window.authManager.user);
+        // console.log('   - Token存在:', !!window.authManager.tokens);
     }
 
     // 检查DOM元素
-    console.log('2. DOM元素状态:');
+    // console.log('2. DOM元素状态:');
     const authLinks = document.getElementById('authLinks');
     const userInfo = document.getElementById('userInfo');
     const userEmail = document.getElementById('userEmail');
 
-    console.log('   - authLinks存在:', !!authLinks);
-    console.log('   - authLinks显示:', authLinks ? authLinks.style.display : 'N/A');
-    console.log('   - userInfo存在:', !!userInfo);
-    console.log('   - userInfo隐藏:', userInfo ? userInfo.classList.contains('hidden') : 'N/A');
-    console.log('   - userEmail存在:', !!userEmail);
-    console.log('   - userEmail内容:', userEmail ? userEmail.textContent : 'N/A');
+    // console.log('   - authLinks存在:', !!authLinks);
+    // console.log('   - authLinks显示:', authLinks ? authLinks.style.display : 'N/A');
+    // console.log('   - userInfo存在:', !!userInfo);
+    // console.log('   - userInfo隐藏:', userInfo ? userInfo.classList.contains('hidden') : 'N/A');
+    // console.log('   - userEmail存在:', !!userEmail);
+    // console.log('   - userEmail内容:', userEmail ? userEmail.textContent : 'N/A');
 
     // 检查LocalStorage
     console.log('3. LocalStorage状态:');
@@ -42,22 +42,22 @@ function debugAuthState() {
 
     storageKeys.forEach(key => {
         const value = localStorage.getItem(key);
-        console.log(`   - ${key}:`, value ? (key.includes('token') ? '存在' : value) : '不存在');
+        // console.log(`   - ${key}:`, value ? (key.includes('token') ? '存在' : value) : '不存在');
     });
 
-    console.log('=== 调试结束 ===');
+    // console.log('=== 调试结束 ===');
 }
 
 // 强制更新用户显示
 function forceUpdateUserDisplay() {
-    console.log('强制更新用户显示...');
+    // console.log('强制更新用户显示...');
 
     const authLinks = document.getElementById('authLinks');
     const userInfo = document.getElementById('userInfo');
     const userEmail = document.getElementById('userEmail');
 
     if (!authLinks || !userInfo || !userEmail) {
-        console.error('DOM元素未找到');
+        // console.error('DOM元素未找到');
         return;
     }
 
@@ -69,20 +69,20 @@ function forceUpdateUserDisplay() {
         userInfo.classList.remove('hidden');
         userInfo.style.display = 'flex';
         userEmail.textContent = window.authManager.user.email;
-        console.log('已显示用户信息:', window.authManager.user.email);
+        // console.log('已显示用户信息:', window.authManager.user.email);
     } else {
         // 显示登录链接，隐藏用户信息
         authLinks.style.display = 'flex';
         authLinks.classList.remove('hidden');
         userInfo.classList.add('hidden');
         userInfo.style.display = 'none';
-        console.log('已显示登录链接');
+        // console.log('已显示登录链接');
     }
     
     // 确保登出按钮事件监听器仍然绑定
     setTimeout(() => {
         if (window.ComponentManager) {
-            console.log('重新绑定登出按钮事件监听器');
+            // console.log('重新绑定登出按钮事件监听器');
             const componentManager = new window.ComponentManager();
             componentManager.setupLogoutHandler();
         }
@@ -92,7 +92,7 @@ function forceUpdateUserDisplay() {
 // 模拟登录
 function simulateLogin() {
     if (!window.authManager) {
-        console.error('认证管理器未初始化');
+        // console.error('认证管理器未初始化');
         return;
     }
 
@@ -124,7 +124,7 @@ function simulateLogin() {
         }
     }));
 
-    console.log('模拟登录完成');
+    // console.log('模拟登录完成');
     forceUpdateUserDisplay();
 }
 
