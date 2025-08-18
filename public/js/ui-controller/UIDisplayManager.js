@@ -37,14 +37,26 @@ export class UIDisplayManager {
             const resultColor = business.success ? 'var(--success)' : 'var(--error)';
 
             // 显示用户提问和AI回复的对话格式（使用CSS类减少内联样式）
+            // 增强健壮性：如果 transcript 为空或 action 为 unknown，则显示"没有听清你说了什么"
+            let userSay = data.transcript;
+            if (!userSay || (data.action && data.action === 'unknown')) {
+                userSay = '没有听清你说了什么';
+            }
+            
             html += `<div class="user-ai-dialog">
-                <span class="user-say">${this.uiController.escapeHtml(data.transcript)}</span>
+                <span class="user-say">${this.uiController.escapeHtml(userSay)}</span>
                 <span class="ai-reply">${this.uiController.escapeHtml(business.message)}</span>
             </div>`;
-        } else if (debugConfig.showTranscript && data.transcript) {
+        } else if (debugConfig.showTranscript && data.transcript && data.action !== 'unknown') {
             // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果
+            // 增强健壮性：只有当 action 不为 unknown 时才显示转录结果
             html += `<div style="color: var(--success); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem;">
                 📝 识别结果: ${this.uiController.escapeHtml(data.transcript)}
+            </div>`;
+        } else if (debugConfig.showTranscript && (!data.transcript || data.action === 'unknown')) {
+            // 如果 transcript 为空或 action 为 unknown，显示提示信息
+            html += `<div style="color: var(--text-muted); text-align: center; font-style: italic;">
+                没有听清你说了什么
             </div>`;
         }
 
