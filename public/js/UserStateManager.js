@@ -15,7 +15,6 @@ export class UserStateManager {
             this.authLinks = document.getElementById('authLinks');
             this.userInfo = document.getElementById('userInfo');
             this.userEmail = document.getElementById('userEmail');
-            this.logoutBtn = document.getElementById('logoutBtn');
 
             if (!this.authLinks || !this.userInfo || !this.userEmail) {
                 console.log('用户状态元素未找到，延迟重试...');
@@ -135,6 +134,9 @@ export class UserStateManager {
         this.userInfo = document.getElementById('userInfo');
         this.userEmail = document.getElementById('userEmail');
 
+        // 确保登出按钮事件始终绑定
+        this.setupLogoutHandler();
+
         if (!this.authLinks || !this.userInfo || !this.userEmail) {
             // 延迟重试
             setTimeout(() => {
@@ -169,6 +171,24 @@ export class UserStateManager {
             if (isDebug) {
                 console.log('显示登录链接');
             }
+        }
+    }
+
+    // 确保登出按钮事件监听器正确绑定
+    setupLogoutHandler() {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            // 移除所有已有的事件监听器
+            const newLogoutBtn = logoutBtn.cloneNode(true);
+            logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+            
+            // 添加新的事件监听器
+            newLogoutBtn.addEventListener('click', async (e) => {
+                console.log('登出按钮被点击(setupLogoutHandler)');
+                e.preventDefault();
+                e.stopPropagation();
+                await this.handleLogout();
+            });
         }
     }
 
