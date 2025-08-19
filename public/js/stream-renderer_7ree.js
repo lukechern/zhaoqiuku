@@ -11,7 +11,7 @@ export class StreamRenderer_7ree {
     async renderResults(data, container, autoTTS = true) {
         // 移除等待TTS完成的Promise逻辑，渲染流程不再依赖TTS播放完成
         if (this.isRendering) {
-            console.log('正在渲染中，跳过新的渲染请求');
+            // console.log('正在渲染中，跳过新的渲染请求');
             return;
         }
 
@@ -47,7 +47,7 @@ export class StreamRenderer_7ree {
             // 渲染完成后直接返回，不等待TTS
             return;
         } catch (error) {
-            console.error('流式渲染失败:', error);
+            // console.error('流式渲染失败:', error);
             // 降级到原始渲染方式
             this.fallbackRender_7ree(data, container);
         } finally {

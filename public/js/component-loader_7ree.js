@@ -27,19 +27,19 @@ function loadComponents_7ree() {
 // 历史页面组件加载函数
 function loadHistoryComponents_7ree() {
     return new Promise((resolve) => {
-        console.log('开始加载历史页面组件...');
+        // console.log('开始加载历史页面组件...');
         // 加载header-top组件
         if (window.preloadedHeaderHtml) {
-            console.log('加载header-top组件');
+            // console.log('加载header-top组件');
             document.getElementById('headerTopContainer_7ree').innerHTML = window.preloadedHeaderHtml;
-            console.log('header-top组件加载完成，触发登出按钮事件监听器绑定');
+            // console.log('header-top组件加载完成，触发登出按钮事件监听器绑定');
         } else {
             console.log('header-top组件未预加载');
         }
 
         // 加载history-records组件
         if (window.preloadedHistoryHtml) {
-            console.log('加载history-records组件');
+            // console.log('加载history-records组件');
             document.getElementById('historyContentContainer_7ree').innerHTML = window.preloadedHistoryHtml;
         } else {
             console.log('history-records组件未预加载');
@@ -47,14 +47,14 @@ function loadHistoryComponents_7ree() {
 
         // 加载bottom-nav组件
         if (window.preloadedNavHtml) {
-            console.log('加载bottom-nav组件');
+            // console.log('加载bottom-nav组件');
             document.getElementById('bottomNavContainer_7ree').innerHTML = window.preloadedNavHtml;
         } else {
             console.log('bottom-nav组件未预加载');
         }
 
         // 确保DOM更新完成
-        console.log('历史页面组件加载完成');
+        // console.log('历史页面组件加载完成');
         setTimeout(resolve, 100);
     });
 }
@@ -67,7 +67,7 @@ async function forceLoadMissingComponents_7ree() {
             if (response.ok) {
                 const html = await response.text();
                 window[varName] = html;
-                console.log(`强制加载组件成功: ${url}`);
+                // console.log(`强制加载组件成功: ${url}`);
                 return true;
             }
         } catch (error) {
@@ -124,7 +124,7 @@ async function waitForHistoryComponents_7ree() {
     }
     
     // 超时后尝试强制加载组件
-    console.warn('组件预加载超时，尝试强制加载组件...');
+    // console.warn('组件预加载超时，尝试强制加载组件...');
     console.log('预加载状态:', {
         header: !!window.preloadedHeaderHtml,
         history: !!window.preloadedHistoryHtml,
@@ -184,7 +184,7 @@ function ensureLogoutButtonHandler() {
                     }
                 }
             });
-            console.log('登出按钮事件监听器绑定完成');
+            // console.log('登出按钮事件监听器绑定完成');
         } else {
             console.log('未找到登出按钮元素');
         }
