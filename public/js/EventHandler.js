@@ -155,6 +155,10 @@ export class EventHandler {
 
         try {
             this.app.isProcessing = true;
+
+            // 确保无论是手动停止还是自动停止（20秒超时），都先隐藏录音UI与动效_7ree
+            this.app.uiController.hideRecordingState();
+            this.ensureUICleanup_7ree();
             
             // 检查录音质量
             const sizeCheck = this.app.audioRecorder.checkAudioSize();
