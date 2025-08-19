@@ -81,6 +81,22 @@ export class StreamRenderer_7ree {
             console.error('启动异步TTS失败:', error);
         }
     }
+    
+    // 同步播放TTS并等待完成
+    async playTTSAndWait(text) {
+        try {
+            if (window.ttsService && window.ttsService.isAvailable()) {
+                console.log('同步播放TTS:', text);
+                // 等待TTS完成
+                await window.ttsService.speak(text);
+                console.log('TTS播放完成');
+            } else {
+                console.log('TTS服务不可用');
+            }
+        } catch (error) {
+            console.error('TTS播放失败:', error);
+        }
+    }
 
     // 渲染用户气泡
     async renderUserBubble_7ree(container, text, transcript) {

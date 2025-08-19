@@ -18,7 +18,7 @@ export class EventHandler {
                 if (isWebView) {
                     this.app.uiController.showMessage('WebView环境：正在请求麦克风权限...', 'info');
                     // WebView环境下给更多时间
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 200));
                 } else {
                     this.app.uiController.showMessage('正在请求麦克风权限...', 'info');
                 }
@@ -129,15 +129,29 @@ export class EventHandler {
             const displayResult = this.app.apiClient.formatResultForDisplay(result);
             this.app.uiController.showResults(displayResult);
             
-            // 等待TTS完成
-            console.log('开始等待TTS完成...');
-            await this.waitForTTSCompletion();
-            console.log('TTS已完成，准备还原麦克风按钮状态');
+            console.log('音频处理完成，准备开始TTS播放');
+            
+            // 提取需要朗读的消息内容
+            let message = '';
+            if (result.business_result && result.business_result.message) {
+                message = result.business_result.message;
+            } else if (result.message) {
+                message = result.message;
+            }
+            
+            // 如果有消息内容，调用TTS服务朗读并等待完成
+            if (message && window.ttsService && window.ttsService.isAvailable()) {
+                console.log('开始TTS播放...');
+                await window.ttsService.speak(message);
+                console.log('TTS播放完成，准备还原麦克风按钮状态');
+            } else {
+                console.log('没有可朗读的消息内容或TTS服务不可用');
+            }
             
             // 还原麦克风按钮状态
             this.app.uiController.hideProcessingState();
             
-            console.log('音频处理完成:', result);
+            console.log('麦克风按钮状态已还原');
 
         } catch (error) {
             console.error('处理录音失败:', error);
@@ -150,34 +164,6 @@ export class EventHandler {
         }
     }
     
-    // 等待TTS完成
-    async waitForTTSCompletion() {
-        // 如果没有TTS服务，直接返回
-        if (!window.ttsService) {
-            return;
-        }
-        
-        // 等待TTS开始播放
-        let attempts = 0;
-        const maxAttempts = 50; // 最多等待5秒 (50 * 100ms)
-        while (!window.ttsService.isPlaying && attempts < maxAttempts) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-            attempts++;
-        }
-        
-        // 如果TTS开始播放，等待其完成
-        if (window.ttsService.isPlaying) {
-            // 创建一个轮询检查TTS是否完成
-            return new Promise(resolve => {
-                const checkInterval = setInterval(() => {
-                    if (!window.ttsService.isPlaying) {
-                        clearInterval(checkInterval);
-                        resolve();
-                    }
-                }, 100);
-            });
-        }
-    }
 
     // 处理播放
     handlePlayback() {
