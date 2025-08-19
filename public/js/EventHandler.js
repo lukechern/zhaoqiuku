@@ -67,11 +67,17 @@ export class EventHandler {
             this.app.uiController.hideRecordingState();
             this.app.uiController.vibrate([100]); // 震动反馈
             
+            // 显示处理状态（加载状态）
+            this.app.uiController.showProcessingState();
+            
             console.log('停止录音');
 
         } catch (error) {
             console.error('停止录音失败:', error);
             this.app.uiController.showError('停止录音失败: ' + error.message);
+            
+            // 发生错误时也要还原麦克风按钮状态
+            this.app.uiController.hideProcessingState();
         }
     }
 
@@ -121,9 +127,6 @@ export class EventHandler {
             // 格式化并显示结果
             const displayResult = this.app.apiClient.formatResultForDisplay(result);
             this.app.uiController.showResults(displayResult);
-            
-            // 显示处理状态（加载状态）
-            this.app.uiController.showProcessingState();
             
             // 等待TTS完成
             await this.waitForTTSCompletion();
