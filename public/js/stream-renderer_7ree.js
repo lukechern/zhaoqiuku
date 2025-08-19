@@ -4,7 +4,7 @@ export class StreamRenderer_7ree {
         this.isRendering = false;
         this.currentRenderingElement = null;
         this.renderingQueue = [];
-        this.typewriterSpeed = 50; // 打字速度（毫秒）
+        this.typewriterSpeed = 120; // 打字速度（毫秒）
     }
 
     // 开始流式渲染结果
@@ -29,14 +29,14 @@ export class StreamRenderer_7ree {
             const userText = this.extractUserText_7ree(data);
             const aiText = this.extractAiText_7ree(data);
             
-            // 异步启动TTS请求（不等待完成）
+            // 异步启动TTS请求（不等待完成，后台处理）
             this.startAsyncTTS_7ree(aiText);
             
             // 1. 先渲染用户气泡
             await this.renderUserBubble_7ree(dialogContainer, userText, data.transcript || '');
             
-            // 2. 等待500ms
-            await this.delay_7ree(500);
+            // 2. 等待1200ms
+            await this.delay_7ree(1200);
             
             // 3. 渲染AI气泡（流式打字效果）
             await this.renderAiBubble_7ree(dialogContainer, aiText);
