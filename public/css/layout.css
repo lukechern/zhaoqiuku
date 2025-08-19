@@ -52,7 +52,7 @@ body {
             0 0 0 12px rgba(0, 0, 0, 0.2),
             0 20px 60px rgba(0, 0, 0, 0.4);
         position: relative;
-        overflow: hidden;
+        overflow: visible;
         margin: 0 auto;
         transition: all 0.3s ease;
         /* 为index和history页面预留header-top组件的高度 */
