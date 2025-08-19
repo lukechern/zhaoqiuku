@@ -70,6 +70,10 @@ export class EventHandler {
             
             // 显示处理状态（加载状态）
             this.app.uiController.showProcessingState();
+            // 在结果区域显示“正在处理音频”提示，避免被占位符覆盖
+            if (this.app.uiController.showLoading) {
+                this.app.uiController.showLoading('正在处理音频，请稍候...');
+            }
             
             console.log('停止录音');
 
