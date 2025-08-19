@@ -125,28 +125,11 @@ export class EventHandler {
             // 发送到API
             const result = await this.app.apiClient.transcribeAudio(audioBlob, mimeType);
             
-            // 格式化并显示结果
+            // 格式化并显示结果，等待TTS播放完成
             const displayResult = this.app.apiClient.formatResultForDisplay(result);
-            this.app.uiController.showResults(displayResult);
+            await this.app.uiController.showResults(displayResult);
             
-            console.log('音频处理完成，准备开始TTS播放');
-            
-            // 提取需要朗读的消息内容
-            let message = '';
-            if (result.business_result && result.business_result.message) {
-                message = result.business_result.message;
-            } else if (result.message) {
-                message = result.message;
-            }
-            
-            // 如果有消息内容，调用TTS服务朗读并等待完成
-            if (message && window.ttsService && window.ttsService.isAvailable()) {
-                console.log('开始TTS播放...');
-                await window.ttsService.speak(message);
-                console.log('TTS播放完成，准备还原麦克风按钮状态');
-            } else {
-                console.log('没有可朗读的消息内容或TTS服务不可用');
-            }
+            console.log('音频处理完成，TTS播放已完成，准备还原麦克风按钮状态');
             
             // 还原麦克风按钮状态
             this.app.uiController.hideProcessingState();

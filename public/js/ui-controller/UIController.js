@@ -310,7 +310,7 @@ export class UIController {
     }
 
     // 显示结果 - 使用流式渲染器
-    showResults(data) {
+    async showResults(data) {
         // 保存最后的结果数据，用于调试级别切换时重新显示
         this.lastResultData = data;
 
@@ -321,8 +321,8 @@ export class UIController {
              // 如果是字符串，使用原始方式显示
              container.innerHTML = `<div class="results-json">${this.escapeHtml(data)}</div>`;
          } else {
-             // 使用流式渲染器
-             this.streamRenderer_7ree.renderResults(data, container);
+             // 使用流式渲染器，自动触发TTS并等待完成
+             await this.streamRenderer_7ree.renderResults(data, container, true);
          }
 
          // 自动滚动到顶部

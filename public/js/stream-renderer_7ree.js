@@ -8,7 +8,13 @@ export class StreamRenderer_7ree {
     }
 
     // 开始流式渲染结果
-    async renderResults(data, container) {
+    async renderResults(data, container, autoTTS = true) {
+        // 创建一个Promise，用于等待TTS完成
+        let ttsPromiseResolve;
+        const ttsPromise = new Promise(resolve => {
+            ttsPromiseResolve = resolve;
+        });
+        
         if (this.isRendering) {
             console.log('正在渲染中，跳过新的渲染请求');
             return;
@@ -29,8 +35,21 @@ export class StreamRenderer_7ree {
             const userText = this.extractUserText_7ree(data);
             const aiText = this.extractAiText_7ree(data);
             
-            // 异步启动TTS请求（不等待完成，后台处理）
-            this.startAsyncTTS_7ree(aiText);
+            // 如果需要自动TTS，则异步启动TTS请求（不等待完成，后台处理）
+            if (autoTTS) {
+                this.startAsyncTTS_7ree(aiText);
+                // 启动一个异步任务来等待TTS完成
+                this.waitForTTSCompletion().then(() => {
+                    if (ttsPromiseResolve) {
+                        ttsPromiseResolve();
+                    }
+                });
+            } else {
+                // 如果不自动TTS，立即resolve
+                if (ttsPromiseResolve) {
+                    ttsPromiseResolve();
+                }
+            }
             
             // 1. 先渲染用户气泡
             await this.renderUserBubble_7ree(dialogContainer, userText, data.transcript || '');
@@ -41,6 +60,8 @@ export class StreamRenderer_7ree {
             // 3. 渲染AI气泡（流式打字效果）
             await this.renderAiBubble_7ree(dialogContainer, aiText);
             
+            // 返回等待TTS完成的Promise
+            return ttsPromise;
         } catch (error) {
             console.error('流式渲染失败:', error);
             // 降级到原始渲染方式
@@ -95,6 +116,35 @@ export class StreamRenderer_7ree {
             }
         } catch (error) {
             console.error('TTS播放失败:', error);
+        }
+    }
+    
+    // 等待TTS完成
+    async waitForTTSCompletion() {
+        // 如果没有TTS服务，直接返回
+        if (!window.ttsService) {
+            return;
+        }
+        
+        // 等待TTS开始播放
+        let attempts = 0;
+        const maxAttempts = 50; // 最多等待5秒 (50 * 100ms)
+        while (!window.ttsService.isPlaying && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        // 如果TTS开始播放，等待其完成
+        if (window.ttsService.isPlaying) {
+            // 创建一个轮询检查TTS是否完成
+            return new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (!window.ttsService.isPlaying) {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }
+                }, 100);
+            });
         }
     }
 
