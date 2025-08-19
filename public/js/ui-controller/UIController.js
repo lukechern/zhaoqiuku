@@ -402,4 +402,50 @@ export class UIController {
             this.currentPlayingElement_7ree = null;
         }
     }
+
+    // 显示处理状态（加载状态）
+    showProcessingState() {
+        if (this.elements.microphoneButton) {
+            // 保存原始内容
+            if (!this.elements.microphoneButton.dataset.originalContent) {
+                this.elements.microphoneButton.dataset.originalContent = this.elements.microphoneButton.innerHTML;
+            }
+            
+            // 替换为加载动画
+            this.elements.microphoneButton.innerHTML = `
+                <div class="loading-dots">
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                </div>
+            `;
+            
+            // 添加加载状态样式
+            this.elements.microphoneButton.classList.add('loading');
+            
+            // 禁用按钮
+            this.elements.microphoneButton.disabled = true;
+        }
+    }
+
+    // 隐藏处理状态（还原为空闲状态）
+    hideProcessingState() {
+        if (this.elements.microphoneButton) {
+            // 移除加载状态样式
+            this.elements.microphoneButton.classList.remove('loading');
+            
+            // 启用按钮
+            this.elements.microphoneButton.disabled = false;
+            
+            // 恢复原始内容
+            if (this.elements.microphoneButton.dataset.originalContent) {
+                this.elements.microphoneButton.innerHTML = this.elements.microphoneButton.dataset.originalContent;
+            } else {
+                // 如果没有保存原始内容，使用默认内容
+                this.elements.microphoneButton.innerHTML = `
+                    <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
+                `;
+            }
+        }
+    }
 }

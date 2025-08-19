@@ -122,13 +122,44 @@ export class EventHandler {
             const displayResult = this.app.apiClient.formatResultForDisplay(result);
             this.app.uiController.showResults(displayResult);
             
+            // 显示处理状态（加载状态）
+            this.app.uiController.showProcessingState();
+            
+            // 等待TTS完成
+            await this.waitForTTSCompletion();
+            
+            // 还原麦克风按钮状态
+            this.app.uiController.hideProcessingState();
+            
             console.log('音频处理完成:', result);
 
         } catch (error) {
             console.error('处理录音失败:', error);
             this.app.uiController.showError(error.message);
+            
+            // 发生错误时也要还原麦克风按钮状态
+            this.app.uiController.hideProcessingState();
         } finally {
             this.app.isProcessing = false;
+        }
+    }
+    
+    // 等待TTS完成
+    async waitForTTSCompletion() {
+        // 等待一段时间确保TTS开始播放
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // 等待TTS播放完成
+        if (window.ttsService && window.ttsService.isPlaying) {
+            // 创建一个轮询检查TTS是否完成
+            return new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (!window.ttsService.isPlaying) {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }
+                }, 100);
+            });
         }
     }
 
