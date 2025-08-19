@@ -42,6 +42,10 @@ export class UIController {
             this.retryElementInitialization();
         } else {
             this.setupTouchEvents();
+            // 新增：初始化左右双按钮
+            if (this.setupDualButtons_7ree) {
+                this.setupDualButtons_7ree();
+            }
         }
 
         this.setupButtonEvents();
@@ -231,8 +235,9 @@ export class UIController {
         if (this.elements.soundWaves) {
             this.elements.soundWaves.classList.add('active', 'recording');
         }
+        // 录音期间改用左右按钮，不再显示“上滑取消”
         if (this.elements.cancelIndicator) {
-            this.elements.cancelIndicator.classList.add('active');
+            this.elements.cancelIndicator.classList.remove('active', 'canceling');
         }
         if (this.elements.timer) {
             this.elements.timer.classList.add('recording');
@@ -251,6 +256,11 @@ export class UIController {
         // 启动计时器
         if (this.startTimer) {
             this.startTimer();
+        }
+
+        // 新增：显示左右双按钮
+        if (this.showDualButtons_7ree) {
+            this.showDualButtons_7ree();
         }
     }
 
@@ -277,6 +287,11 @@ export class UIController {
 
         if (this.stopTimer) {
             this.stopTimer();
+        }
+
+        // 新增：隐藏左右双按钮
+        if (this.hideDualButtons_7ree) {
+            this.hideDualButtons_7ree();
         }
     }
 

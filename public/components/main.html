@@ -40,6 +40,16 @@
                 <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
             </div>
 
+            <!-- 新增：录音确认/取消双按钮（默认隐藏，仅录音时显示） -->
+            <div class="dual-recording-buttons_7ree" id="dualRecordingButtons_7ree" aria-hidden="true">
+                <button id="cancelRecordBtn_7ree" class="record-btn_7ree cancel_7ree" type="button" title="取消录音">
+                    <img src="img/delete.svg" alt="取消">
+                </button>
+                <button id="confirmRecordBtn_7ree" class="record-btn_7ree confirm_7ree" type="button" title="结束并发送">
+                    <img src="img/success.svg" alt="结束并发送">
+                </button>
+            </div>
+
             <div class="cancel-indicator" id="cancelIndicator">
                 <span>向上滑动取消录音</span>
             </div>

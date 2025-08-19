@@ -3,6 +3,8 @@
 export class UITouchHandler {
     constructor(uiController) {
         this.uiController = uiController;
+        // 新增：使用点击开始录音模式
+        this.useClickToRecord_7ree = true;
     }
 
     // 设置触摸事件
@@ -15,6 +17,41 @@ export class UITouchHandler {
         }
 
         console.log('正在为麦克风按钮绑定事件...', button);
+
+        // 新增：点击开始录音模式
+        if (this.useClickToRecord_7ree) {
+            // 防抖：录音中再次点击麦克风不做任何动作
+            button.addEventListener('click', (e) => {
+                console.log('麦克风按钮被点击！');
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.uiController.isRecording) {
+                    // 正在录音，点击麦克风不结束，需使用左右按钮明确操作
+                    return;
+                }
+                this.uiController.handlePressStart();
+            });
+
+            // 基础保护：阻止长按、选择、拖拽、上下文菜单
+            button.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); return false; });
+            button.addEventListener('selectstart', (e) => { e.preventDefault(); e.stopPropagation(); return false; });
+            button.addEventListener('dragstart', (e) => { e.preventDefault(); e.stopPropagation(); return false; });
+            button.addEventListener('longpress', (e) => { e.preventDefault(); e.stopPropagation(); return false; });
+
+            // WebView保护
+            if (window.webViewCompat_7ree) {
+                window.webViewCompat_7ree.setupElementProtection(button, {
+                    preventContextMenu: true,
+                    preventSelection: true,
+                    preventDrag: true,
+                    longPressDelay: 300
+                });
+                console.log('已为麦克风按钮设置WebView保护');
+            }
+
+            console.log('麦克风按钮事件绑定完成（点击开始录音模式）');
+            return; // 直接返回，不绑定长按/滑动
+        }
 
         // 触摸事件
         button.addEventListener('touchstart', (e) => {

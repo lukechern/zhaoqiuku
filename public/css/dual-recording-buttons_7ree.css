@@ -1,0 +1,63 @@
+/* 左右录音操作按钮（录音时显示）_7ree */
+.dual-recording-buttons_7ree {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 320px;
+    display: none; /* 默认隐藏 */
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    pointer-events: none; /* 容器不抢事件，按钮自身接管 */
+    z-index: 5;
+}
+
+.dual-recording-buttons_7ree.show {
+    display: flex;
+}
+
+.dual-recording-buttons_7ree .record-btn_7ree {
+    pointer-events: auto;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    border: none;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    transition: transform .08s ease, box-shadow .2s ease, background-color .2s ease;
+    user-select: none;
+}
+
+.dual-recording-buttons_7ree .record-btn_7ree img {
+    width: 26px;
+    height: 26px;
+}
+
+.dual-recording-buttons_7ree .record-btn_7ree:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* 左侧：取消（红底） */
+.dual-recording-buttons_7ree .cancel_7ree {
+    background: #ff3b30;
+}
+
+/* 右侧：确认（绿底） */
+.dual-recording-buttons_7ree .confirm_7ree {
+    background: #34c759;
+}
+
+/* 暗色模式兼容 */
+@media (prefers-color-scheme: dark) {
+    .dual-recording-buttons_7ree .record-btn_7ree {
+        box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+}
