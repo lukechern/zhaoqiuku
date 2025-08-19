@@ -47,7 +47,7 @@
     content: "";
     position: absolute;
     right: -36px;
-    top: 12px;
+    top: -4px;
     width: 24px;
     height: 24px;
     background-image: url('../img/sound.svg');
@@ -67,7 +67,7 @@
     line-height: 1.6; /* 调整行高 */
     max-width: 85%;
     align-self: flex-start;
-    border: 1px solid #334155;
+    border: 1px solid #445771;
     position: relative;
     font-weight: 500;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
@@ -78,7 +78,7 @@
     content: "";
     position: absolute;
     left: -36px;
-    top: 12px;
+    top: -4px;
     width: 24px;
     height: 24px;
     background-image: url('../img/sound.svg');

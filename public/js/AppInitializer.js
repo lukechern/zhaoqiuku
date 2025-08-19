@@ -21,6 +21,9 @@ export class AppInitializer {
             // 显示初始状态
             this.app.uiController.clearResults();
             this.app.uiController.disableControls();
+            
+            // 根据调试级别控制按钮显示
+            this.updateControlsVisibility();
 
             this.app.isInitialized = true;
             console.log('语音识别应用初始化完成');
@@ -28,6 +31,23 @@ export class AppInitializer {
         } catch (error) {
             console.error('应用初始化失败:', error);
             this.app.uiController.showError('应用初始化失败: ' + error.message);
+        }
+    }
+
+    // 根据调试级别更新控制按钮可见性
+    updateControlsVisibility() {
+        // 获取控制按钮容器
+        const controlsContainer = document.getElementById('controlsContainer');
+        if (controlsContainer && window.debugConfig) {
+            const currentLevel = window.debugConfig.config.currentLevel;
+            const DEBUG_LEVELS = window.debugConfig.config.levels;
+            
+            // 只有在DEBUG或FULL_DEBUG模式下才显示控制按钮
+            if (currentLevel === 'debug' || currentLevel === 'full_debug') {
+                controlsContainer.style.display = 'flex';
+            } else {
+                controlsContainer.style.display = 'none';
+            }
         }
     }
 
