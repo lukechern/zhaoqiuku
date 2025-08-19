@@ -228,12 +228,13 @@ export class UIController {
 
     // 显示录音状态
     showRecordingState() {
-        // 添加元素存在性检查
+        // 隐藏麦克风按钮
         if (this.elements.microphoneButton) {
-            this.elements.microphoneButton.classList.add('recording');
+            this.elements.microphoneButton.style.display = 'none';
         }
+        // 水波动效上移到计时器位置
         if (this.elements.soundWaves) {
-            this.elements.soundWaves.classList.add('active', 'recording');
+            this.elements.soundWaves.classList.add('active', 'recording', 'moved-to-timer_7ree');
         }
         // 录音期间改用左右按钮，不再显示“上滑取消”
         if (this.elements.cancelIndicator) {
@@ -266,12 +267,14 @@ export class UIController {
 
     // 隐藏录音状态
     hideRecordingState() {
-        // 添加元素存在性检查
+        // 恢复麦克风按钮显示
         if (this.elements.microphoneButton) {
+            this.elements.microphoneButton.style.display = '';
             this.elements.microphoneButton.classList.remove('recording');
         }
+        // 移除水波动效的上移样式
         if (this.elements.soundWaves) {
-            this.elements.soundWaves.classList.remove('active', 'recording');
+            this.elements.soundWaves.classList.remove('active', 'recording', 'moved-to-timer_7ree');
         }
         if (this.elements.cancelIndicator) {
             this.elements.cancelIndicator.classList.remove('active', 'canceling');

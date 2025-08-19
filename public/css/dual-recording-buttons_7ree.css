@@ -24,7 +24,7 @@
     pointer-events: auto;
     width: 56px;
     height: 56px;
-    border-radius: 16px;
+    border-radius: 50%; /* 改为正圆形 */
     border: none;
     outline: none;
     display: inline-flex;
@@ -38,6 +38,7 @@
 .dual-recording-buttons_7ree .record-btn_7ree img {
     width: 26px;
     height: 26px;
+    filter: brightness(0) invert(1); /* 将SVG图标变为白色 */
 }
 
 .dual-recording-buttons_7ree .record-btn_7ree:active {
