@@ -120,16 +120,16 @@ export class EventHandler {
             this.app.uiController.enableControls();
             
             // 显示处理状态
-            this.app.uiController.showLoading('正在处理音频，请稍候...');
+            this.app.uiController.showProcessingState();
             
             // 发送到API
             const result = await this.app.apiClient.transcribeAudio(audioBlob, mimeType);
             
-            // 格式化并显示结果，等待TTS播放完成
+            // 格式化并显示结果，不等待TTS播放完成
             const displayResult = this.app.apiClient.formatResultForDisplay(result);
             await this.app.uiController.showResults(displayResult);
             
-            console.log('音频处理完成，TTS播放已完成，准备还原麦克风按钮状态');
+            console.log('音频处理完成，结果已显示（TTS后台异步播放）');
             
             // 还原麦克风按钮状态
             this.app.uiController.hideProcessingState();

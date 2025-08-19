@@ -317,18 +317,18 @@ export class UIController {
         const container = this.elements.resultsContainer;
 
         // 使用流式渲染器渲染结果
-         if (typeof data === 'string') {
-             // 如果是字符串，使用原始方式显示
-             container.innerHTML = `<div class="results-json">${this.escapeHtml(data)}</div>`;
-         } else {
-             // 使用流式渲染器，自动触发TTS并等待完成
-             await this.streamRenderer_7ree.renderResults(data, container, true);
-         }
+        if (typeof data === 'string') {
+            // 如果是字符串，使用原始方式显示
+            container.innerHTML = `<div class="results-json">${this.escapeHtml(data)}</div>`;
+        } else {
+            // 使用流式渲染器，自动触发TTS并等待完成（注意：renderResults内部已不再等待TTS）
+            await this.streamRenderer_7ree.renderResults(data, container, true);
+        }
 
-         // 自动滚动到顶部
-         container.scrollTop = 0;
+        // 自动滚动到顶部
+        container.scrollTop = 0;
 
-         // 注意：TTS朗读现在在流式渲染器中异步处理，无需在此调用
+        // 注意：TTS朗读现在在流式渲染器中异步处理，无需在此调用
     }
 
     // 自动朗读API响应内容

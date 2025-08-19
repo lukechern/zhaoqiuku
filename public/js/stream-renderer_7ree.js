@@ -9,12 +9,7 @@ export class StreamRenderer_7ree {
 
     // 开始流式渲染结果
     async renderResults(data, container, autoTTS = true) {
-        // 创建一个Promise，用于等待TTS完成
-        let ttsPromiseResolve;
-        const ttsPromise = new Promise(resolve => {
-            ttsPromiseResolve = resolve;
-        });
-        
+        // 移除等待TTS完成的Promise逻辑，渲染流程不再依赖TTS播放完成
         if (this.isRendering) {
             console.log('正在渲染中，跳过新的渲染请求');
             return;
@@ -35,20 +30,9 @@ export class StreamRenderer_7ree {
             const userText = this.extractUserText_7ree(data);
             const aiText = this.extractAiText_7ree(data);
             
-            // 如果需要自动TTS，则异步启动TTS请求（不等待完成，后台处理）
+            // 如果需要自动TTS，则立即异步启动TTS请求（不等待完成，后台处理）
             if (autoTTS) {
                 this.startAsyncTTS_7ree(aiText);
-                // 启动一个异步任务来等待TTS完成
-                this.waitForTTSCompletion().then(() => {
-                    if (ttsPromiseResolve) {
-                        ttsPromiseResolve();
-                    }
-                });
-            } else {
-                // 如果不自动TTS，立即resolve
-                if (ttsPromiseResolve) {
-                    ttsPromiseResolve();
-                }
             }
             
             // 1. 先渲染用户气泡
@@ -60,8 +44,8 @@ export class StreamRenderer_7ree {
             // 3. 渲染AI气泡（流式打字效果）
             await this.renderAiBubble_7ree(dialogContainer, aiText);
             
-            // 返回等待TTS完成的Promise
-            return ttsPromise;
+            // 渲染完成后直接返回，不等待TTS
+            return;
         } catch (error) {
             console.error('流式渲染失败:', error);
             // 降级到原始渲染方式
@@ -119,7 +103,7 @@ export class StreamRenderer_7ree {
         }
     }
     
-    // 等待TTS完成
+    // 等待TTS完成（保留但不再被renderResults使用）
     async waitForTTSCompletion() {
         // 如果没有TTS服务，直接返回
         if (!window.ttsService) {
