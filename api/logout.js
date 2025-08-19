@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         // 清除认证 Cookie
         clearAuthCookies(res);
 
-        console.log('用户登出成功');
+        // console.log('用户登出成功');
 
         return res.status(200).json({
             success: true,

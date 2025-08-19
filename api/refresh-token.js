@@ -80,7 +80,7 @@ export default async function handler(req, res) {
             (cookieOptions.httpOnly ? '; HttpOnly' : '')
         );
 
-        console.log('访问令牌刷新成功');
+        // console.log('访问令牌刷新成功');
 
         return res.status(200).json({
             success: true,
