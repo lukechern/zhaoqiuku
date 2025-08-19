@@ -40,7 +40,6 @@ export class AppInitializer {
         const controlsContainer = document.getElementById('controlsContainer');
         if (controlsContainer && window.debugConfig) {
             const currentLevel = window.debugConfig.config.currentLevel;
-            const DEBUG_LEVELS = window.debugConfig.config.levels;
             
             // 只有在DEBUG或FULL_DEBUG模式下才显示控制按钮
             if (currentLevel === 'debug' || currentLevel === 'full_debug') {
@@ -49,6 +48,13 @@ export class AppInitializer {
                 controlsContainer.style.display = 'none';
             }
         }
+    }
+
+    // 设置调试级别变更监听器
+    setupDebugLevelListener() {
+        window.addEventListener('debugLevelChanged', (event) => {
+            this.updateControlsVisibility();
+        });
     }
 
     // 检查浏览器支持
