@@ -35,26 +35,11 @@ export class TTSService {
             null;
     }
 
-    // 自动朗读API响应内容
+    // 自动朗读API响应内容（已废弃，现在使用流式渲染器异步处理）
     async autoReadResponse(data) {
-        // 默认启用自动朗读
-        const textToRead = this.extractTextToRead(data);
-        if (!textToRead) {
-            console.log('没有找到需要朗读的文本');
-            return;
-        }
-
-        // 应用默认延迟
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // 限制文本长度
-        let finalText = textToRead;
-        if (textToRead.length > 500) {
-            finalText = textToRead.substring(0, 500) + '...';
-        }
-
-        console.log('开始朗读:', finalText);
-        await this.speak(finalText);
+        console.log('autoReadResponse已废弃，TTS现在在流式渲染器中异步处理');
+        // 保留此方法以兼容旧代码，但不执行任何操作
+        return;
     }
 
     // 朗读指定文本

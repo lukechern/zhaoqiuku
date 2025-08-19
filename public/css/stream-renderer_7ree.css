@@ -1,0 +1,155 @@
+/* 流式渲染器样式 */
+
+/* 打字效果光标 */
+.typewriter-cursor_7ree {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background-color: currentColor;
+    animation: blink_7ree 1s infinite;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+}
+
+/* 光标闪烁动画 */
+@keyframes blink_7ree {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+/* 流式渲染容器 */
+.stream-container_7ree {
+    position: relative;
+}
+
+/* 渲染中状态 */
+.rendering_7ree {
+    position: relative;
+}
+
+/* 用户气泡渲染动画 */
+.user-say.rendering_7ree {
+    animation: slideInRight_7ree 0.3s ease-out;
+}
+
+/* AI气泡渲染动画 */
+.ai-reply.rendering_7ree {
+    animation: slideInLeft_7ree 0.3s ease-out;
+}
+
+/* 从右侧滑入动画 */
+@keyframes slideInRight_7ree {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 从左侧滑入动画 */
+@keyframes slideInLeft_7ree {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 打字效果容器 */
+.typewriter-text_7ree {
+    display: inline;
+    position: relative;
+}
+
+/* 渐入效果 */
+.fade-in_7ree {
+    animation: fadeIn_7ree 0.2s ease-in;
+}
+
+@keyframes fadeIn_7ree {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 流式渲染状态指示器 */
+.stream-indicator_7ree {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--primary-color, #007bff);
+    animation: pulse_7ree 1.5s infinite;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+@keyframes pulse_7ree {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .typewriter-cursor_7ree {
+        width: 1px;
+        height: 1em;
+    }
+    
+    .stream-indicator_7ree {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .typewriter-cursor_7ree {
+        background-color: currentColor;
+        opacity: 1;
+    }
+    
+    .stream-indicator_7ree {
+        border: 1px solid currentColor;
+    }
+}
+
+/* 减少动画模式支持 */
+@media (prefers-reduced-motion: reduce) {
+    .typewriter-cursor_7ree,
+    .stream-indicator_7ree,
+    .user-say.rendering_7ree,
+    .ai-reply.rendering_7ree,
+    .fade-in_7ree {
+        animation: none;
+    }
+    
+    .user-say.rendering_7ree,
+    .ai-reply.rendering_7ree {
+        opacity: 1;
+        transform: none;
+    }
+}
