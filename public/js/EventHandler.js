@@ -60,6 +60,7 @@ export class EventHandler {
 
     // 处理录音停止
     handleRecordingStop() {
+        console.log('处理录音停止');
         if (!this.app.audioRecorder.isRecording) return;
 
         try {
@@ -129,7 +130,9 @@ export class EventHandler {
             this.app.uiController.showResults(displayResult);
             
             // 等待TTS完成
+            console.log('开始等待TTS完成...');
             await this.waitForTTSCompletion();
+            console.log('TTS已完成，准备还原麦克风按钮状态');
             
             // 还原麦克风按钮状态
             this.app.uiController.hideProcessingState();
@@ -149,11 +152,21 @@ export class EventHandler {
     
     // 等待TTS完成
     async waitForTTSCompletion() {
-        // 等待一段时间确保TTS开始播放
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // 如果没有TTS服务，直接返回
+        if (!window.ttsService) {
+            return;
+        }
         
-        // 等待TTS播放完成
-        if (window.ttsService && window.ttsService.isPlaying) {
+        // 等待TTS开始播放
+        let attempts = 0;
+        const maxAttempts = 50; // 最多等待5秒 (50 * 100ms)
+        while (!window.ttsService.isPlaying && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        // 如果TTS开始播放，等待其完成
+        if (window.ttsService.isPlaying) {
             // 创建一个轮询检查TTS是否完成
             return new Promise(resolve => {
                 const checkInterval = setInterval(() => {

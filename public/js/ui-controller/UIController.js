@@ -405,6 +405,7 @@ export class UIController {
 
     // 显示处理状态（加载状态）
     showProcessingState() {
+        console.log('显示处理状态（加载状态）');
         if (this.elements.microphoneButton) {
             // 保存原始内容
             if (!this.elements.microphoneButton.dataset.originalContent) {
@@ -430,6 +431,7 @@ export class UIController {
 
     // 隐藏处理状态（还原为空闲状态）
     hideProcessingState() {
+        console.log('隐藏处理状态（还原为空闲状态）');
         if (this.elements.microphoneButton) {
             // 移除加载状态样式
             this.elements.microphoneButton.classList.remove('loading');
