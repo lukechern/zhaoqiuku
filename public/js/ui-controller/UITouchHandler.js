@@ -20,21 +20,25 @@ export class UITouchHandler {
         button.addEventListener('touchstart', (e) => {
             console.log('touchstart 事件被触发', e);
             e.preventDefault();
+            e.stopPropagation();
             this.handleTouchStart(e);
         }, { passive: false });
 
         button.addEventListener('touchmove', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             this.handleTouchMove(e);
         }, { passive: false });
 
         button.addEventListener('touchend', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             this.handleTouchEnd(e);
         }, { passive: false });
 
         button.addEventListener('touchcancel', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             this.handleTouchEnd(e);
         }, { passive: false });
 
@@ -53,15 +57,73 @@ export class UITouchHandler {
             this.handleMouseEnd(e);
         });
 
-        // 防止上下文菜单
+        // 防止上下文菜单和长按菜单
         button.addEventListener('contextmenu', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+
+        // 防止长按选择文本和系统菜单
+        button.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+
+        // 防止拖拽
+        button.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+
+        // 防止长按事件（Android WebView特有）
+        button.addEventListener('longpress', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+
+        // 使用定时器检测长按并阻止默认行为
+        let longPressTimer = null;
+        button.addEventListener('touchstart', (e) => {
+            longPressTimer = setTimeout(() => {
+                // 长按检测，阻止系统默认行为
+                e.preventDefault();
+                e.stopPropagation();
+            }, 500); // 500ms后认为是长按
+        }, { passive: false });
+
+        button.addEventListener('touchend', () => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        });
+
+        button.addEventListener('touchcancel', () => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
         });
 
         // 添加简单的点击测试事件
         button.addEventListener('click', (e) => {
             console.log('麦克风按钮被点击了！');
         });
+
+        // 设置WebView兼容性保护
+        if (window.webViewCompat_7ree) {
+            window.webViewCompat_7ree.setupElementProtection(button, {
+                preventContextMenu: true,
+                preventSelection: true,
+                preventDrag: true,
+                longPressDelay: 300 // 300ms后阻止长按菜单
+            });
+            console.log('已为麦克风按钮设置WebView保护');
+        }
 
         console.log('麦克风按钮事件绑定完成');
     }

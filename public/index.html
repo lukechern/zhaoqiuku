@@ -10,6 +10,15 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    
+    <!-- 禁用WebView长按菜单和选择 -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <meta name="format-detection" content="address=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <script>
         // 动态添加版本号防止CSS缓存
@@ -101,6 +110,7 @@
 
         // 需要加载的JavaScript文件列表
         const scriptsToLoad_7ree = [
+            'js/webview-compat_7ree.js', // 优先加载WebView兼容性模块
             'js/confirm-dialog_7ree.js', // 优先加载确认对话框组件
             'js/navigation.js', // 优先加载导航组件
             'js/debug-config.js',
