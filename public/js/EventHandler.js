@@ -66,6 +66,10 @@ export class EventHandler {
         try {
             this.app.audioRecorder.stopRecording();
             this.app.uiController.hideRecordingState();
+            
+            // 额外确保UI元素被正确隐藏_7ree
+            this.ensureUICleanup_7ree();
+            
             this.app.uiController.vibrate([100]); // 震动反馈
             
             // 显示处理状态（加载状态）
@@ -83,6 +87,38 @@ export class EventHandler {
             
             // 发生错误时也要还原麦克风按钮状态
             this.app.uiController.hideProcessingState();
+            // 错误时也确保UI清理_7ree
+            this.ensureUICleanup_7ree();
+        }
+    }
+
+    // 确保UI元素被正确清理的方法_7ree
+    ensureUICleanup_7ree() {
+        try {
+            // 强制移除水波纹动效的所有相关类
+            const soundWaves = document.getElementById('soundWaves');
+            if (soundWaves) {
+                soundWaves.classList.remove('active', 'recording', 'moved-to-timer_7ree');
+                console.log('强制清理水波纹动效类');
+            }
+            
+            // 强制隐藏双按钮
+            const dualButtons = document.getElementById('dualRecordingButtons_7ree');
+            if (dualButtons) {
+                dualButtons.classList.remove('show');
+                dualButtons.setAttribute('aria-hidden', 'true');
+                console.log('强制隐藏双按钮');
+            }
+            
+            // 确保麦克风按钮显示
+            const micButton = document.getElementById('microphoneButton');
+            if (micButton) {
+                micButton.style.display = '';
+                micButton.classList.remove('recording');
+            }
+            
+        } catch (error) {
+            console.error('UI清理失败:', error);
         }
     }
 
@@ -94,6 +130,10 @@ export class EventHandler {
             // 停止录音但不触发完成事件
             this.app.audioRecorder.cancelRecording();
             this.app.uiController.hideRecordingState();
+            
+            // 额外确保UI元素被正确隐藏_7ree
+            this.ensureUICleanup_7ree();
+            
             this.app.uiController.vibrate([50, 50]); // 取消震动反馈
             
             // 显示取消提示
@@ -104,6 +144,8 @@ export class EventHandler {
         } catch (error) {
             console.error('取消录音失败:', error);
             this.app.uiController.showError('取消录音失败: ' + error.message);
+            // 错误时也确保UI清理_7ree
+            this.ensureUICleanup_7ree();
         }
     }
 
