@@ -349,7 +349,7 @@ class UnifiedAuthManager {
                 this.showError('email', result.error || '发送验证码失败，请重试');
             }
         } catch (error) {
-            console.error('发送验证码错误:', error);
+            // console.error('发送验证码错误:', error); // 已注释，避免控制台错误日志（_7ree）
             this.hideLoading();
             this.showError('email', '网络错误，请检查网络连接后重试');
         }
@@ -392,7 +392,7 @@ class UnifiedAuthManager {
                 this.showError('verify', result.error || '重新发送失败，请重试');
             }
         } catch (error) {
-            console.error('重新发送验证码错误:', error);
+            // console.error('重新发送验证码错误:', error); // 已注释，避免控制台错误日志（_7ree）
             this.hideLoading();
             this.showError('verify', '网络错误，请重试');
         }
@@ -468,7 +468,7 @@ class UnifiedAuthManager {
                 this.verifyCodeInput.select();
             }
         } catch (error) {
-            console.error('验证验证码错误:', error);
+            // console.error('验证验证码错误:', error); // 已注释，避免控制台错误日志（_7ree）
             this.hideLoading();
             // 验证失败，设置失败标志（_7ree）
             this.verifyCodeFailedOnce_7ree = true;
@@ -738,18 +738,21 @@ class UnifiedAuthManager {
 
     // 显示验证码错误状态（_7ree）
     showVerifyCodeError_7ree() {
-        if (!this.verifyCodeInputs_7ree) return;
-        
-        this.verifyCodeInputs_7ree.forEach(input => {
-            input.classList.add('error');
-        });
-        
-        // 2秒后移除错误状态
-        setTimeout(() => {
+        if (this.verifyCodeInputs_7ree) {
             this.verifyCodeInputs_7ree.forEach(input => {
-                input.classList.remove('error');
+                input.classList.add('error');
+                // 添加震动动画
+                input.style.animation = 'shake_7ree 0.5s ease-in-out';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
             });
-        }, 2000);
+            
+            // 验证失败后自动清空所有输入框并聚焦到第一个（_7ree）
+            setTimeout(() => {
+                this.clearVerifyCode_7ree();
+            }, 600); // 等待震动动画完成后再清空
+        }
     }
 }
 
