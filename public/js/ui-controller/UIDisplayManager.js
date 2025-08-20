@@ -45,7 +45,7 @@ export class UIDisplayManager {
             
             html += `<div class="user-ai-dialog">
                 <span class="user-say playable" data-transcript="${this.uiController.escapeHtml(data.transcript || '')}">${this.uiController.escapeHtml(userSay)}</span>
-                <span class="ai-reply playable" data-message="${this.uiController.escapeHtml(business.message)}">${this.uiController.escapeHtml(business.message)}</span>
+                <span class="ai-reply playable" data-message="${this.uiController.escapeHtml(business.message)}">${this.formatAiMessage_7ree(business.message)}</span>
             </div>`;
         } else if (debugConfig.showTranscript && data.transcript && data.action !== 'unknown') {
             // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果
@@ -198,5 +198,14 @@ export class UIDisplayManager {
     // 显示不支持提示
     showUnsupportedPrompt() {
         this.showError('您的浏览器不支持语音录制功能，请使用现代浏览器');
+    }
+
+    // 格式化AI消息，允许<br>标签换行
+    formatAiMessage_7ree(message) {
+        if (!message) return '';
+        
+        // 先转义所有HTML标签，然后将<br>标签还原
+        const escapedMessage = this.uiController.escapeHtml(message);
+        return escapedMessage.replace(/&lt;br&gt;/g, '<br>');
     }
 }

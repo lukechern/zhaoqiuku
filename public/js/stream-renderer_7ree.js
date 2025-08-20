@@ -162,14 +162,14 @@ export class StreamRenderer_7ree {
 
     // 打字机效果
     async typewriterEffect_7ree(element, text) {
-        const escapedText = this.escapeHtml_7ree(text);
+        const formattedText = this.formatAiMessage_7ree(text);
         let currentText = '';
         
         // 添加渲染状态样式
         element.classList.add('rendering_7ree');
         
-        for (let i = 0; i < escapedText.length; i++) {
-            currentText += escapedText[i];
+        for (let i = 0; i < formattedText.length; i++) {
+            currentText += formattedText[i];
             // 添加光标效果
             element.innerHTML = currentText + '<span class="typewriter-cursor_7ree"></span>';
             
@@ -330,5 +330,14 @@ export class StreamRenderer_7ree {
     // 设置打字速度
     setTypewriterSpeed_7ree(speed) {
         this.typewriterSpeed = Math.max(10, Math.min(200, speed)); // 限制在10-200ms之间
+    }
+
+    // 格式化AI消息，允许<br>标签换行
+    formatAiMessage_7ree(message) {
+        if (!message) return '';
+        
+        // 先转义所有HTML标签，然后将<br>标签还原
+        const escapedMessage = this.escapeHtml_7ree(message);
+        return escapedMessage.replace(/&lt;br&gt;/g, '<br>');
     }
 }

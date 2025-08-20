@@ -205,7 +205,7 @@ async function handleGetAction(object, userId) {
 
     // 格式化记录时间
     const recordDate = new Date(data.operation_time * 1000);
-    const formattedDate = `${recordDate.getFullYear()}年${recordDate.getMonth() + 1}月${recordDate.getDate()}日`;
+    const formattedDate = formatRelativeTime_7ree(recordDate);
     
     console.log('📅 时间格式化:', {
         原始时间戳: data.operation_time,
@@ -214,7 +214,7 @@ async function handleGetAction(object, userId) {
 
     return {
         success: true,
-        message: `${object}的存放位置为${data.location}，记录时间为${formattedDate}`,
+        message: `${object}的存放位置为${data.location}<br>（记录于：${formattedDate}）`,
         data: {
             item: object,
             location: data.location,
@@ -278,6 +278,64 @@ export async function deleteItemRecord(recordId, userId) {
     }
 
     return { success: true, message: '记录已删除' };
+}
+
+/**
+ * 智能相对时间格式化函数
+ * @param {Date} recordDate - 记录时间
+ * @returns {string} - 格式化后的相对时间描述
+ */
+function formatRelativeTime_7ree(recordDate) {
+    const now = new Date();
+    const diffMs = now.getTime() - recordDate.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.floor(diffDays / 365);
+    
+    // 判断是否为今天、昨天、前天
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const dayBeforeYesterday = new Date(today);
+    dayBeforeYesterday.setDate(today.getDate() - 2);
+    
+    const recordDateOnly = new Date(recordDate.getFullYear(), recordDate.getMonth(), recordDate.getDate());
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const yesterdayOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+    const dayBeforeYesterdayOnly = new Date(dayBeforeYesterday.getFullYear(), dayBeforeYesterday.getMonth(), dayBeforeYesterday.getDate());
+    
+    if (recordDateOnly.getTime() === todayOnly.getTime()) {
+        return '今天';
+    } else if (recordDateOnly.getTime() === yesterdayOnly.getTime()) {
+        return '昨天';
+    } else if (recordDateOnly.getTime() === dayBeforeYesterdayOnly.getTime()) {
+        return '前天';
+    }
+    
+    // 60分钟内显示分钟
+    if (diffMinutes < 60) {
+        return `${diffMinutes}分钟前`;
+    }
+    
+    // 12小时内显示小时
+    if (diffHours < 12) {
+        return `${diffHours}小时前`;
+    }
+    
+    // 30天内显示天数
+    if (diffDays <= 30) {
+        return `${diffDays}天前`;
+    }
+    
+    // 12个月内显示月数
+    if (diffMonths <= 12) {
+        return `${diffMonths}月前`;
+    }
+    
+    // 超过12个月显示年数
+    return `${diffYears}年前`;
 }
 
 export default {
