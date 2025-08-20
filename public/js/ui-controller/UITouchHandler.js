@@ -16,7 +16,7 @@ export class UITouchHandler {
             return;
         }
 
-        console.log('正在为麦克风按钮绑定事件...', button);
+        // console.log('正在为麦克风按钮绑定事件...', button);
 
         // 新增：点击开始录音模式
         if (this.useClickToRecord_7ree) {
@@ -49,7 +49,7 @@ export class UITouchHandler {
                 console.log('已为麦克风按钮设置WebView保护');
             }
 
-            console.log('麦克风按钮事件绑定完成（点击开始录音模式）');
+            // console.log('麦克风按钮事件绑定完成（点击开始录音模式）');
             return; // 直接返回，不绑定长按/滑动
         }
 

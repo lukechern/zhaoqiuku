@@ -229,7 +229,7 @@ async function handleGetAction(object, userId) {
  */
 function handleUnknownAction() {
     console.log('❓ UNKNOWN操作 - 意图不明确');
-    console.log('无需数据库操作，直接返回提示信息');
+    // console.log('无需数据库操作，直接返回提示信息');
     
     return {
         success: false,
