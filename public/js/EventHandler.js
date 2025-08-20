@@ -16,7 +16,7 @@ export class EventHandler {
                 const isWebView = this.app.appInitializer.detectWebView();
                 
                 if (isWebView) {
-                    this.app.uiController.showMessage('WebView环境：正在唤醒AI助手...', 'info');
+                    this.app.uiController.showMessage('正在唤醒AI助手...', 'info');
                     // WebView环境下给更多时间
                     await new Promise(resolve => setTimeout(resolve, 200));
                 } else {

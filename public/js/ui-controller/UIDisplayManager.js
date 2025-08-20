@@ -150,6 +150,13 @@ export class UIDisplayManager {
     // 显示错误
     showError(error) {
         const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
+        
+        // 如果正在录音，不覆盖录音状态显示，而是通过console输出错误信息
+        if (this.uiController.isRecording) {
+            console.error('录音过程中发生错误:', errorMessage);
+            return;
+        }
+        
         if (this.uiController.elements.resultsContainer) {
             this.uiController.elements.resultsContainer.innerHTML = `
                 <div style="color: var(--error); text-align: center;">
@@ -167,6 +174,12 @@ export class UIDisplayManager {
             warning: 'var(--warning)',
             error: 'var(--error)'
         };
+
+        // 如果正在录音，不覆盖录音状态显示，而是通过console输出消息
+        if (this.uiController.isRecording) {
+            console.log(`录音过程中的消息 [${type}]:`, message);
+            return;
+        }
 
         if (this.uiController.elements.resultsContainer) {
             this.uiController.elements.resultsContainer.innerHTML = `

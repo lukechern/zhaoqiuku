@@ -474,8 +474,9 @@ export class UIController {
             }
         }
         
-        // 如果结果容器为空（没有显示结果），则显示placeholder
-        if (this.elements.resultsContainer && this.elements.resultsContainer.innerHTML.trim() === '') {
+        // 只有在非录音状态下，且结果容器为空时，才显示placeholder
+        // 避免在录音过程中被错误地还原为placeholder
+        if (!this.isRecording && this.elements.resultsContainer && this.elements.resultsContainer.innerHTML.trim() === '') {
             this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？按住麦克风问问AI</div>';
         }
     }
