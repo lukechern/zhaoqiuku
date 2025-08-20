@@ -248,8 +248,9 @@ export class UIController {
         if (this.elements.resultsContainer) {
             this.elements.resultsContainer.innerHTML = `
                 <div class="results-json">
-                    <div class="listening-status">请告诉我，您是想记录物品位置，还是查找物品…</div>
-                    <div class="timer-display">还可以说20秒</div>
+                    <div class="listening-status">请您告诉我:<br>是想记录物品位置,<br>还是查找物品…</div>
+
+                    <div class="timer-display">您还可以说20秒</div>
                 </div>
             `;
         }

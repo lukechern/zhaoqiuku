@@ -16,11 +16,11 @@ export class EventHandler {
                 const isWebView = this.app.appInitializer.detectWebView();
                 
                 if (isWebView) {
-                    this.app.uiController.showMessage('WebView环境：正在请求麦克风权限...', 'info');
+                    this.app.uiController.showMessage('WebView环境：正在唤醒AI助手...', 'info');
                     // WebView环境下给更多时间
                     await new Promise(resolve => setTimeout(resolve, 200));
                 } else {
-                    this.app.uiController.showMessage('正在请求麦克风权限...', 'info');
+                    this.app.uiController.showMessage('正在唤醒AI助手...', 'info');
                 }
                 
                 await this.app.audioRecorder.initialize();
@@ -76,7 +76,7 @@ export class EventHandler {
             this.app.uiController.showProcessingState();
             // 在结果区域显示“正在处理音频”提示，避免被占位符覆盖
             if (this.app.uiController.showLoading) {
-                this.app.uiController.showLoading('AI正在思考中，请您稍候…');
+                this.app.uiController.showLoading('AI助手正在思考中，请您稍候…');
             }
             
             console.log('停止录音');
@@ -187,7 +187,7 @@ export class EventHandler {
             this.app.uiController.showProcessingState();
             // 在结果区域显示"正在处理音频"提示
             if (this.app.uiController.showLoading) {
-                this.app.uiController.showLoading('AI正在思考中，请您稍候…');
+                this.app.uiController.showLoading('AI助手正在思考中，请您稍候…');
             }
             
             // 发送到API

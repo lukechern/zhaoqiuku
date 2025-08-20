@@ -35,7 +35,7 @@ export class UITimerManager {
         const maxRecordingTime = 20; // 最大录音时间20秒
         const remaining = Math.max(0, maxRecordingTime - elapsed);
 
-        const timeString = `还可以说${remaining}秒`;
+        const timeString = `您还可以说${remaining}秒`;
 
         // 更新resultsContainer中的计时器显示
         if (this.uiController.elements.resultsContainer) {
@@ -52,7 +52,7 @@ export class UITimerManager {
         if (this.uiController.elements.resultsContainer) {
             const timerDisplay = this.uiController.elements.resultsContainer.querySelector('.timer-display');
             if (timerDisplay) {
-                timerDisplay.textContent = '还可以说20秒';
+                timerDisplay.textContent = '您还可以说20秒';
             }
         }
         this.uiController.startTime = null;
