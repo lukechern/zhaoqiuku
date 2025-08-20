@@ -155,9 +155,6 @@ export class UIDisplayManager {
                                 <div class="wave_7ree"></div>
                                 <div class="wave_7ree"></div>
                             </div>
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
-                            <div class="loading-dot"></div>
                         </div>
                     </div>
                 `;
