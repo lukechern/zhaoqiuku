@@ -185,6 +185,10 @@ export class EventHandler {
             
             // 显示处理状态
             this.app.uiController.showProcessingState();
+            // 在结果区域显示"正在处理音频"提示
+            if (this.app.uiController.showLoading) {
+                this.app.uiController.showLoading('正在处理音频，请稍候...');
+            }
             
             // 发送到API
             const result = await this.app.apiClient.transcribeAudio(audioBlob, mimeType);
