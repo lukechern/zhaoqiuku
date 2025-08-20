@@ -14,6 +14,8 @@
 
   let originalHeaderHtml_7ree = '';
   let isSearchMode_7ree = false;
+  // 本次搜索模式期间是否提交过搜索（用于关闭时是否需要刷新列表）
+  let hasSubmittedSearch_7ree = false;
 
   function ensureHeaderReady_7ree(){
     const header = document.querySelector('#headerTopContainer_7ree .header-top');
@@ -51,6 +53,7 @@
     // 记录原始内容，进入搜索模式
     originalHeaderHtml_7ree = header.innerHTML;
     isSearchMode_7ree = true;
+    hasSubmittedSearch_7ree = false; // 进入时重置标记
 
     header.classList.add('header-search-mode_7ree');
     header.innerHTML = '';
@@ -109,17 +112,26 @@
       setTimeout(()=> window.ensureLogoutButtonHandler(), 0);
     }
 
-    // 关闭搜索后清空搜索结果并恢复列表
-    if (window.historyManager && typeof window.historyManager.clearSearch_7ree === 'function') {
-      window.historyManager.clearSearch_7ree();
-    } else {
-      const container = document.getElementById('history-records');
-      if (container) {
-        Array.from(container.querySelectorAll('.history-record')).forEach(el => {
-          el.style.display = '';
-        });
+    // 仅当本次搜索模式期间发生过搜索提交时，才清空搜索并恢复列表
+    if (hasSubmittedSearch_7ree) {
+      if (window.historyManager && typeof window.historyManager.clearSearch_7ree === 'function') {
+        window.historyManager.clearSearch_7ree();
+      } else {
+        const container = document.getElementById('history-records');
+        if (container) {
+          Array.from(container.querySelectorAll('.history-record')).forEach(el => {
+            el.style.display = '';
+          });
+        }
       }
     }
+
+    // 退出搜索时，将加载指示器文案恢复为默认
+    const loadingTextEl = document.querySelector('#loading-indicator span');
+    if (loadingTextEl) loadingTextEl.textContent = '加载中...';
+
+    // 重置标记
+    hasSubmittedSearch_7ree = false;
   }
 
   function doSearch_7ree(){
@@ -135,10 +147,12 @@
 
     // 优先使用服务端搜索
     if (window.historyManager && typeof window.historyManager.setSearchKeyword_7ree === 'function') {
+      // 在页面的加载指示器上展示“正在为您搜索...”
+      const loadingTextEl = document.querySelector('#loading-indicator span');
+      if (loadingTextEl) loadingTextEl.textContent = '正在为您搜索...';
+
+      hasSubmittedSearch_7ree = true; // 标记为已提交
       window.historyManager.setSearchKeyword_7ree(keyword);
-      if (typeof window.showToast === 'function') {
-        window.showToast('正在为你搜索...', 'info');
-      }
       return;
     }
 
@@ -157,6 +171,7 @@
       if (matched) matchCount++;
     });
 
+    hasSubmittedSearch_7ree = true; // 标记为已提交（本地过滤场景）
     if (typeof window.showToast === 'function') {
       window.showToast(`找到 ${matchCount} 条匹配记录`, matchCount ? 'success' : 'info');
     }
