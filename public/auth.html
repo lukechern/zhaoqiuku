@@ -55,7 +55,7 @@
                             <img class="progress-icon_7ree incomplete_7ree hidden" src="img/progress-incomplete_7ree.svg" alt="未完成" />
                             <img class="progress-icon_7ree complete_7ree" src="img/progress-complete_7ree.svg" alt="已完成" />
                         </div>
-                        <span class="progress-text_7ree">邀请码</span>
+                        <span class="progress-text_7ree">1.邀请码</span>
                     </div>
                     <div class="progress-step_7ree" id="progressStep2_7ree">
                         <!-- 节点2 图标替换 (_7ree) -->
@@ -63,7 +63,7 @@
                             <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg" alt="未完成" />
                             <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg" alt="已完成" />
                         </div>
-                        <span class="progress-text_7ree">邮箱验证码</span>
+                        <span class="progress-text_7ree">2.邮箱验证</span>
                     </div>
                     <div class="progress-step_7ree" id="progressStep3_7ree">
                         <!-- 节点3 图标替换 (_7ree) -->
@@ -71,7 +71,7 @@
                             <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg" alt="未完成" />
                             <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg" alt="已完成" />
                         </div>
-                        <span class="progress-text_7ree">验证通过</span>
+                        <span class="progress-text_7ree">3.验证通过</span>
                     </div>
                 </div>
 
@@ -106,7 +106,16 @@
                 <div class="step hidden" id="verifyStep">
                     <div class="form-group">
                         <label for="verifyCode">验证码</label>
-                        <input type="text" id="verifyCode" placeholder="请输入6位验证码" maxlength="6" required>
+                        <div class="verify-code-container_7ree">
+                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="0">
+                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="1">
+                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="2">
+                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="3">
+                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="4">
+                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="5">
+                        </div>
+                        <!-- 隐藏的原始输入框，用于保持兼容性 -->
+                        <input type="hidden" id="verifyCode">
                         <div class="error-message" id="verifyError"></div>
                         <div class="help-text">
                             验证码已发送至 <span id="emailDisplay"></span>

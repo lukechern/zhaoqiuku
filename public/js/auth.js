@@ -67,25 +67,34 @@ class UnifiedAuthManager {
         // 表单元素
         this.emailInput = document.getElementById('email');
         this.verifyCodeInput = document.getElementById('verifyCode');
+        // 验证码分隔输入框（_7ree）
+        this.verifyCodeInputs_7ree = document.querySelectorAll('.verify-code-input_7ree');
         this.emailDisplay = document.getElementById('emailDisplay');
         this.userTypeHint = document.getElementById('userTypeHint');
 
         // 按钮元素
         this.sendCodeBtn = document.getElementById('sendCodeBtn');
-        this.resendBtn = document.getElementById('resendBtn');
         this.verifyBtn = document.getElementById('verifyBtn');
+        this.resendBtn = document.getElementById('resendBtn');
         this.goToAppBtn = document.getElementById('goToAppBtn');
 
         // 错误信息元素
         this.emailError = document.getElementById('emailError');
         this.verifyError = document.getElementById('verifyError');
 
-        // 其他元素
-        this.loadingText = document.getElementById('loadingText');
-        this.resendText = document.getElementById('resendText');
-        this.countdown = document.getElementById('countdown');
+        // 成功页面元素
         this.successTitle = document.getElementById('successTitle');
         this.successMessage = document.getElementById('successMessage');
+
+        // 加载状态元素
+        this.loadingText = document.getElementById('loadingText');
+
+        // 倒计时元素
+        this.countdown = document.getElementById('countdown');
+        this.resendText = document.getElementById('resendText');
+        
+        // 初始化验证码输入框交互（_7ree）
+        this.initVerifyCodeInputs_7ree();
         
         // 进度条元素（_7ree）
         this.progressBar_7ree = document.getElementById('progressBar_7ree');
@@ -124,15 +133,11 @@ class UnifiedAuthManager {
 
         this.verifyCodeInput.addEventListener('input', () => {
             this.clearError('verify');
-            // 自动验证6位验证码
-            if (this.verifyCodeInput.value.length === 6) {
-                this.verifyCode();
-            }
         });
         this.verifyCodeInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.verifyCode();
         });
-
+        
         // 邀请码事件（_7ree）
         if (this.validateInvitationBtn_7ree) {
             this.validateInvitationBtn_7ree.addEventListener('click', async () => {
@@ -163,7 +168,7 @@ class UnifiedAuthManager {
                         this.invitationInput_7ree?.focus();
                     }
                 } catch (err) {
-                    console.error('邀请码校验失败:', err);
+                    // 静默处理：不在控制台打印 error（_7ree）
                     this.hideLoading();
                     this.showError('invitation', '网络错误，请稍后重试');
                 }
@@ -446,13 +451,15 @@ class UnifiedAuthManager {
                 this.clearCountdown();
             } else {
                 this.hideLoading();
+                this.showVerifyCodeError_7ree(); // 使用新的错误显示方法（_7ree）
                 this.showError('verify', result.error || '验证码错误，请重试');
                 this.verifyCodeInput.select();
             }
         } catch (error) {
             console.error('验证验证码错误:', error);
             this.hideLoading();
-            this.showError('verify', '网络错误，请重试');
+            this.showVerifyCodeError_7ree(); // 使用新的错误显示方法（_7ree）
+            this.showError('verify', '验证失败，请重试');
         }
     }
 
@@ -582,9 +589,151 @@ class UnifiedAuthManager {
         updateTime();
         setInterval(updateTime, 1000);
     }
+
+    // 初始化验证码输入框交互（_7ree）
+    initVerifyCodeInputs_7ree() {
+        if (!this.verifyCodeInputs_7ree || this.verifyCodeInputs_7ree.length === 0) return;
+        
+        this.verifyCodeInputs_7ree.forEach((input, index) => {
+            // 输入事件：只允许数字，自动跳转到下一个输入框
+            input.addEventListener('input', (e) => {
+                const value = e.target.value;
+                
+                // 只允许数字
+                if (!/^[0-9]$/.test(value)) {
+                    e.target.value = '';
+                    return;
+                }
+                
+                // 添加填充样式
+                e.target.classList.add('filled');
+                
+                // 自动跳转到下一个输入框
+                if (value && index < this.verifyCodeInputs_7ree.length - 1) {
+                    this.verifyCodeInputs_7ree[index + 1].focus();
+                }
+                
+                // 更新隐藏的验证码输入框
+                this.updateVerifyCode_7ree();
+                
+                // 如果所有输入框都填满，自动验证
+                if (this.getVerifyCode_7ree().length === 6) {
+                    setTimeout(() => this.verifyCode(), 100);
+                }
+            });
+            
+            // 键盘事件：处理退格键
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace') {
+                    if (!e.target.value && index > 0) {
+                        // 如果当前输入框为空，跳转到前一个输入框并清空
+                        this.verifyCodeInputs_7ree[index - 1].focus();
+                        this.verifyCodeInputs_7ree[index - 1].value = '';
+                        this.verifyCodeInputs_7ree[index - 1].classList.remove('filled');
+                    } else {
+                        // 清空当前输入框
+                        e.target.classList.remove('filled');
+                    }
+                    this.updateVerifyCode_7ree();
+                } else if (e.key === 'ArrowLeft' && index > 0) {
+                    this.verifyCodeInputs_7ree[index - 1].focus();
+                } else if (e.key === 'ArrowRight' && index < this.verifyCodeInputs_7ree.length - 1) {
+                    this.verifyCodeInputs_7ree[index + 1].focus();
+                } else if (e.key === 'Enter') {
+                    this.verifyCode();
+                }
+            });
+            
+            // 粘贴事件：处理粘贴验证码
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasteData = e.clipboardData.getData('text');
+                const digits = pasteData.replace(/\D/g, '').slice(0, 6);
+                
+                if (digits.length > 0) {
+                    this.setVerifyCode_7ree(digits);
+                }
+            });
+            
+            // 焦点事件：选中内容
+            input.addEventListener('focus', (e) => {
+                e.target.select();
+            });
+        });
+    }
+
+    // 更新隐藏的验证码输入框（_7ree）
+    updateVerifyCode_7ree() {
+        const code = this.getVerifyCode_7ree();
+        if (this.verifyCodeInput) {
+            this.verifyCodeInput.value = code;
+        }
+    }
+
+    // 获取当前验证码（_7ree）
+    getVerifyCode_7ree() {
+        if (!this.verifyCodeInputs_7ree) return '';
+        return Array.from(this.verifyCodeInputs_7ree).map(input => input.value).join('');
+    }
+
+    // 设置验证码（_7ree）
+    setVerifyCode_7ree(code) {
+        if (!this.verifyCodeInputs_7ree) return;
+        
+        const digits = code.toString().slice(0, 6);
+        this.verifyCodeInputs_7ree.forEach((input, index) => {
+            if (index < digits.length) {
+                input.value = digits[index];
+                input.classList.add('filled');
+            } else {
+                input.value = '';
+                input.classList.remove('filled');
+            }
+        });
+        
+        this.updateVerifyCode_7ree();
+        
+        // 焦点到下一个空输入框或最后一个
+        const nextEmptyIndex = digits.length < 6 ? digits.length : 5;
+        if (this.verifyCodeInputs_7ree[nextEmptyIndex]) {
+            this.verifyCodeInputs_7ree[nextEmptyIndex].focus();
+        }
+    }
+
+    // 清空验证码（_7ree）
+    clearVerifyCode_7ree() {
+        if (!this.verifyCodeInputs_7ree) return;
+        
+        this.verifyCodeInputs_7ree.forEach(input => {
+            input.value = '';
+            input.classList.remove('filled', 'error');
+        });
+        
+        this.updateVerifyCode_7ree();
+        
+        // 焦点到第一个输入框
+        if (this.verifyCodeInputs_7ree[0]) {
+            this.verifyCodeInputs_7ree[0].focus();
+        }
+    }
+
+    // 显示验证码错误状态（_7ree）
+    showVerifyCodeError_7ree() {
+        if (!this.verifyCodeInputs_7ree) return;
+        
+        this.verifyCodeInputs_7ree.forEach(input => {
+            input.classList.add('error');
+        });
+        
+        // 2秒后移除错误状态
+        setTimeout(() => {
+            this.verifyCodeInputs_7ree.forEach(input => {
+                input.classList.remove('error');
+            });
+        }, 2000);
+    }
 }
 
-// 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
     new UnifiedAuthManager();
 });

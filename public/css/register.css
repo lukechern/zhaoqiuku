@@ -397,3 +397,63 @@
     }
 }
 .progress-node_7ree img.progress-icon_7ree{width:100%;height:100%;position:absolute;top:0;left:0;object-fit:contain;}
+/* 验证码输入框美化样式（_7ree） */
+.verify-code-container_7ree {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.verify-code-input_7ree {
+    width: 3rem !important;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: 2px solid var(--border) !important;
+    border-radius: 8px !important;
+    background: var(--surface-light) !important;
+    color: var(--text-primary) !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+}
+
+.verify-code-input_7ree:focus {
+    outline: none !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+    transform: scale(1.05);
+}
+
+.verify-code-input_7ree.error {
+    border-color: var(--error) !important;
+    box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.2) !important;
+    animation: shake_7ree 0.5s ease-in-out;
+}
+
+.verify-code-input_7ree.filled {
+    background: rgba(102, 126, 234, 0.1) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* 摇晃动画 */
+@keyframes shake_7ree {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .verify-code-container_7ree {
+        gap: 0.3rem;
+    }
+    
+    .verify-code-input_7ree {
+        width: 2.5rem !important;
+        height: 2.5rem;
+        font-size: 1rem;
+    }
+}
