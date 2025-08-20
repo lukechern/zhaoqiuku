@@ -47,7 +47,7 @@
     padding: 0.75rem 1rem;
     border: 2px solid var(--border);
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 1.7rem;
     transition: all 0.3s ease;
     background: var(--surface-light);
     color: var(--text-primary);
@@ -406,12 +406,12 @@
 }
 
 .verify-code-input_7ree {
-    width: 3rem !important;
-    height: 3rem;
+    width: 2.5rem !important;
+    height: 3.5rem;
     text-align: center;
     font-size: 1.2rem;
     font-weight: 600;
-    border: 2px solid var(--border) !important;
+    border: 2px solid var(--text-secondary) !important;
     border-radius: 8px !important;
     background: var(--surface-light) !important;
     color: var(--text-primary) !important;
@@ -445,15 +445,3 @@
     75% { transform: translateX(4px); }
 }
 
-/* 移动端适配 */
-@media (max-width: 480px) {
-    .verify-code-container_7ree {
-        gap: 0.3rem;
-    }
-    
-    .verify-code-input_7ree {
-        width: 2.5rem !important;
-        height: 2.5rem;
-        font-size: 1rem;
-    }
-}
