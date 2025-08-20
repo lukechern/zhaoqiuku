@@ -244,12 +244,12 @@ export class UIController {
             this.elements.timer.classList.add('recording');
         }
 
-        // 在 results-json 区域显示"聆听中……"和计时器（不显示动画效果）
+        // 在 results-json 区域显示"请告诉AI，您是想记录物品的存放位置，或者查找物品…"和计时器（不显示动画效果）
         if (this.elements.resultsContainer) {
             this.elements.resultsContainer.innerHTML = `
                 <div class="results-json">
-                    <div class="listening-status">聆听中……</div>
-                    <div class="timer-display">20秒</div>
+                    <div class="listening-status">请告诉AI，您是想记录物品的存放位置，或者查找物品…</div>
+                    <div class="timer-display">还有20秒</div>
                 </div>
             `;
         }
@@ -320,7 +320,7 @@ export class UIController {
         if (this.elements.resultsContainer) {
             const statusElement = this.elements.resultsContainer.querySelector('.listening-status');
             if (statusElement) {
-                statusElement.textContent = '聆听中……';
+                statusElement.textContent = '请告诉AI，您是想记录物品的存放位置，或者查找物品…';
             }
         }
     }

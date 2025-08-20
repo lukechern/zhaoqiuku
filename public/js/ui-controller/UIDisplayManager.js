@@ -14,7 +14,7 @@ export class UIDisplayManager {
         if (this.uiController.elements.resultsContainer) {
             const statusElement = this.uiController.elements.resultsContainer.querySelector('.listening-status');
             if (statusElement) {
-                statusElement.textContent = '聆听中……';
+                statusElement.textContent = '请告诉AI，您是想记录物品的存放位置，或者查找物品…';
             }
         }
     }

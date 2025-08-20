@@ -316,7 +316,7 @@
 .loading-dot {
     width: 16px;
     height: 16px;
-    background-color: #6f42c1; /* 紫色，与按钮颜色一致 */
+    background-color: #3b82f6; /* 蓝色，与水波纹颜色一致 */
     border-radius: 50%;
     margin: 0 8px;
     animation: bounce 1.5s infinite ease-in-out both;
