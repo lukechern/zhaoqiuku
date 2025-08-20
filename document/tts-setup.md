@@ -123,7 +123,7 @@ const ttsConfig = {
 
 ## 使用流程
 
-1. 用户按住麦克风说话
+1. 用户轻触麦克风说话
 2. 语音识别转换为文本
 3. API处理并返回响应
 4. 系统显示结果在 `#resultsContainer > div > div > span.ai-reply`

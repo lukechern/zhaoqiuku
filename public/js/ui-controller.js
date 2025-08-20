@@ -32,12 +32,13 @@ export class UIController extends BaseUIController {
         
         // 触摸处理方法
         this.setupTouchEvents = this.touchHandler.setupTouchEvents.bind(this.touchHandler);
-        this.handleTouchStart = this.touchHandler.handleTouchStart.bind(this.touchHandler);
-        this.handleTouchMove = this.touchHandler.handleTouchMove.bind(this.touchHandler);
-        this.handleTouchEnd = this.touchHandler.handleTouchEnd.bind(this.touchHandler);
-        this.handleMouseStart = this.touchHandler.handleMouseStart.bind(this.touchHandler);
-        this.handleMouseMove = this.touchHandler.handleMouseMove.bind(this.touchHandler);
-        this.handleMouseEnd = this.touchHandler.handleMouseEnd.bind(this.touchHandler);
+        // 以下旧的长按/滑动处理方法已废弃_7ree（点击开始录音 + 左右按钮确认/取消）
+        // this.handleTouchStart = this.touchHandler.handleTouchStart.bind(this.touchHandler);
+        // this.handleTouchMove = this.touchHandler.handleTouchMove.bind(this.touchHandler);
+        // this.handleTouchEnd = this.touchHandler.handleTouchEnd.bind(this.touchHandler);
+        // this.handleMouseStart = this.touchHandler.handleMouseStart.bind(this.touchHandler);
+        // this.handleMouseMove = this.touchHandler.handleMouseMove.bind(this.touchHandler);
+        // this.handleMouseEnd = this.touchHandler.handleMouseEnd.bind(this.touchHandler);
         
         // 显示管理方法
         this.hideCancelState = this.displayManager.hideCancelState.bind(this.displayManager);

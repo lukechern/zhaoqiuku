@@ -20,11 +20,11 @@
 
 根据google的这个音频理解文档 https://ai.google.dev/gemini-api/docs/audio?hl=zh-cn
 纯js+html+css的手机网站，部署到vercel
-基本需求，用户按住麦克风图标，说话（20s以内的中文），然后让google的gemini返回json格式的原文、指定的关键词等
+基本需求，用户轻触麦克风图标，说话（20s以内的中文），然后让google的gemini返回json格式的原文、指定的关键词等
 
 好——下面给你一套**可直接部署到 Vercel** 的纯前端（HTML/CSS/JS）+后端（Vercel Serverless API）方案。实现流程：
 
-1. 手机端：按住麦克风开始录音（最多 20s），松开结束并上传（Base64 + mimeType）。
+1. 手机端：轻触麦克风开始录音（最多 20s），松开结束并上传（Base64 + mimeType）。
 2. 后端（Vercel API route）：把收到的音频 inline 传给 Google Gemini 的 `generateContent`（或使用 Files API 上传更大文件），并把 Gemini 返回的文本结果解析成 JSON（原文、关键词等）返回给前端。
 3. 注意：API Key 放在后端环境变量，不暴露到浏览器。Gemini 支持内嵌音频（inlineData）或先上传文件（Files API）。([Google AI for Developers][1])
 
@@ -71,7 +71,7 @@
           <path d="M12 21v0"></path>
         </svg>
       </div>
-      <div class="hint">按住麦克风说话（最长 20s），松开发送</div>
+      <div class="hint">轻触麦克风说话（最长 20s），松开发送</div>
       <div class="hint timer" id="timer">00:00</div>
       <div style="display:flex;gap:8px;margin-top:6px">
         <button id="playBack" class="small" disabled>回放</button>
