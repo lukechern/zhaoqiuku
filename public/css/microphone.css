@@ -166,7 +166,7 @@
     }
 }
 
-/* 加载状态的跳动点动画 */
+/* 加载状态的跳动点动画和水波效果组合 */
 .loading-dots {
     display: flex;
     align-items: center;
@@ -175,6 +175,142 @@
     height: 100%;
     background-color: #17182E; /* 与页面背景色相同 */
     border-radius: 50%;
+    position: relative;
+}
+
+/* 水波效果容器，位于跳动点外面 */
+.sound-waves_7ree {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.sound-waves_7ree.active {
+    opacity: 1;
+}
+
+.wave_7ree {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.wave_7ree:nth-child(1) {
+    width: 130px;
+    height: 130px;
+    animation: wave-animation_7ree 2s ease-out infinite;
+    animation-delay: 0s;
+}
+
+.wave_7ree:nth-child(2) {
+    width: 150px;
+    height: 150px;
+    animation: wave-animation_7ree 2s ease-out infinite;
+    animation-delay: 0.4s;
+}
+
+.wave_7ree:nth-child(3) {
+    width: 170px;
+    height: 170px;
+    animation: wave-animation_7ree 2s ease-out infinite;
+    animation-delay: 0.8s;
+}
+
+.wave_7ree:nth-child(4) {
+    width: 190px;
+    height: 190px;
+    animation: wave-animation_7ree 2s ease-out infinite;
+    animation-delay: 1.2s;
+}
+
+.wave_7ree:nth-child(5) {
+    width: 210px;
+    height: 210px;
+    animation: wave-animation_7ree 2s ease-out infinite;
+    animation-delay: 1.6s;
+}
+
+@keyframes wave-animation_7ree {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.92);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.3);
+    }
+}
+
+/* 录音时的音波颜色变化 */
+.sound-waves_7ree.recording .wave_7ree {
+    border-color: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.sound-waves_7ree.recording .wave_7ree:nth-child(1) {
+    animation: wave-recording_7ree 1.5s ease-out infinite;
+    animation-delay: 0s;
+}
+
+.sound-waves_7ree.recording .wave_7ree:nth-child(2) {
+    animation: wave-recording_7ree 1.5s ease-out infinite;
+    animation-delay: 0.3s;
+}
+
+.sound-waves_7ree.recording .wave_7ree:nth-child(3) {
+    animation: wave-recording_7ree 1.5s ease-out infinite;
+    animation-delay: 0.6s;
+}
+
+.sound-waves_7ree.recording .wave_7ree:nth-child(4) {
+    animation: wave-recording_7ree 1.5s ease-out infinite;
+    animation-delay: 0.9s;
+}
+
+.sound-waves_7ree.recording .wave_7ree:nth-child(5) {
+    animation: wave-recording_7ree 1.5s ease-out infinite;
+    animation-delay: 1.2s;
+}
+
+@keyframes wave-recording_7ree {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.92);
+        border-color: #3b82f6;
+    }
+    30% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(0.98);
+        border-color: #60a5fa;
+    }
+    60% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.05);
+        border-color: #3b82f6;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.2);
+        border-color: #93c5fd;
+    }
 }
 
 .loading-dot {
@@ -184,6 +320,8 @@
     border-radius: 50%;
     margin: 0 8px;
     animation: bounce 1.5s infinite ease-in-out both;
+    z-index: 10; /* 确保跳动点在水波上方 */
+    position: relative;
 }
 
 .loading-dot:nth-child(1) {
@@ -225,4 +363,31 @@
         height: 5px;
         margin: 0 2px;
     }
+}
+
+/* 移动端水波效果适配 */
+@media (max-width: 768px) {
+    .sound-waves_7ree {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .wave_7ree:nth-child(1) { width: 110px; height: 110px; }
+    .wave_7ree:nth-child(2) { width: 130px; height: 130px; }
+    .wave_7ree:nth-child(3) { width: 150px; height: 150px; }
+    .wave_7ree:nth-child(4) { width: 170px; height: 170px; }
+    .wave_7ree:nth-child(5) { width: 190px; height: 190px; }
+}
+
+@media (max-width: 480px) {
+    .sound-waves_7ree {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .wave_7ree:nth-child(1) { width: 100px; height: 100px; }
+    .wave_7ree:nth-child(2) { width: 120px; height: 120px; }
+    .wave_7ree:nth-child(3) { width: 140px; height: 140px; }
+    .wave_7ree:nth-child(4) { width: 160px; height: 160px; }
+    .wave_7ree:nth-child(5) { width: 180px; height: 180px; }
 }

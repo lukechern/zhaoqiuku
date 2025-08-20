@@ -244,12 +244,24 @@ export class UIController {
             this.elements.timer.classList.add('recording');
         }
 
-        // 在 results-json 区域显示"聆听中……"和计时器
+        // 在 results-json 区域显示"聆听中……"和计时器，包含水波效果
         if (this.elements.resultsContainer) {
             this.elements.resultsContainer.innerHTML = `
                 <div class="results-json">
                     <div class="listening-status">聆听中……</div>
-                    <div class="timer-display">00:00</div>
+                    <div class="loading-dots">
+                        <div class="sound-waves_7ree active recording" id="soundWaves_7ree">
+                            <div class="wave_7ree"></div>
+                            <div class="wave_7ree"></div>
+                            <div class="wave_7ree"></div>
+                            <div class="wave_7ree"></div>
+                            <div class="wave_7ree"></div>
+                        </div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                    <div class="timer-display">20秒</div>
                 </div>
             `;
         }
@@ -272,10 +284,7 @@ export class UIController {
             this.elements.microphoneButton.style.display = '';
             this.elements.microphoneButton.classList.remove('recording');
         }
-        // 移除水波动效的上移样式
-        if (this.elements.soundWaves) {
-            this.elements.soundWaves.classList.remove('active', 'recording', 'moved-to-timer_7ree');
-        }
+        // 移除水波动效（现在整合在loading-dots中，通过清空resultsContainer来处理）
         if (this.elements.cancelIndicator) {
             this.elements.cancelIndicator.classList.remove('active', 'canceling');
         }

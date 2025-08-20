@@ -27,15 +27,15 @@ export class UITimerManager {
         }
     }
 
-    // 更新计时器显示
+    // 更新计时器显示（20秒倒计时）
     updateTimer() {
         if (!this.uiController.startTime) return;
 
         const elapsed = Math.floor((Date.now() - this.uiController.startTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
+        const maxRecordingTime = 20; // 最大录音时间20秒
+        const remaining = Math.max(0, maxRecordingTime - elapsed);
 
-        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = `${remaining}秒`;
 
         // 更新resultsContainer中的计时器显示
         if (this.uiController.elements.resultsContainer) {
@@ -52,7 +52,7 @@ export class UITimerManager {
         if (this.uiController.elements.resultsContainer) {
             const timerDisplay = this.uiController.elements.resultsContainer.querySelector('.timer-display');
             if (timerDisplay) {
-                timerDisplay.textContent = '00:00';
+                timerDisplay.textContent = '20秒';
             }
         }
         this.uiController.startTime = null;
