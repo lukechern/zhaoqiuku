@@ -94,7 +94,7 @@
         // 检查是否是页面刷新
         const isPageRefresh = sessionStorage.getItem('page_refreshing') === 'true';
         if (isPageRefresh) {
-            console.log('检测到页面刷新，准备恢复状态...');
+            // console.log('检测到页面刷新，准备恢复状态...');
             sessionStorage.removeItem('page_refreshing');
         }
 
