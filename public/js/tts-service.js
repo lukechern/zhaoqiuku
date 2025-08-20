@@ -184,16 +184,17 @@ export class TTSService {
     cleanTextForTTS_7ree(text) {
         if (!text) return '';
         
-        // 将<br>标签替换为空格，避免朗读时语句连在一起
-        let cleanedText = text.replace(/<br\s*\/?>/gi, ' ');
-        
-        // 移除其他HTML标签
-        cleanedText = cleanedText.replace(/<[^>]*>/g, '');
-        
-        // 解码HTML实体
+        // 先解码HTML实体，确保 &lt;br&gt; 等被还原为 <br>，再进行统一处理_7ree
+        let cleanedText = text;
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = cleanedText;
         cleanedText = tempDiv.textContent || tempDiv.innerText || '';
+        
+        // 将<br>标签替换为空格，避免朗读时语句连在一起
+        cleanedText = cleanedText.replace(/<br\s*\/?>(\r?\n)?/gi, ' ');
+        
+        // 移除其他HTML标签
+        cleanedText = cleanedText.replace(/<[^>]*>/g, '');
         
         // 清理多余的空格
         cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
