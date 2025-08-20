@@ -136,8 +136,15 @@ export class EventHandler {
             
             this.app.uiController.vibrate([50, 50]); // 取消震动反馈
             
-            // 显示取消提示
+            // 显示取消提示，然后延迟恢复placeholder
             this.app.uiController.showMessage('录音已取消', 'info');
+            
+            // 2秒后恢复placeholder状态
+            setTimeout(() => {
+                if (this.app.uiController.elements.resultsContainer) {
+                    this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？按住麦克风问问AI</div>';
+                }
+            }, 2000);
             
             console.log('录音已取消');
 
@@ -146,6 +153,13 @@ export class EventHandler {
             this.app.uiController.showError('取消录音失败: ' + error.message);
             // 错误时也确保UI清理_7ree
             this.ensureUICleanup_7ree();
+            
+            // 错误时也需要恢复placeholder
+            setTimeout(() => {
+                if (this.app.uiController.elements.resultsContainer) {
+                    this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？按住麦克风问问AI</div>';
+                }
+            }, 2000);
         }
     }
 

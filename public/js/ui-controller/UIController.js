@@ -283,9 +283,10 @@ export class UIController {
             this.elements.timer.classList.remove('recording');
         }
 
-        // 清除 results-json 区域的内容
+        // 清除 results-json 区域的内容，但不立即显示placeholder
+        // 这样可以让后续的showLoading正常显示
         if (this.elements.resultsContainer) {
-            this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？按住麦克风问问AI</div>';
+            this.elements.resultsContainer.innerHTML = '';
         }
 
         if (this.stopTimer) {
@@ -466,6 +467,11 @@ export class UIController {
                     <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
                 `;
             }
+        }
+        
+        // 如果结果容器为空（没有显示结果），则显示placeholder
+        if (this.elements.resultsContainer && this.elements.resultsContainer.innerHTML.trim() === '') {
+            this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？按住麦克风问问AI</div>';
         }
     }
 }
