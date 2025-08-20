@@ -244,23 +244,11 @@ export class UIController {
             this.elements.timer.classList.add('recording');
         }
 
-        // 在 results-json 区域显示"聆听中……"和计时器，包含水波效果
+        // 在 results-json 区域显示"聆听中……"和计时器（不显示动画效果）
         if (this.elements.resultsContainer) {
             this.elements.resultsContainer.innerHTML = `
                 <div class="results-json">
                     <div class="listening-status">聆听中……</div>
-                    <div class="loading-dots">
-                        <div class="sound-waves_7ree active recording" id="soundWaves_7ree">
-                            <div class="wave_7ree"></div>
-                            <div class="wave_7ree"></div>
-                            <div class="wave_7ree"></div>
-                            <div class="wave_7ree"></div>
-                            <div class="wave_7ree"></div>
-                        </div>
-                        <div class="loading-dot"></div>
-                        <div class="loading-dot"></div>
-                        <div class="loading-dot"></div>
-                    </div>
                     <div class="timer-display">20秒</div>
                 </div>
             `;

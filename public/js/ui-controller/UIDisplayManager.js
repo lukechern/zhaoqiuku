@@ -142,7 +142,29 @@ export class UIDisplayManager {
     // 显示加载状态
     showLoading(message = '处理中...') {
         if (this.uiController.elements.resultsContainer) {
-            this.uiController.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
+            // 如果是"正在处理音频"消息，显示水波纹和跳动点的组合效果
+            if (message.includes('正在处理音频')) {
+                this.uiController.elements.resultsContainer.innerHTML = `
+                    <div class="results-json">
+                        <div class="loading">${message}</div>
+                        <div class="loading-dots">
+                            <div class="sound-waves_7ree active recording" id="soundWaves_7ree">
+                                <div class="wave_7ree"></div>
+                                <div class="wave_7ree"></div>
+                                <div class="wave_7ree"></div>
+                                <div class="wave_7ree"></div>
+                                <div class="wave_7ree"></div>
+                            </div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 其他加载消息保持原样
+                this.uiController.elements.resultsContainer.innerHTML = `<div class="loading">${message}</div>`;
+            }
         }
     }
 
