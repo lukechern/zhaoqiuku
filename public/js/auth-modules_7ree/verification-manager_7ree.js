@@ -56,7 +56,7 @@ class VerificationManager_7ree {
     async resendVerificationCode() {
         if (this.resendBtn.disabled) return;
         
-        this.authManager.showLoading('正在重新发送验证码...');
+        this.authManager.uiController_7ree.showLoading('正在重新发送验证码...');
 
         try {
             const response = await fetch('/api/unified-auth', {
@@ -74,14 +74,14 @@ class VerificationManager_7ree {
             const result = await response.json();
 
             if (response.ok) {
-                this.authManager.hideLoading();
+                this.authManager.uiController_7ree.hideLoading();
                 this.startCountdown();
                 this.clearError();
             } else {
-                this.authManager.hideLoading();
+                this.authManager.uiController_7ree.hideLoading();
                 // 邀请码错误时，回退到邀请码步骤
                 if (result.error && /邀请码/.test(result.error)) {
-                    this.authManager.switchStep('invitation');
+                    this.authManager.uiController_7ree.switchStep('invitation');
                     this.authManager.invitationManager_7ree.showError(result.error);
                     this.authManager.invitationManager_7ree.invitationInput_7ree?.focus();
                     return;
@@ -90,7 +90,7 @@ class VerificationManager_7ree {
             }
         } catch (error) {
             // console.error('重新发送验证码错误:', error); // 已注释，避免控制台错误日志（_7ree）
-            this.authManager.hideLoading();
+            this.authManager.uiController_7ree.hideLoading();
             this.showError('网络错误，请重试');
         }
     }
@@ -109,7 +109,7 @@ class VerificationManager_7ree {
             return;
         }
 
-        this.authManager.showLoading('正在验证...');
+        this.authManager.uiController_7ree.showLoading('正在验证...');
 
         try {
             const response = await fetch('/api/unified-auth', {
@@ -127,7 +127,7 @@ class VerificationManager_7ree {
             const result = await response.json();
 
             if (response.ok) {
-                this.authManager.hideLoading();
+                this.authManager.uiController_7ree.hideLoading();
                 
                 // 保存认证状态
                 if (result.auth && window.authManager) {
@@ -154,10 +154,10 @@ class VerificationManager_7ree {
                 // 验证成功，重置失败标志（_7ree）
                 this.verifyCodeFailedOnce_7ree = false;
                 
-                this.authManager.switchStep('success');
+                this.authManager.uiController_7ree.switchStep('success');
                 this.clearCountdown();
             } else {
-                this.authManager.hideLoading();
+                this.authManager.uiController_7ree.hideLoading();
                 // 验证失败，设置失败标志（_7ree）
                 this.verifyCodeFailedOnce_7ree = true;
                 this.showVerifyCodeError_7ree(); // 使用新的错误显示方法（_7ree）
@@ -166,7 +166,7 @@ class VerificationManager_7ree {
             }
         } catch (error) {
             // console.error('验证验证码错误:', error); // 已注释，避免控制台错误日志（_7ree）
-            this.authManager.hideLoading();
+            this.authManager.uiController_7ree.hideLoading();
             // 验证失败，设置失败标志（_7ree）
             this.verifyCodeFailedOnce_7ree = true;
             this.showVerifyCodeError_7ree(); // 使用新的错误显示方法（_7ree）

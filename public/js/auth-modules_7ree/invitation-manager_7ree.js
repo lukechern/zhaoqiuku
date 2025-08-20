@@ -38,7 +38,7 @@ class InvitationManager_7ree {
                     return;
                 }
                 // 先后端校验，校验通过后才进入邮箱步骤（_7ree）
-                this.authManager.showLoading('正在校验邀请码...');
+                this.authManager.uiController_7ree.showLoading('正在校验邀请码...');
                 try {
                     const resp = await fetch('/api/invitation-config', {
                         method: 'POST',
@@ -49,17 +49,17 @@ class InvitationManager_7ree {
                     if (resp.ok && result && result.valid) {
                         this.invitationCode_7ree = code;
                         this.invitationVerified_7ree = true;
-                        this.authManager.hideLoading();
-                        this.authManager.switchStep('email');
-                        setTimeout(() => this.authManager.emailInput?.focus(), 0);
+                        this.authManager.uiController_7ree.hideLoading();
+                    this.authManager.uiController_7ree.switchStep('email');
+                        setTimeout(() => this.authManager.uiController_7ree.focusEmailInput(), 0);
                     } else {
-                        this.authManager.hideLoading();
+                        this.authManager.uiController_7ree.hideLoading();
                         this.showError(result?.error || '邀请码无效或已过期');
                         this.invitationInput_7ree?.focus();
                     }
                 } catch (err) {
                     // 静默处理：不在控制台打印 error（_7ree）
-                    this.authManager.hideLoading();
+                    this.authManager.uiController_7ree.hideLoading();
                     this.showError('网络错误，请稍后重试');
                 }
             });
@@ -83,14 +83,14 @@ class InvitationManager_7ree {
 
         if (this.invitationEnabled_7ree && this.invitationStep_7ree) {
             // 显示邀请码步骤，阻止直接发送验证码
-            this.authManager.switchStep('invitation');
+            this.authManager.uiController_7ree.switchStep('invitation');
             this.invitationInput_7ree?.focus();
         } else {
             // 保持原有默认：显示邮箱步骤
-            this.authManager.switchStep('email');
+            this.authManager.uiController_7ree.switchStep('email');
         }
         // 拉取结束后再显示表单，避免初始闪烁（_7ree）
-        this.authManager.authForm?.classList.remove('hidden');
+        this.authManager.uiController_7ree.showAuthForm();
     }
 
     // 清除邀请码错误信息
