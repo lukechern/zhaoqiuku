@@ -305,8 +305,8 @@
 .progress-bar_7ree::after {
     content: '';
     position: absolute;
-    top: calc(1rem + 8px); /* 调整对齐到连线中心 */
-    right: 1rem; /* 让箭头顶点与连线末端相接触 */
+    top: calc(1rem + 9px); /* 调整对齐到连线中心 */
+    right: 0.9rem; /* 让箭头顶点与连线末端相接触 */
     width: 0;
     height: 0;
     border-left: 16px solid #ccc; /* 增大一倍：8px -> 16px */
@@ -373,19 +373,15 @@
 }
 
 /* 响应式调整 */
-@media (max-width: 480px) {
-    .progress-bar_7ree {
-        gap: 1.25rem; /* 增大25%：1rem * 1.25 = 1.25rem */
-    }
-    
+@media (max-width: 480px) {   
     .progress-bar_7ree::before {
         top: calc(1rem + 14px); /* 调整小屏幕下的连接线位置 */
         width: calc(100% - 2rem); /* 与箭头对齐，消除断层 */
     }
     
     .progress-bar_7ree::after {
-        top: calc(1rem + 6px); /* 调整小屏幕下的箭头位置对齐连线中心 */
-        right: 1rem; /* 顶点贴合连线末端 */
+        top: calc(1rem + 9px); /* 调整小屏幕下的箭头位置对齐连线中心 */
+        right: 0.9rem; /* 顶点贴合连线末端 */
         border-left: 12px solid #ccc; /* 增大一倍：6px -> 12px */
         border-top: 6px solid transparent; /* 增大一倍：3px -> 6px */
         border-bottom: 6px solid transparent; /* 增大一倍：3px -> 6px */
