@@ -557,22 +557,29 @@ class UnifiedAuthManager {
     // 启动服务器时间更新（_7ree）
     startServerTimeUpdate_7ree() {
         if (!this.serverTime_7ree) return;
-        
+    
+        const timeZone_7ree = 'Asia/Shanghai';
+        const formatter_7ree = new Intl.DateTimeFormat('zh-CN', {
+            timeZone: timeZone_7ree,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+    
         const updateTime = () => {
             const now = new Date();
-            const timeString = now.getFullYear() + '-' + 
-                             String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                             String(now.getDate()).padStart(2, '0') + ' ' + 
-                             String(now.getHours()).padStart(2, '0') + ':' + 
-                             String(now.getMinutes()).padStart(2, '0') + ':' + 
-                             String(now.getSeconds()).padStart(2, '0');
+            // 格式: 2025-08-21 00:21:46
+            const parts = formatter_7ree.formatToParts(now);
+            const get = t => parts.find(p => p.type === t).value;
+            const timeString = `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}:${get('second')}`;
             this.serverTime_7ree.textContent = timeString;
         };
-        
-        // 立即更新一次
+    
         updateTime();
-        
-        // 每秒更新
         setInterval(updateTime, 1000);
     }
 }

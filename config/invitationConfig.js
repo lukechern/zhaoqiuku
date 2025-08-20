@@ -15,18 +15,35 @@ export const INVITATION_CONFIG_7ree = {
     SUFFIX_MODE: 'MONTH_DAY'      // 附加码算法：'YEAR_MONTH' | 'MONTH_DAY'
 };
 
-// 计算动态附加码
+// 固定用于计算附加码的时区（与前端显示保持一致）
+const TIMEZONE_7REE = 'Asia/Shanghai';
+
+// 基于指定时区获取日期组成部分
+function getDatePartsInTZ_7ree(date = new Date(), timeZone = TIMEZONE_7REE) {
+    const fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
+    const parts = fmt.formatToParts(date);
+    const y = parts.find(p => p.type === 'year').value;
+    const m = parts.find(p => p.type === 'month').value;
+    const d = parts.find(p => p.type === 'day').value;
+    return { y, m, d };
+}
+
+// 计算动态附加码（按固定时区）
 export function getDynamicSuffix_7ree(date = new Date()) {
-    const yy = String(date.getFullYear()).slice(-2);
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
+    const { y, m, d } = getDatePartsInTZ_7ree(date);
+    const yy = y.slice(-2);
 
     if (INVITATION_CONFIG_7ree.SUFFIX_MODE === 'YEAR_MONTH') {
         // 年月：yyMM → 2508
-        return `${yy}${mm}`;
+        return `${yy}${m}`;
     }
     // 默认按月日：MMdd → 0809
-    return `${mm}${dd}`;
+    return `${m}${d}`;
 }
 
 // 生成今日完整邀请码
