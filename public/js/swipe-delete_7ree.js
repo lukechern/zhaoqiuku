@@ -424,87 +424,102 @@ class SwipeDeleteManager_7ree {
      * 显示Toast提示
      */
     showToast(message, type = 'info') {
-        // 创建toast元素
-        const toast = document.createElement('div');
-        toast.className = `toast_7ree toast-${type}_7ree`;
-        toast.textContent = message;
-        
-        // 添加样式
-        Object.assign(toast.style, {
-            position: 'fixed',
-            top: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3',
-            color: 'white',
-            padding: '12px 24px',
-            borderRadius: '6px',
-            fontSize: '14px',
-            fontWeight: '500',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            zIndex: '10000',
-            opacity: '0',
-            transition: 'opacity 0.3s ease-in-out'
-        });
-        
-        // 添加到页面
-        document.body.appendChild(toast);
-        
-        // 显示动画
-        setTimeout(() => {
-            toast.style.opacity = '1';
-        }, 10);
-        
-        // 自动隐藏
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
-            }, 300);
-        }, 3000);
-    }
-
-    /**
-     * 为新添加的记录元素设置滑动功能
-     */
-    setupSwipeForElement(recordElement) {
-        // console.log('SwipeDeleteManager_7ree: setupSwipeForElement被调用', recordElement);
-        if (!recordElement) {
-            // console.error('SwipeDeleteManager_7ree: recordElement为空');
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
             return;
         }
-        this.ensureSwipeStructure(recordElement);
+        try {
+            const toast = document.createElement('div');
+            toast.className = `toast_7ree toast-${type}_7ree`;
+            toast.textContent = message;
+            Object.assign(toast.style, {
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                left: 'auto',
+                transform: 'none',
+                backgroundColor: type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3',
+                color: 'white',
+                padding: '12px 16px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: '500',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                zIndex: '10000',
+                opacity: '0',
+                transition: 'opacity 0.3s ease-in-out'
+            });
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => { toast.style.opacity = '1'; });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+            }, 3000);
+        } catch (e) {
+            console.error('showToast fallback error', e, message);
+        }
     }
+
+}
+
+// 全局右上角 Toast（全局可用）_7ree
+if (!window.showToast) {
+  window.showToast = function showToast_7ree(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast_7ree toast-${type}_7ree`;
+    toast.textContent = message;
+    Object.assign(toast.style, {
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      left: 'auto',
+      transform: 'none',
+      backgroundColor: type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3',
+      color: 'white',
+      padding: '12px 16px',
+      borderRadius: '6px',
+      fontSize: '14px',
+      fontWeight: '500',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+      zIndex: '10000',
+      opacity: '0',
+      transition: 'opacity 0.3s ease-in-out'
+    });
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => { toast.style.opacity = '1'; });
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+    }, 3000);
+  };
 }
 
 // 全局实例
 window.swipeDeleteManager_7ree = null;
 
-// 初始化滑动删除管理器
-function initSwipeDeleteManager_7ree() {
-    if (!window.swipeDeleteManager_7ree) {
-        window.swipeDeleteManager_7ree = new SwipeDeleteManager_7ree();
-        // console.log('SwipeDeleteManager_7ree: 管理器已初始化');
+    // 初始化滑动删除管理器
+    function initSwipeDeleteManager_7ree() {
+        if (!window.swipeDeleteManager_7ree) {
+            window.swipeDeleteManager_7ree = new SwipeDeleteManager_7ree();
+            // console.log('SwipeDeleteManager_7ree: 管理器已初始化');
+        }
     }
-}
 
-// 在DOMContentLoaded时初始化
-document.addEventListener('DOMContentLoaded', initSwipeDeleteManager_7ree);
+    // 在DOMContentLoaded时初始化
+    document.addEventListener('DOMContentLoaded', initSwipeDeleteManager_7ree);
 
-// 如果DOM已经加载完成，立即初始化
-if (document.readyState === 'loading') {
-    // DOM还在加载中，等待DOMContentLoaded事件
-} else {
-    // DOM已经加载完成，立即初始化
-    initSwipeDeleteManager_7ree();
-}
+    // 如果DOM已经加载完成，立即初始化
+    if (document.readyState === 'loading') {
+        // DOM还在加载中，等待DOMContentLoaded事件
+    } else {
+        // DOM已经加载完成，立即初始化
+        initSwipeDeleteManager_7ree();
+    }
 
-// 暴露初始化函数供其他模块调用
-window.initSwipeDeleteManager_7ree = initSwipeDeleteManager_7ree;
+    // 暴露初始化函数供其他模块调用
+    window.initSwipeDeleteManager_7ree = initSwipeDeleteManager_7ree;
 
-// 导出模块
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SwipeDeleteManager_7ree;
-}
+    // 导出模块
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = SwipeDeleteManager_7ree;
+    }

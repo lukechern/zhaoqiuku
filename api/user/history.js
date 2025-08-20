@@ -65,14 +65,26 @@ async function handleGetHistory(req, res) {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
         const offset = (page - 1) * limit;
+        const keyword = (req.query.keyword || '').toString().trim();
 
         const supabase = await createSupabaseClient();
 
+        // 搜索过滤器 _7ree（用于 supabase.or）
+        const orFilter_7ree = (kw) => {
+            const esc = kw.replace(/%/g, '\\%').replace(/_/g, '\\_');
+            const pattern = `%${esc}%`;
+            return `item_name.ilike.${pattern},item_type.ilike.${pattern},location.ilike.${pattern},transcript.ilike.${pattern}`;
+        };
+
         // 获取总记录数
-        const { count, error: countError } = await supabase
+        let countQuery = supabase
             .from(ITEMS_TABLE)
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId);
+        if (keyword) {
+            countQuery = countQuery.or(orFilter_7ree(keyword));
+        }
+        const { count, error: countError } = await countQuery;
 
         if (countError) {
             return res.status(500).json({
@@ -82,10 +94,14 @@ async function handleGetHistory(req, res) {
         }
 
         // 获取分页数据
-        const { data, error } = await supabase
+        let dataQuery = supabase
             .from(ITEMS_TABLE)
             .select('*')
-            .eq('user_id', userId)
+            .eq('user_id', userId);
+        if (keyword) {
+            dataQuery = dataQuery.or(orFilter_7ree(keyword));
+        }
+        const { data, error } = await dataQuery
             .order('operation_time', { ascending: false })
             .range(offset, offset + limit - 1);
 

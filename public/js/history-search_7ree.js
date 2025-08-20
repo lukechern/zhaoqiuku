@@ -25,8 +25,12 @@
     const header = ensureHeaderReady_7ree();
     if (!header) return;
 
-    // 已经有按钮则不重复添加
-    if (header.querySelector('.search-toggle-btn_7ree')) return;
+    // 已经有按钮则直接绑定点击事件（避免因 innerHTML 还原后事件丢失）
+    const existing = header.querySelector('.search-toggle-btn_7ree');
+    if (existing) {
+      existing.onclick = () => enterSearchMode_7ree();
+      return;
+    }
 
     // 在现有 header-top 的最左侧插入按钮
     const btn = document.createElement('button');
@@ -104,6 +108,18 @@
     if (typeof window.ensureLogoutButtonHandler === 'function') {
       setTimeout(()=> window.ensureLogoutButtonHandler(), 0);
     }
+
+    // 关闭搜索后清空搜索结果并恢复列表
+    if (window.historyManager && typeof window.historyManager.clearSearch_7ree === 'function') {
+      window.historyManager.clearSearch_7ree();
+    } else {
+      const container = document.getElementById('history-records');
+      if (container) {
+        Array.from(container.querySelectorAll('.history-record')).forEach(el => {
+          el.style.display = '';
+        });
+      }
+    }
   }
 
   function doSearch_7ree(){
@@ -113,23 +129,28 @@
     if(!keyword){
       if (typeof window.showToast === 'function') {
         window.showToast('请输入搜索关键词', 'info');
-      } else {
-        alert('请输入搜索关键词');
       }
       return;
     }
 
-    // 遍历并过滤 history-records 下的 .history-record
+    // 优先使用服务端搜索
+    if (window.historyManager && typeof window.historyManager.setSearchKeyword_7ree === 'function') {
+      window.historyManager.setSearchKeyword_7ree(keyword);
+      if (typeof window.showToast === 'function') {
+        window.showToast('正在为你搜索...', 'info');
+      }
+      return;
+    }
+
+    // 回退方案：本地过滤（仅在 historyManager 不可用时）
     const container = document.getElementById('history-records');
     if (!container) return;
 
     const items = Array.from(container.querySelectorAll('.history-record'));
     let matchCount = 0;
-
     const kw = keyword.toLowerCase();
 
     items.forEach(el => {
-      // 基于可见文本内容匹配：物品名、位置、语音等
       const text = el.textContent.toLowerCase();
       const matched = text.includes(kw);
       el.style.display = matched ? '' : 'none';

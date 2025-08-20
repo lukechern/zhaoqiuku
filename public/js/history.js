@@ -13,6 +13,7 @@ class HistoryManager {
         this.isLoading = false;
         this.hasMore = true;
         this.records = [];
+        this.currentSearchKeyword_7ree = '';
 
 
 
@@ -91,7 +92,11 @@ class HistoryManager {
                 this.showLoadingMore();
             }
 
-            const response = await fetch(`/api/user/history?page=${this.currentPage}&limit=${this.limit}`, {
+            let url = `/api/user/history?page=${this.currentPage}&limit=${this.limit}`;
+            if (this.currentSearchKeyword_7ree) {
+                url += `&keyword=${encodeURIComponent(this.currentSearchKeyword_7ree)}`;
+            }
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -520,3 +525,15 @@ window.initHistoryManager_7ree = initHistoryManager_7ree;
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = HistoryManager;
 }
+
+HistoryManager.prototype.setSearchKeyword_7ree = function(keyword){
+  this.currentSearchKeyword_7ree = keyword;
+  this.loadHistoryRecords(true);
+};
+
+HistoryManager.prototype.clearSearch_7ree = function(){
+  this.currentSearchKeyword_7ree = '';
+  this.loadHistoryRecords(true);
+};
+
+window.historyManager = new HistoryManager();
