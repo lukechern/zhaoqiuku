@@ -13,6 +13,7 @@ class UnifiedAuthManager {
         this.userType = null; // 'new' | 'existing'
         this.countdownTimer = null;
         this.countdownSeconds = 60;
+        this.verifyCodeFailedOnce_7ree = false; // 验证码是否曾经失败过（_7ree）
         
         // 获取返回URL参数
         this.returnUrl = this.getReturnUrl();
@@ -240,6 +241,12 @@ class UnifiedAuthManager {
             this.emailStep.classList.remove('hidden');
         } else if (step === 'verify') {
             this.verifyStep.classList.remove('hidden');
+            // 自动聚焦到第一个验证码输入框（_7ree）
+            setTimeout(() => {
+                if (this.verifyCodeInputs_7ree && this.verifyCodeInputs_7ree[0]) {
+                    this.verifyCodeInputs_7ree[0].focus();
+                }
+            }, 100);
         } else if (step === 'success') {
             this.successStep.classList.remove('hidden');
         } else if (step === 'invitation' && this.invitationStep_7ree) { // _7ree
@@ -447,10 +454,15 @@ class UnifiedAuthManager {
                     this.goToAppBtn.textContent = '开始使用';
                 }
                 
+                // 验证成功，重置失败标志（_7ree）
+                this.verifyCodeFailedOnce_7ree = false;
+                
                 this.switchStep('success');
                 this.clearCountdown();
             } else {
                 this.hideLoading();
+                // 验证失败，设置失败标志（_7ree）
+                this.verifyCodeFailedOnce_7ree = true;
                 this.showVerifyCodeError_7ree(); // 使用新的错误显示方法（_7ree）
                 this.showError('verify', result.error || '验证码错误，请重试');
                 this.verifyCodeInput.select();
@@ -458,6 +470,8 @@ class UnifiedAuthManager {
         } catch (error) {
             console.error('验证验证码错误:', error);
             this.hideLoading();
+            // 验证失败，设置失败标志（_7ree）
+            this.verifyCodeFailedOnce_7ree = true;
             this.showVerifyCodeError_7ree(); // 使用新的错误显示方法（_7ree）
             this.showError('verify', '验证失败，请重试');
         }
@@ -616,8 +630,8 @@ class UnifiedAuthManager {
                 // 更新隐藏的验证码输入框
                 this.updateVerifyCode_7ree();
                 
-                // 如果所有输入框都填满，自动验证
-                if (this.getVerifyCode_7ree().length === 6) {
+                // 如果所有输入框都填满，自动验证（但验证失败过一次后不再自动验证）（_7ree）
+                if (this.getVerifyCode_7ree().length === 6 && !this.verifyCodeFailedOnce_7ree) {
                     setTimeout(() => this.verifyCode(), 100);
                 }
             });
@@ -700,21 +714,26 @@ class UnifiedAuthManager {
         }
     }
 
-    // 清空验证码（_7ree）
+    // 清空验证码输入框（_7ree）
     clearVerifyCode_7ree() {
-        if (!this.verifyCodeInputs_7ree) return;
-        
-        this.verifyCodeInputs_7ree.forEach(input => {
-            input.value = '';
-            input.classList.remove('filled', 'error');
-        });
-        
-        this.updateVerifyCode_7ree();
-        
-        // 焦点到第一个输入框
-        if (this.verifyCodeInputs_7ree[0]) {
-            this.verifyCodeInputs_7ree[0].focus();
+        if (this.verifyCodeInputs_7ree) {
+            this.verifyCodeInputs_7ree.forEach(input => {
+                input.value = '';
+                input.classList.remove('filled', 'error');
+            });
+            // 聚焦到第一个输入框
+            if (this.verifyCodeInputs_7ree[0]) {
+                this.verifyCodeInputs_7ree[0].focus();
+            }
         }
+        
+        // 清空隐藏的原始输入框
+        if (this.verifyCodeInput) {
+            this.verifyCodeInput.value = '';
+        }
+        
+        // 重置失败标志，允许重新自动验证（_7ree）
+        this.verifyCodeFailedOnce_7ree = false;
     }
 
     // 显示验证码错误状态（_7ree）

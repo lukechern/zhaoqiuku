@@ -47,7 +47,7 @@
     padding: 0.75rem 1rem;
     border: 2px solid var(--border);
     border-radius: 8px;
-    font-size: 1.7rem;
+    font-size: 1.5rem;
     transition: all 0.3s ease;
     background: var(--surface-light);
     color: var(--text-primary);
