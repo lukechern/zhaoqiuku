@@ -61,6 +61,8 @@ class UnifiedAuthManager {
         this.invitationInput_7ree = document.getElementById('invitationCode_7ree');
         this.invitationError_7ree = document.getElementById('invitationError_7ree');
         this.validateInvitationBtn_7ree = document.getElementById('validateInvitationBtn_7ree');
+        // 表单容器（_7ree）
+        this.authForm = document.getElementById('authForm');
 
         // 表单元素
         this.emailInput = document.getElementById('email');
@@ -118,18 +120,38 @@ class UnifiedAuthManager {
 
         // 邀请码事件（_7ree）
         if (this.validateInvitationBtn_7ree) {
-            this.validateInvitationBtn_7ree.addEventListener('click', () => {
+            this.validateInvitationBtn_7ree.addEventListener('click', async () => {
                 this.clearError('invitation');
                 const code = (this.invitationInput_7ree?.value || '').trim();
                 if (!code) {
                     this.showError('invitation', '请输入邀请码');
                     return;
                 }
-                // 本地仅记录，不在此时请求后端，真正校验发生在发送验证码接口
-                this.invitationCode_7ree = code;
-                this.invitationVerified_7ree = true;
-                this.switchStep('email');
-                setTimeout(() => this.emailInput?.focus(), 0);
+                // 先后端校验，校验通过后才进入邮箱步骤（_7ree）
+                this.showLoading('正在校验邀请码...');
+                try {
+                    const resp = await fetch('/api/invitation-config', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ invitation_7ree: code })
+                    });
+                    const result = await resp.json().catch(() => ({}));
+                    if (resp.ok && result && result.valid) {
+                        this.invitationCode_7ree = code;
+                        this.invitationVerified_7ree = true;
+                        this.hideLoading();
+                        this.switchStep('email');
+                        setTimeout(() => this.emailInput?.focus(), 0);
+                    } else {
+                        this.hideLoading();
+                        this.showError('invitation', result?.error || '邀请码无效或已过期');
+                        this.invitationInput_7ree?.focus();
+                    }
+                } catch (err) {
+                    console.error('邀请码校验失败:', err);
+                    this.hideLoading();
+                    this.showError('invitation', '网络错误，请稍后重试');
+                }
             });
             this.invitationInput_7ree?.addEventListener('input', () => this.clearError('invitation'));
             this.invitationInput_7ree?.addEventListener('keypress', (e) => {
@@ -226,6 +248,8 @@ class UnifiedAuthManager {
             // 保持原有默认：显示邮箱步骤
             this.switchStep('email');
         }
+        // 拉取结束后再显示表单，避免初始闪烁（_7ree）
+        this.authForm?.classList.remove('hidden');
     }
 
     // 发送验证码

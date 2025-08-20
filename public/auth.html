@@ -47,7 +47,7 @@
             </header>
 
             <main class="register-content">
-            <div class="register-form" id="authForm">
+            <div class="register-form hidden" id="authForm">
                 <!-- 步骤0: 输入邀请码（可配置启用） -->
                 <div class="step hidden" id="invitationStep_7ree">
                     <div class="form-group">
@@ -55,14 +55,14 @@
                         <input type="text" id="invitationCode_7ree" placeholder="请输入邀请码" maxlength="32" autocomplete="one-time-code">
                         <div class="error-message" id="invitationError_7ree"></div>
                         <div class="help-text">
-                            请先输入有效邀请码后再进行邮箱验证
+                            若启用邀请码，请先输入有效邀请码后再进行邮箱验证
                         </div>
                     </div>
                     <button class="register-btn" id="validateInvitationBtn_7ree">下一步</button>
                 </div>
 
                 <!-- 步骤1: 输入邮箱 -->
-                <div class="step" id="emailStep">
+                <div class="step hidden" id="emailStep">
                     <div class="form-group">
                         <label for="email">电子邮箱地址</label>
                         <input type="email" id="email" placeholder="请输入您的电子邮箱地址" required>
