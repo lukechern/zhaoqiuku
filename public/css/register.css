@@ -284,7 +284,35 @@
     align-items: flex-start;
     margin-bottom: 2rem;
     padding: 1rem 0;
-    gap: 2rem;
+    gap: 2.5rem; /* 增大25%：2rem * 1.25 = 2.5rem */
+    position: relative;
+}
+
+/* 进度条连接线 */
+.progress-bar_7ree::before {
+    content: '';
+    position: absolute;
+    top: calc(1rem + 16px); /* 1rem padding + 节点高度的一半 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 4rem); /* 减去两端的边距 */
+    height: 2px;
+    background: linear-gradient(to right, #ccc 0%, #ccc 85%, transparent 85%);
+    z-index: 0;
+}
+
+/* 箭头 */
+.progress-bar_7ree::after {
+    content: '';
+    position: absolute;
+    top: calc(1rem + 12px); /* 稍微上移对齐箭头 */
+    right: 1.75rem;
+    width: 0;
+    height: 0;
+    border-left: 8px solid #ccc;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    z-index: 1;
 }
 
 .progress-step_7ree {
@@ -292,6 +320,7 @@
     flex-direction: column;
     align-items: center;
     position: relative;
+    z-index: 2;
 }
 
 .progress-node_7ree {
@@ -299,6 +328,8 @@
     width: 32px;
     height: 32px;
     margin-bottom: 0.5rem;
+    background: white; /* 确保节点背景遮盖连接线 */
+    border-radius: 50%;
 }
 
 .progress-icon_7ree {
@@ -344,7 +375,20 @@
 /* 响应式调整 */
 @media (max-width: 480px) {
     .progress-bar_7ree {
-        gap: 1rem;
+        gap: 1.25rem; /* 增大25%：1rem * 1.25 = 1.25rem */
+    }
+    
+    .progress-bar_7ree::before {
+        top: calc(1rem + 14px); /* 调整小屏幕下的连接线位置 */
+        width: calc(100% - 3rem);
+    }
+    
+    .progress-bar_7ree::after {
+        top: calc(1rem + 10px); /* 调整小屏幕下的箭头位置 */
+        right: 1.25rem;
+        border-left: 6px solid #ccc;
+        border-top: 3px solid transparent;
+        border-bottom: 3px solid transparent;
     }
     
     .progress-node_7ree {
