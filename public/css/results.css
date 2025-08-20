@@ -39,7 +39,6 @@
     align-self: flex-end;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
     position: relative;
-    font-weight: 500;
     margin-right: 40px;
 }
 
@@ -69,7 +68,6 @@
     align-self: flex-start;
     border: 1px solid #445771;
     position: relative;
-    font-weight: 500;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
     margin-left: 40px;
 }
