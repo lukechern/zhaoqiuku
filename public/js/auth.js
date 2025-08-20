@@ -86,6 +86,21 @@ class UnifiedAuthManager {
         this.countdown = document.getElementById('countdown');
         this.successTitle = document.getElementById('successTitle');
         this.successMessage = document.getElementById('successMessage');
+        
+        // 进度条元素（_7ree）
+        this.progressBar_7ree = document.getElementById('progressBar_7ree');
+        this.progressStep1_7ree = document.getElementById('progressStep1_7ree');
+        this.progressStep2_7ree = document.getElementById('progressStep2_7ree');
+        this.progressStep3_7ree = document.getElementById('progressStep3_7ree');
+        this.progressNode1_7ree = document.getElementById('progressNode1_7ree');
+        this.progressNode2_7ree = document.getElementById('progressNode2_7ree');
+        this.progressNode3_7ree = document.getElementById('progressNode3_7ree');
+        
+        // 服务器时间元素（_7ree）
+        this.serverTime_7ree = document.getElementById('serverTime_7ree');
+        
+        // 启动服务器时间更新（_7ree）
+        this.startServerTimeUpdate_7ree();
     }
 
     bindEvents() {
@@ -227,6 +242,9 @@ class UnifiedAuthManager {
         }
 
         this.currentStep = step;
+        
+        // 更新进度条（_7ree）
+        this.updateProgressBar_7ree(step);
     }
 
     // 初始化邀请码流程（_7ree）
@@ -475,6 +493,87 @@ class UnifiedAuthManager {
             console.log('前往主页');
             window.location.href = 'index.html';
         }
+    }
+    
+    // 更新进度条状态（_7ree）
+    updateProgressBar_7ree(step) {
+        if (!this.progressBar_7ree) return;
+        
+        // 重置所有节点为未完成状态
+        [this.progressNode1_7ree, this.progressNode2_7ree, this.progressNode3_7ree].forEach(node => {
+            if (node) {
+                const incomplete = node.querySelector('.incomplete_7ree');
+                const complete = node.querySelector('.complete_7ree');
+                if (incomplete) incomplete.classList.remove('hidden');
+                if (complete) complete.classList.add('hidden');
+            }
+        });
+        
+        // 根据当前步骤更新进度
+        if (step === 'invitation' || (this.invitationEnabled_7ree && step === 'email' && !this.invitationVerified_7ree)) {
+            // 邀请码步骤：显示邀请码节点，隐藏其他
+            if (this.progressStep1_7ree) this.progressStep1_7ree.style.display = 'flex';
+            if (this.progressStep2_7ree) this.progressStep2_7ree.style.display = 'flex';
+            if (this.progressStep3_7ree) this.progressStep3_7ree.style.display = 'flex';
+        } else if (step === 'email') {
+            // 邮箱步骤：如果启用邀请码则标记邀请码完成
+            if (this.invitationEnabled_7ree && this.invitationVerified_7ree) {
+                this.markProgressComplete_7ree(1);
+            }
+            // 隐藏邀请码节点如果未启用
+            if (!this.invitationEnabled_7ree && this.progressStep1_7ree) {
+                this.progressStep1_7ree.style.display = 'none';
+            }
+        } else if (step === 'verify') {
+            // 验证码步骤：标记前面步骤完成
+            if (this.invitationEnabled_7ree) {
+                this.markProgressComplete_7ree(1);
+            }
+            this.markProgressComplete_7ree(2);
+        } else if (step === 'success') {
+            // 成功步骤：标记所有步骤完成
+            if (this.invitationEnabled_7ree) {
+                this.markProgressComplete_7ree(1);
+            }
+            this.markProgressComplete_7ree(2);
+            this.markProgressComplete_7ree(3);
+        }
+    }
+    
+    // 标记进度节点为完成状态（_7ree）
+    markProgressComplete_7ree(nodeIndex) {
+        const node = nodeIndex === 1 ? this.progressNode1_7ree : 
+                     nodeIndex === 2 ? this.progressNode2_7ree : 
+                     this.progressNode3_7ree;
+        
+        if (node) {
+            const incomplete = node.querySelector('.incomplete_7ree');
+            const complete = node.querySelector('.complete_7ree');
+            if (incomplete) incomplete.classList.add('hidden');
+            if (complete) complete.classList.remove('hidden');
+        }
+    }
+    
+    // 启动服务器时间更新（_7ree）
+    startServerTimeUpdate_7ree() {
+        if (!this.serverTime_7ree) return;
+        
+        const updateTime = () => {
+            const now = new Date();
+            const timeString = now.getFullYear() + '-' + 
+                             String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                             String(now.getDate()).padStart(2, '0') + ' ' + 
+                             String(now.getHours()).padStart(2, '0') + ':' + 
+                             String(now.getMinutes()).padStart(2, '0') + ':' + 
+                             String(now.getSeconds()).padStart(2, '0');
+            this.serverTime_7ree.textContent = timeString;
+        };
+        
+        // 立即更新一次
+        updateTime();
+        
+        // 每秒更新
+        setInterval(updateTime, 1000);
     }
 }
 

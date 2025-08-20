@@ -47,6 +47,46 @@
             </header>
 
             <main class="register-content">
+                <!-- 进度条 -->
+                <div class="progress-bar_7ree" id="progressBar_7ree">
+                    <div class="progress-step_7ree" id="progressStep1_7ree">
+                        <div class="progress-node_7ree" id="progressNode1_7ree">
+                            <svg class="progress-icon_7ree incomplete_7ree" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            </svg>
+                            <svg class="progress-icon_7ree complete_7ree hidden" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
+                                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="progress-text_7ree">邀请码</span>
+                    </div>
+                    <div class="progress-step_7ree" id="progressStep2_7ree">
+                        <div class="progress-node_7ree" id="progressNode2_7ree">
+                            <svg class="progress-icon_7ree incomplete_7ree" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            </svg>
+                            <svg class="progress-icon_7ree complete_7ree hidden" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
+                                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="progress-text_7ree">邮箱验证码</span>
+                    </div>
+                    <div class="progress-step_7ree" id="progressStep3_7ree">
+                        <div class="progress-node_7ree" id="progressNode3_7ree">
+                            <svg class="progress-icon_7ree incomplete_7ree" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                            </svg>
+                            <svg class="progress-icon_7ree complete_7ree hidden" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" fill="#4CAF50"/>
+                                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="progress-text_7ree">验证通过</span>
+                    </div>
+                </div>
+
             <div class="register-form hidden" id="authForm">
                 <!-- 步骤0: 输入邀请码（可配置启用） -->
                 <div class="step hidden" id="invitationStep_7ree">
@@ -114,7 +154,7 @@
         </main>
 
             <footer class="register-footer">
-                <p>安全提示：我们只会向您的邮箱发送验证码，请勿泄露给他人</p>
+                <p id="serverTime_7ree" class="server-time_7ree">2025-01-20 18:06:55</p>
                 <p><a href="index.html">返回首页</a></p>
             </footer>
         </div>

@@ -8,6 +8,9 @@
     max-width: 400px;
     margin: 2rem auto;
     padding: 0 1rem;
+    min-height: 500px; /* 固定最小高度，避免跳动 */
+    display: flex;
+    flex-direction: column;
 }
 
 .register-form {
@@ -271,5 +274,85 @@
     
     .register-footer p {
         color: #999;
+    }
+}
+
+/* 进度条样式 (_7ree) */
+.progress-bar_7ree {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+    gap: 2rem;
+}
+
+.progress-step_7ree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.progress-node_7ree {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 0.5rem;
+}
+
+.progress-icon_7ree {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.progress-icon_7ree.incomplete_7ree {
+    color: #ccc;
+}
+
+.progress-icon_7ree.complete_7ree {
+    color: #4CAF50;
+}
+
+.progress-text_7ree {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* 服务器时间样式 (_7ree) */
+.server-time_7ree {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--primary-color);
+    animation: pulse_7ree 2s ease-in-out infinite;
+}
+
+@keyframes pulse_7ree {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+    .progress-bar_7ree {
+        gap: 1rem;
+    }
+    
+    .progress-node_7ree {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .progress-text_7ree {
+        font-size: 0.7rem;
     }
 }
