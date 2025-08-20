@@ -168,8 +168,28 @@ export class StreamRenderer_7ree {
         // 添加渲染状态样式
         element.classList.add('rendering_7ree');
         
-        for (let i = 0; i < formattedText.length; i++) {
-            currentText += formattedText[i];
+        let i = 0;
+        while (i < formattedText.length) {
+            // 检查是否遇到HTML标签开始
+            if (formattedText[i] === '<') {
+                // 查找标签结束位置
+                let tagEnd = formattedText.indexOf('>', i);
+                if (tagEnd !== -1) {
+                    // 将整个标签作为一个单位添加
+                    const tag = formattedText.substring(i, tagEnd + 1);
+                    currentText += tag;
+                    i = tagEnd + 1;
+                } else {
+                    // 如果没有找到结束标签，按单个字符处理
+                    currentText += formattedText[i];
+                    i++;
+                }
+            } else {
+                // 普通字符，逐个添加
+                currentText += formattedText[i];
+                i++;
+            }
+            
             // 添加光标效果
             element.innerHTML = currentText + '<span class="typewriter-cursor_7ree"></span>';
             

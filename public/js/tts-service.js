@@ -49,10 +49,12 @@ export class TTSService {
         }
 
         try {
+            // 清理HTML标签，特别是<br>标签
+            let processedText = this.cleanTextForTTS_7ree(text);
+            
             // 限制文本长度
-            let processedText = text;
-            if (text.length > 500) {
-                processedText = text.substring(0, 500) + '...';
+            if (processedText.length > 500) {
+                processedText = processedText.substring(0, 500) + '...';
             }
 
             // 检查是否有缓存
@@ -176,6 +178,27 @@ export class TTSService {
     updateConfig(newConfig) {
         this.config = { ...this.config, ...newConfig };
         window.ttsConfig = this.config;
+    }
+
+    // 清理文本中的HTML标签，用于TTS朗读
+    cleanTextForTTS_7ree(text) {
+        if (!text) return '';
+        
+        // 将<br>标签替换为空格，避免朗读时语句连在一起
+        let cleanedText = text.replace(/<br\s*\/?>/gi, ' ');
+        
+        // 移除其他HTML标签
+        cleanedText = cleanedText.replace(/<[^>]*>/g, '');
+        
+        // 解码HTML实体
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = cleanedText;
+        cleanedText = tempDiv.textContent || tempDiv.innerText || '';
+        
+        // 清理多余的空格
+        cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+        
+        return cleanedText;
     }
 }
 
