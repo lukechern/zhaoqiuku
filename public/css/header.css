@@ -92,6 +92,14 @@
     margin-bottom: 0.2rem;
 }
 
+/* 为标题添加与麦克风按钮相同的渐变文字颜色 */
+.header-title.special {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
 .header-subtitle {
     color: var(--text-secondary);
     font-size: 1rem;
