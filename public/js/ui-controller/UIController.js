@@ -428,12 +428,19 @@ export class UIController {
                 this.elements.microphoneButton.dataset.originalContent = this.elements.microphoneButton.innerHTML;
             }
             
-            // 替换为加载动画
+            // 替换为加载动画，包含水波纹效果
             this.elements.microphoneButton.innerHTML = `
                 <div class="loading-dots">
                     <div class="loading-dot"></div>
                     <div class="loading-dot"></div>
                     <div class="loading-dot"></div>
+                    <div class="sound-waves_7ree active recording" id="soundWaves_7ree">
+                        <div class="wave_7ree"></div>
+                        <div class="wave_7ree"></div>
+                        <div class="wave_7ree"></div>
+                        <div class="wave_7ree"></div>
+                        <div class="wave_7ree"></div>
+                    </div>
                 </div>
             `;
             

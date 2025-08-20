@@ -178,21 +178,21 @@
     position: relative;
 }
 
-/* 水波效果容器，位于跳动点外面 */
+/* 水波效果容器，位于跳动点外面，在麦克风按钮区域 */
 .sound-waves_7ree {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px;
-    height: 200px;
+    width: 120px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
-    z-index: 5;
+    z-index: 1; /* 确保水波在跳动点下方 */
 }
 
 .sound-waves_7ree.active {
@@ -212,36 +212,36 @@
 .wave_7ree:nth-child(1) {
     width: 130px;
     height: 130px;
-    animation: wave-animation_7ree 2s ease-out infinite;
+    animation: wave-animation_7ree 1.5s ease-out infinite;
     animation-delay: 0s;
 }
 
 .wave_7ree:nth-child(2) {
     width: 150px;
     height: 150px;
-    animation: wave-animation_7ree 2s ease-out infinite;
-    animation-delay: 0.4s;
+    animation: wave-animation_7ree 1.5s ease-out infinite;
+    animation-delay: 0.3s;
 }
 
 .wave_7ree:nth-child(3) {
     width: 170px;
     height: 170px;
-    animation: wave-animation_7ree 2s ease-out infinite;
-    animation-delay: 0.8s;
+    animation: wave-animation_7ree 1.5s ease-out infinite;
+    animation-delay: 0.6s;
 }
 
 .wave_7ree:nth-child(4) {
     width: 190px;
     height: 190px;
-    animation: wave-animation_7ree 2s ease-out infinite;
-    animation-delay: 1.2s;
+    animation: wave-animation_7ree 1.5s ease-out infinite;
+    animation-delay: 0.9s;
 }
 
 .wave_7ree:nth-child(5) {
     width: 210px;
     height: 210px;
-    animation: wave-animation_7ree 2s ease-out infinite;
-    animation-delay: 1.6s;
+    animation: wave-animation_7ree 1.5s ease-out infinite;
+    animation-delay: 1.2s;
 }
 
 @keyframes wave-animation_7ree {
@@ -368,21 +368,8 @@
 /* 移动端水波效果适配 */
 @media (max-width: 768px) {
     .sound-waves_7ree {
-        width: 180px;
-        height: 180px;
-    }
-    
-    .wave_7ree:nth-child(1) { width: 110px; height: 110px; }
-    .wave_7ree:nth-child(2) { width: 130px; height: 130px; }
-    .wave_7ree:nth-child(3) { width: 150px; height: 150px; }
-    .wave_7ree:nth-child(4) { width: 170px; height: 170px; }
-    .wave_7ree:nth-child(5) { width: 190px; height: 190px; }
-}
-
-@media (max-width: 480px) {
-    .sound-waves_7ree {
-        width: 160px;
-        height: 160px;
+        width: 90px;
+        height: 90px;
     }
     
     .wave_7ree:nth-child(1) { width: 100px; height: 100px; }
@@ -390,4 +377,17 @@
     .wave_7ree:nth-child(3) { width: 140px; height: 140px; }
     .wave_7ree:nth-child(4) { width: 160px; height: 160px; }
     .wave_7ree:nth-child(5) { width: 180px; height: 180px; }
+}
+
+@media (max-width: 480px) {
+    .sound-waves_7ree {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .wave_7ree:nth-child(1) { width: 95px; height: 95px; }
+    .wave_7ree:nth-child(2) { width: 110px; height: 110px; }
+    .wave_7ree:nth-child(3) { width: 125px; height: 125px; }
+    .wave_7ree:nth-child(4) { width: 140px; height: 140px; }
+    .wave_7ree:nth-child(5) { width: 155px; height: 155px; }
 }
