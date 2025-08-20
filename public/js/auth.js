@@ -19,6 +19,15 @@ class UnifiedAuthManager {
         
         this.initializeElements();
         this.bindEvents();
+        
+        // 初始化邀请码流程（_7ree）
+        this.initInvitationFlow_7ree();
+
+        // 标记已初始化，防止重复实例化（_7ree）
+        if (typeof window !== 'undefined') {
+            window.__UnifiedAuthManagerInited_7ree = true;
+            window.__UnifiedAuthManagerInstance_7ree = this;
+        }
     }
 
     // 获取返回URL参数
@@ -47,6 +56,11 @@ class UnifiedAuthManager {
         this.verifyStep = document.getElementById('verifyStep');
         this.successStep = document.getElementById('successStep');
         this.loading = document.getElementById('loading');
+        // 邀请码步骤元素（_7ree）
+        this.invitationStep_7ree = document.getElementById('invitationStep_7ree');
+        this.invitationInput_7ree = document.getElementById('invitationCode_7ree');
+        this.invitationError_7ree = document.getElementById('invitationError_7ree');
+        this.validateInvitationBtn_7ree = document.getElementById('validateInvitationBtn_7ree');
 
         // 表单元素
         this.emailInput = document.getElementById('email');
@@ -101,6 +115,27 @@ class UnifiedAuthManager {
         this.verifyCodeInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.verifyCode();
         });
+
+        // 邀请码事件（_7ree）
+        if (this.validateInvitationBtn_7ree) {
+            this.validateInvitationBtn_7ree.addEventListener('click', () => {
+                this.clearError('invitation');
+                const code = (this.invitationInput_7ree?.value || '').trim();
+                if (!code) {
+                    this.showError('invitation', '请输入邀请码');
+                    return;
+                }
+                // 本地仅记录，不在此时请求后端，真正校验发生在发送验证码接口
+                this.invitationCode_7ree = code;
+                this.invitationVerified_7ree = true;
+                this.switchStep('email');
+                setTimeout(() => this.emailInput?.focus(), 0);
+            });
+            this.invitationInput_7ree?.addEventListener('input', () => this.clearError('invitation'));
+            this.invitationInput_7ree?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.validateInvitationBtn_7ree.click();
+            });
+        }
     }
 
     // 验证邮箱格式
@@ -117,6 +152,9 @@ class UnifiedAuthManager {
         } else if (type === 'verify') {
             this.verifyError.textContent = '';
             this.verifyCodeInput.classList.remove('error');
+        } else if (type === 'invitation') { // _7ree
+            if (this.invitationError_7ree) this.invitationError_7ree.textContent = '';
+            if (this.invitationInput_7ree) this.invitationInput_7ree.classList.remove('error');
         }
     }
 
@@ -128,6 +166,9 @@ class UnifiedAuthManager {
         } else if (type === 'verify') {
             this.verifyError.textContent = message;
             this.verifyCodeInput.classList.add('error');
+        } else if (type === 'invitation') { // _7ree
+            if (this.invitationError_7ree) this.invitationError_7ree.textContent = message;
+            if (this.invitationInput_7ree) this.invitationInput_7ree.classList.add('error');
         }
     }
 
@@ -150,6 +191,7 @@ class UnifiedAuthManager {
         this.emailStep.classList.add('hidden');
         this.verifyStep.classList.add('hidden');
         this.successStep.classList.add('hidden');
+        if (this.invitationStep_7ree) this.invitationStep_7ree.classList.add('hidden');
 
         // 显示目标步骤
         if (step === 'email') {
@@ -158,14 +200,44 @@ class UnifiedAuthManager {
             this.verifyStep.classList.remove('hidden');
         } else if (step === 'success') {
             this.successStep.classList.remove('hidden');
+        } else if (step === 'invitation' && this.invitationStep_7ree) { // _7ree
+            this.invitationStep_7ree.classList.remove('hidden');
         }
 
         this.currentStep = step;
     }
 
+    // 初始化邀请码流程（_7ree）
+    async initInvitationFlow_7ree() {
+        try {
+            const res = await fetch('/api/invitation-config');
+            if (!res.ok) throw new Error('failed');
+            const data = await res.json();
+            this.invitationEnabled_7ree = !!data.enabled;
+        } catch (e) {
+            this.invitationEnabled_7ree = false;
+        }
+
+        if (this.invitationEnabled_7ree && this.invitationStep_7ree) {
+            // 显示邀请码步骤，阻止直接发送验证码
+            this.switchStep('invitation');
+            this.invitationInput_7ree?.focus();
+        } else {
+            // 保持原有默认：显示邮箱步骤
+            this.switchStep('email');
+        }
+    }
+
     // 发送验证码
     async sendVerificationCode() {
         const email = this.emailInput.value.trim();
+
+        // 若启用邀请码但未完成邀请码步骤，则阻止
+        if (this.invitationEnabled_7ree && !this.invitationVerified_7ree) {
+            this.switchStep('invitation');
+            this.showError('invitation', '请先输入邀请码');
+            return;
+        }
 
         // 验证邮箱
         if (!email) {
@@ -189,7 +261,8 @@ class UnifiedAuthManager {
                 },
                 body: JSON.stringify({ 
                     action: 'send_code',
-                    email: email 
+                    email: email,
+                    invitation_7ree: this.invitationEnabled_7ree ? (this.invitationCode_7ree || '') : undefined
                 })
             });
 
@@ -212,6 +285,13 @@ class UnifiedAuthManager {
                 this.verifyCodeInput.focus();
             } else {
                 this.hideLoading();
+                // 邀请码错误时，回退到邀请码步骤
+                if (result.error && /邀请码/.test(result.error)) {
+                    this.switchStep('invitation');
+                    this.showError('invitation', result.error);
+                    this.invitationInput_7ree?.focus();
+                    return;
+                }
                 this.showError('email', result.error || '发送验证码失败，请重试');
             }
         } catch (error) {
@@ -235,7 +315,8 @@ class UnifiedAuthManager {
                 },
                 body: JSON.stringify({ 
                     action: 'send_code',
-                    email: this.email 
+                    email: this.email,
+                    invitation_7ree: this.invitationEnabled_7ree ? (this.invitationCode_7ree || '') : undefined
                 })
             });
 
@@ -247,6 +328,13 @@ class UnifiedAuthManager {
                 this.clearError('verify');
             } else {
                 this.hideLoading();
+                // 邀请码错误时，回退到邀请码步骤
+                if (result.error && /邀请码/.test(result.error)) {
+                    this.switchStep('invitation');
+                    this.showError('invitation', result.error);
+                    this.invitationInput_7ree?.focus();
+                    return;
+                }
                 this.showError('verify', result.error || '重新发送失败，请重试');
             }
         } catch (error) {

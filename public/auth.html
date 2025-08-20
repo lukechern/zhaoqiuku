@@ -48,6 +48,19 @@
 
             <main class="register-content">
             <div class="register-form" id="authForm">
+                <!-- 步骤0: 输入邀请码（可配置启用） -->
+                <div class="step hidden" id="invitationStep_7ree">
+                    <div class="form-group">
+                        <label for="invitationCode_7ree">邀请码</label>
+                        <input type="text" id="invitationCode_7ree" placeholder="请输入邀请码" maxlength="32" autocomplete="one-time-code">
+                        <div class="error-message" id="invitationError_7ree"></div>
+                        <div class="help-text">
+                            请先输入有效邀请码后再进行邮箱验证
+                        </div>
+                    </div>
+                    <button class="register-btn" id="validateInvitationBtn_7ree">下一步</button>
+                </div>
+
                 <!-- 步骤1: 输入邮箱 -->
                 <div class="step" id="emailStep">
                     <div class="form-group">
@@ -156,14 +169,17 @@
                 // 当所有脚本加载完成后，初始化UnifiedAuthManager
                 if (loadedScripts === totalScripts) {
                     console.log('All scripts loaded, initializing UnifiedAuthManager...');
-                    // 确保DOM也已加载完成
+                    // 确保只初始化一次（_7ree）
                     if (document.readyState === 'loading') {
                         document.addEventListener('DOMContentLoaded', () => {
-                            new UnifiedAuthManager();
+                            if (!window.__UnifiedAuthManagerInited_7ree) {
+                                new UnifiedAuthManager();
+                            }
                         });
                     } else {
-                        // DOM已经加载完成
-                        new UnifiedAuthManager();
+                        if (!window.__UnifiedAuthManagerInited_7ree) {
+                            new UnifiedAuthManager();
+                        }
                     }
                 }
             };

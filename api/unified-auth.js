@@ -9,6 +9,7 @@ import { EMAIL_SENDER, EMAIL_TEMPLATES, EMAIL_CONFIG } from '../config/emailConf
 import { findUserByEmail, upsertUserVerificationCode, verifyUserCode, cleanupExpiredCodes } from '../utils/database.js';
 import { generateAuthTokens } from '../utils/jwt.js';
 import { setAuthCookies, generateClientAuthState } from '../utils/auth.js';
+import { INVITATION_CONFIG_7ree, validateInvitation_7ree } from '../config/invitationConfig.js';
 
 // 生成验证码
 function generateVerificationCode() {
@@ -25,8 +26,14 @@ function validateEmail(email) {
 }
 
 // 发送验证码
-async function handleSendCode(email, res) {
+async function handleSendCode(email, res, invitation_7ree) {
     try {
+        // 邀请码校验（启用时）
+        if (INVITATION_CONFIG_7ree?.ENABLED) {
+            if (!validateInvitation_7ree(invitation_7ree)) {
+                return res.status(400).json({ error: '邀请码无效或已过期，请检查后重试' });
+            }
+        }
         // 检查用户是否存在
         const existingUser = await findUserByEmail(email);
         const userType = existingUser ? 'existing' : 'new';
@@ -185,7 +192,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { action, email, code } = req.body;
+        const { action, email, code, invitation_7ree } = req.body;
 
         // 验证输入
         if (!action) {
@@ -202,7 +209,7 @@ export default async function handler(req, res) {
 
         // 根据操作类型处理请求
         if (action === 'send_code') {
-            return await handleSendCode(email, res);
+            return await handleSendCode(email, res, invitation_7ree);
         } else if (action === 'verify_code') {
             if (!code) {
                 return res.status(400).json({ error: '验证码不能为空' });
