@@ -276,8 +276,17 @@ export class StreamRenderer_7ree {
         
         const message = element.getAttribute('data-message');
         
+        // 归一化文本以匹配TTS缓存键_7ree（与 TTSService.speak 内部一致的清洗与截断规则）
+        let normalizedMessage_7ree = message;
+        if (window.ttsService && typeof window.ttsService.cleanTextForTTS_7ree === 'function') {
+            normalizedMessage_7ree = window.ttsService.cleanTextForTTS_7ree(message);
+            if (normalizedMessage_7ree.length > 500) {
+                normalizedMessage_7ree = normalizedMessage_7ree.substring(0, 500) + '...';
+            }
+        }
+        
         // 检查是否有缓存的TTS音频数据
-        if (window.ttsService && window.ttsService.cachedAudioData && window.ttsService.cachedText === message) {
+        if (window.ttsService && window.ttsService.cachedAudioData && window.ttsService.cachedText === normalizedMessage_7ree) {
             try {
                 window.ttsService.playAudio(window.ttsService.cachedAudioData).then(() => {
                     element.classList.remove('playing');
