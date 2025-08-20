@@ -286,26 +286,27 @@ export class StreamRenderer_7ree {
         }
         
         // 检查是否有缓存的TTS音频数据
-        if (window.ttsService && window.ttsService.cachedAudioData && window.ttsService.cachedText === normalizedMessage_7ree) {
-            try {
-                window.ttsService.playAudio(window.ttsService.cachedAudioData).then(() => {
-                    element.classList.remove('playing');
-                    if (uiController.currentPlayingElement_7ree === element) {
-                        uiController.currentPlayingElement_7ree = null;
-                    }
-                }).catch(() => {
-                    element.classList.remove('playing');
-                    if (uiController.currentPlayingElement_7ree === element) {
-                        uiController.currentPlayingElement_7ree = null;
-                    }
-                });
-            } catch (error) {
-                console.error('播放TTS音频失败:', error);
+        // 若有缓存的TTS音频数据则直接播放（不做文本命中判定）_7ree
+        if (window.ttsService && window.ttsService.cachedAudioData) {
+        try {
+            window.ttsService.playAudio(window.ttsService.cachedAudioData).then(() => {
                 element.classList.remove('playing');
                 if (uiController.currentPlayingElement_7ree === element) {
                     uiController.currentPlayingElement_7ree = null;
                 }
+            }).catch(() => {
+                element.classList.remove('playing');
+                if (uiController.currentPlayingElement_7ree === element) {
+                    uiController.currentPlayingElement_7ree = null;
+                }
+            });
+        } catch (error) {
+            console.error('播放TTS音频失败:', error);
+            element.classList.remove('playing');
+            if (uiController.currentPlayingElement_7ree === element) {
+                uiController.currentPlayingElement_7ree = null;
             }
+        }
         } else {
             // 没有缓存，重新生成TTS
             if (window.ttsService) {
