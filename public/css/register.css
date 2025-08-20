@@ -305,13 +305,13 @@
 .progress-bar_7ree::after {
     content: '';
     position: absolute;
-    top: calc(1rem + 12px); /* 稍微上移对齐箭头 */
-    right: 1.75rem;
+    top: calc(1rem + 8px); /* 调整对齐到连线中心 */
+    right: calc(2rem - 16px); /* 调整位置使箭头紧贴连线末端 */
     width: 0;
     height: 0;
-    border-left: 8px solid #ccc;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
+    border-left: 16px solid #ccc; /* 增大一倍：8px -> 16px */
+    border-top: 8px solid transparent; /* 增大一倍：4px -> 8px */
+    border-bottom: 8px solid transparent; /* 增大一倍：4px -> 8px */
     z-index: 1;
 }
 
@@ -328,7 +328,7 @@
     width: 32px;
     height: 32px;
     margin-bottom: 0.5rem;
-    background: white; /* 确保节点背景遮盖连接线 */
+    background: #1a1a2e; /* 确保节点背景遮盖连接线 */
     border-radius: 50%;
 }
 
@@ -384,11 +384,11 @@
     }
     
     .progress-bar_7ree::after {
-        top: calc(1rem + 10px); /* 调整小屏幕下的箭头位置 */
-        right: 1.25rem;
-        border-left: 6px solid #ccc;
-        border-top: 3px solid transparent;
-        border-bottom: 3px solid transparent;
+        top: calc(1rem + 6px); /* 调整小屏幕下的箭头位置对齐连线中心 */
+        right: calc(1.5rem - 12px); /* 调整位置使箭头紧贴连线末端 */
+        border-left: 12px solid #ccc; /* 增大一倍：6px -> 12px */
+        border-top: 6px solid transparent; /* 增大一倍：3px -> 6px */
+        border-bottom: 6px solid transparent; /* 增大一倍：3px -> 6px */
     }
     
     .progress-node_7ree {
