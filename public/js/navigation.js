@@ -144,6 +144,75 @@ class ComponentManager {
         });
     }
 
+    setupNavigationLoading() {
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const targetPage = item.getAttribute('data-page');
+
+                // 如果点击的是当前页面，不做任何操作
+                if (targetPage === this.currentPage) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // 显示加载状态
+                this.showNavigationLoading(targetPage);
+
+                // 直接执行页面跳转
+                window.location.href = item.href;
+            });
+        });
+    }
+
+    showNavigationLoading(targetPage) {
+        const navItems = document.querySelectorAll('.nav-item');
+        const loadingIndicator = document.getElementById('pageLoadingIndicator');
+
+        // 清除所有状态
+        navItems.forEach(item => {
+            item.classList.remove('active', 'loading', 'inactive');
+        });
+
+        // 设置目标按钮为活跃状态（显示正常的高亮效果）
+        const targetItem = document.querySelector(`[data-page="${targetPage}"]`);
+        if (targetItem) {
+            targetItem.classList.add('active');
+        }
+
+        // 设置其他按钮为非活跃状态
+        navItems.forEach(item => {
+            const page = item.getAttribute('data-page');
+            if (page !== targetPage) {
+                item.classList.add('inactive');
+            }
+        });
+
+        // 显示页面居中加载指示器
+        if (loadingIndicator) {
+            loadingIndicator.classList.remove('hidden');
+        }
+    }
+
+    hideNavigationLoading() {
+        const navItems = document.querySelectorAll('.nav-item');
+        const loadingIndicator = document.getElementById('pageLoadingIndicator');
+
+        // 清除加载状态
+        navItems.forEach(item => {
+            item.classList.remove('loading', 'inactive');
+        });
+
+        // 重新设置活跃状态
+        this.setActiveState();
+
+        // 隐藏加载指示器
+        if (loadingIndicator) {
+            loadingIndicator.classList.add('hidden');
+        }
+    }
+
     // 立即加载底部导航，不等待DOM完全加载
     async loadNavigationImmediately() {
         if (!this.shouldShowNavigation()) {
@@ -181,7 +250,7 @@ class ComponentManager {
     init() {
         // 立即开始加载底部导航（如果需要的话）
         this.loadNavigationImmediately();
-        
+
         // 等待DOM完全加载后再加载其他组件
         const loadComponents = () => {
             if (this.shouldLoadHeaderTop()) {
@@ -190,6 +259,11 @@ class ComponentManager {
                 // 在auth页面添加标题
                 this.addAuthPageTitle();
             }
+
+            // 设置导航加载状态
+            setTimeout(() => {
+                this.setupNavigationLoading();
+            }, 100);
         };
 
         if (document.readyState === 'loading') {

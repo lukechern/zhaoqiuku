@@ -23,22 +23,22 @@
 .user-ai-dialog {
     display: flex;
     flex-direction: column;
-    gap: 18px; /* 增加气泡间距 */
+    gap: 42px; /* 增加气泡间距 */
     margin-bottom: 20px;
 }
 
 .user-say {
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    color: #BB80FF;
-    border: 1px solid #BB80FF;
+    background: #eff2fb;
+    color: #4c059f;
+    border: 1px solid #eedfff;
     padding: 8px 10px;
     border-radius: 12px 2px 12px 12px;
-    font-size: 1.1rem; 
-    font-weight: 300;
+    font-size: 1.1rem;
+    font-weight: 400;
     line-height: 1.6;
     max-width: 85%;
     align-self: flex-end;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
     position: relative;
     margin-right: 40px;
 }
@@ -59,18 +59,18 @@
 }
 
 .ai-reply {
-    background: linear-gradient(135deg, #1e293b, #0f172a);
+    background: #0e076f;
     color: #f1f5f9;
     padding: 8px 10px;
     border-radius: 2px 12px 12px 12px;
     font-size: 1.1rem; 
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.6; /* 调整行高 */
     max-width: 85%;
     align-self: flex-start;
     border: 1px solid #445771;
     position: relative;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
     margin-left: 40px;
 }
 
