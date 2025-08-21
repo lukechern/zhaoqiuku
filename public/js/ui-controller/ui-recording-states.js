@@ -60,9 +60,10 @@ function hideRecordingState(elements, isRecording) {
 
     // 清除 results-json 区域的内容，但不立即显示placeholder
     // 这样可以让后续的showLoading正常显示
-    if (elements.resultsContainer) {
-        elements.resultsContainer.innerHTML = '';
-    }
+    // 注：为避免结果气泡被清空，已不在此处清空 resultsContainer_7ree
+    // if (elements.resultsContainer) {
+    //     elements.resultsContainer.innerHTML = '';
+    // }
 
     if (window.stopTimer) {
         window.stopTimer();

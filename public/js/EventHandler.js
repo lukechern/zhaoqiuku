@@ -199,6 +199,11 @@ export class EventHandler {
             
             console.log('音频处理完成，结果已显示（TTS后台异步播放）');
             
+            // 等待TTS播放完成后再还原麦克风按钮状态_7ree
+            if (window.streamRenderer_7ree && typeof window.streamRenderer_7ree.waitForTTSCompletion === 'function') {
+                await window.streamRenderer_7ree.waitForTTSCompletion();
+            }
+            
             // 还原麦克风按钮状态
             this.app.uiController.hideProcessingState();
             
