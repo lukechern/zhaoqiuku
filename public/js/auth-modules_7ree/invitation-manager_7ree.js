@@ -50,14 +50,15 @@ class InvitationManager_7ree {
                         this.invitationCode_7ree = code;
                         this.invitationVerified_7ree = true;
                         this.authManager.uiController_7ree.hideLoading();
-                    this.authManager.uiController_7ree.switchStep('email');
+                        this.authManager.uiController_7ree.switchStep('email');
                         // 邀请码验证通过后，点亮第一个进度节点（_7ree）
                         this.authManager.progressManager_7ree && this.authManager.progressManager_7ree.setStepCompletedManually_7ree && this.authManager.progressManager_7ree.setStepCompletedManually_7ree(1);
                         setTimeout(() => this.authManager.uiController_7ree.focusEmailInput(), 0);
                     } else {
                         this.authManager.uiController_7ree.hideLoading();
                         this.showError(result?.error || '邀请码无效或已过期');
-                        this.invitationInput_7ree?.focus();
+                        // 验证失败后清空输入框，便于用户重新输入（_7ree）
+                        this.clearInvitationCode_7ree();
                     }
                 } catch (err) {
                     // 静默处理：不在控制台打印 error（_7ree）
@@ -105,6 +106,15 @@ class InvitationManager_7ree {
     showError(message) {
         if (this.invitationError_7ree) this.invitationError_7ree.textContent = message;
         if (this.invitationInput_7ree) this.invitationInput_7ree.classList.add('error');
+    }
+
+    // 清空邀请码输入框并聚焦（_7ree）
+    clearInvitationCode_7ree() {
+        if (this.invitationInput_7ree) {
+            this.invitationInput_7ree.value = '';
+            // 保留 error 样式以提示错误；当用户再次输入时会自动移除（_7ree）
+            setTimeout(() => this.invitationInput_7ree?.focus(), 0);
+        }
     }
 
     // 检查邀请码是否已验证
