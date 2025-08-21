@@ -5,6 +5,7 @@
  */
 
 .register-content {
+    width:90vw;
     max-width: 400px;
     margin: 2rem auto;
     padding: 0 1rem;
@@ -14,7 +15,6 @@
 }
 
 .register-form {
-    width:90vw;
     background: var(--surface);
     border-radius: 16px;
     padding: 2rem;
@@ -297,6 +297,7 @@
     top: calc(1rem + 16px); /* 1rem padding + 节点高度的一半 */
     left: 1rem; /* 从容器内边距起点开始 */
     right: 2.2rem; /* 为箭头预留空间 */
+    width: calc(100% - 2rem);
     height: 2px;
     background: #ccc; /* 使用实线避免末端出现透明空隙 */
     z-index: 0;
