@@ -3,7 +3,7 @@
     body {
         display: block;
         padding: 0;
-        background: linear-gradient(135deg, var(--background) 0%, var(--surface) 100%);
+        background: var(--background);
     }
     
     body::before {
@@ -73,9 +73,8 @@
     .mobile-frame {
         max-height: 90vh;
         box-shadow:
-            0 0 0 8px rgba(255, 255, 255, 0.15),
-            0 0 0 12px rgba(0, 0, 0, 0.3),
-            0 30px 80px rgba(0, 0, 0, 0.5);
+            0 10px 25px rgba(0, 0, 0, 0.08),
+            0 4px 10px rgba(0, 0, 0, 0.04);
     }
 }
 
@@ -102,9 +101,8 @@
         max-width: 390px;
         max-height: 90vh;
         box-shadow:
-            0 0 0 10px rgba(255, 255, 255, 0.15),
-            0 0 0 15px rgba(0, 0, 0, 0.3),
-            0 40px 100px rgba(0, 0, 0, 0.6);
+            0 15px 35px rgba(0, 0, 0, 0.1),
+            0 6px 15px rgba(0, 0, 0, 0.05);
     }
 }
 

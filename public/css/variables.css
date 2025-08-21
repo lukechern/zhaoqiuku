@@ -1,19 +1,19 @@
 /* CSS 变量定义 */
 :root {
-    --primary-color: #667eea;
-    --primary-dark: #5a67d8;
-    --secondary-color: #764ba2;
-    --background: #0f0f23;
-    --surface: #1a1a2e;
-    --surface-light: #16213e;
-    --text-primary: #ffffff;
-    --text-secondary: #a0aec0;
-    --text-muted: #718096;
-    --success: #48bb78;
-    --warning: #ed8936;
-    --error: #f56565;
-    --border: #2d3748;
-    --shadow: rgba(0, 0, 0, 0.3);
+    --primary-color: #6366f1;
+    --primary-dark: #4f46e5;
+    --secondary-color: #8b5cf6;
+    --background: #ffffff;
+    --surface: #f8fafc;
+    --surface-light: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --border: #e2e8f0;
+    --shadow: rgba(0, 0, 0, 0.05);
     
     /* 错误相关变量 */
     --error-color-rgb: 245, 101, 101;

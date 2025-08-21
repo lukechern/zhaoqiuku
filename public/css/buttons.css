@@ -26,14 +26,17 @@
 
 .control-btn:hover:not(:disabled) {
     background: var(--primary-color);
-    color: var(--text-primary);
+    color: white;
     border-color: var(--primary-color);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .control-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
+    background: var(--surface-light);
+    border-color: var(--border);
 }
 
 /* 刷新按钮使用与其他按钮相同的样式 */
@@ -45,17 +48,18 @@
 
 #refreshBtn:hover:not(:disabled) {
     background: var(--primary-color);
-    color: var(--text-primary);
+    color: white;
     border-color: var(--primary-color);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .control-btn svg,
 .control-btn img.control-icon {
     width: 20px;
     height: 20px;
-    fill: white;
-    color: white;
+    fill: currentColor;
+    color: currentColor;
 }
 
 /* 加载动画 */
