@@ -48,7 +48,7 @@
     padding: 0.75rem 1rem;
     border: 2px solid var(--border);
     border-radius: 8px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     transition: all 0.3s ease;
     background: var(--surface-light);
     color: var(--text-primary);
@@ -388,7 +388,7 @@
     }
     
     .progress-bar_7ree::after {
-        top: calc(1rem + 8px);
+        top: calc(1rem + 9px);
         right: 0.5rem;
         border-left-width: 12px;
         border-top-width: 6px;

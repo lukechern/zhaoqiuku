@@ -101,38 +101,66 @@ class UnifiedAuthManager {
             return;
         }
         
+        // 若已启用邀请码且尚未验证，先引导到邀请码步骤（_7ree）
+        if (this.invitationManager_7ree && this.invitationManager_7ree.isInvitationRequired && this.invitationManager_7ree.isInvitationRequired()) {
+            this.uiController_7ree.switchStep('invitation');
+            if (this.invitationManager_7ree.showError) {
+                this.invitationManager_7ree.showError('请先输入并验证邀请码');
+            }
+            if (this.invitationManager_7ree.invitationInput_7ree) {
+                this.invitationManager_7ree.invitationInput_7ree.focus();
+            }
+            return;
+        }
+        
         this.email = email;
         this.uiController_7ree.clearEmailError();
         this.uiController_7ree.showLoading('正在发送验证码...');
         
         try {
-            const response = await fetch('/api/send-verification-code', {
+            const response = await fetch('/api/unified-auth', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: this.email })
+                body: JSON.stringify({ 
+                    action: 'send_code',
+                    email: this.email,
+                    invitation_7ree: this.invitationManager_7ree ? this.invitationManager_7ree.getInvitationCode() : undefined
+                })
             });
             
-            const data = await response.json();
+            let result;
+            try {
+                result = await response.json();
+            } catch (parseErr) {
+                // 解析失败时读取文本，给出更友好的错误提示（_7ree）
+                const text = await response.text();
+                throw new Error(text || '服务器返回格式错误');
+            }
             
-            if (data.success) {
-                this.userType = data.userType;
+            if (response.ok) {
+                this.userType = result.userType;
                 this.uiController_7ree.setEmailDisplay(this.email);
                 this.uiController_7ree.setUserTypeHint(this.userType);
                 
-                // 检查是否需要邀请码
-                if (data.requiresInvitation) {
-                    this.uiController_7ree.switchStep('invitation');
-                } else {
-                    this.uiController_7ree.switchStep('verify');
-                    this.verificationManager_7ree.startCountdown();
-                }
+                // 成功后直接进入验证码步骤并开始倒计时（_7ree）
+                this.uiController_7ree.switchStep('verify');
+                this.verificationManager_7ree.startCountdown();
             } else {
-                this.uiController_7ree.showEmailError(data.message || '发送验证码失败，请重试');
+                // 邀请码错误时，回退到邀请码步骤（_7ree）
+                if (result && result.error && /邀请码/.test(result.error)) {
+                    this.uiController_7ree.switchStep('invitation');
+                    if (this.invitationManager_7ree) {
+                        this.invitationManager_7ree.showError(result.error);
+                        this.invitationManager_7ree.invitationInput_7ree?.focus();
+                    }
+                } else {
+                    this.uiController_7ree.showEmailError((result && (result.message || result.error)) || '发送验证码失败，请重试');
+                }
             }
         } catch (error) {
-            console.error('发送验证码失败:', error);
+            // console.error('发送验证码失败:', error); // 保持安静的控制台（_7ree）
             this.uiController_7ree.showEmailError('网络错误，请检查网络连接后重试');
         } finally {
             this.uiController_7ree.hideLoading();
