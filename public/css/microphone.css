@@ -5,7 +5,7 @@
     align-items: center;
     gap: 1rem;
     /* 确保容器有足够的空间容纳音波动画 */
-    padding: 90px 0;
+    padding: 60px 0;
 }
 
 .microphone-button {

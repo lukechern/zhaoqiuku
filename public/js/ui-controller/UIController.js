@@ -1,10 +1,33 @@
-// UIController.js - UI控制模块主类
+// UIController.js - UI控制模块主类（已模块化）
 
 import { StreamRenderer_7ree } from '../stream-renderer_7ree.js';
 
+// 导入UI模块
+import './index.js';
+
 export class UIController {
     constructor() {
-        this.elements = {
+        // 使用模块化的元素获取函数
+        this.elements = window.getUIElements ? window.getUIElements() : this.getDefaultElements();
+
+        this.isRecording = false;
+        this.startTouchY = null;
+        this.currentTouchY = null;
+        this.cancelThreshold = 80; // 向上滑动80px取消
+        this.isCanceling = false;
+        this.lastResultData = null;
+
+        // 播放状态追踪_7ree
+        this.currentPlayingElement_7ree = null;  // 当前正在播放的气泡元素
+        this.currentPlayingAudio_7ree = null;    // 当前播放的音频对象(用于用户气泡)
+
+        // 流式渲染器_7ree
+        this.streamRenderer_7ree = new StreamRenderer_7ree();
+    }
+
+    // 获取默认元素（备用方法）
+    getDefaultElements() {
+        return {
             microphoneButton: document.getElementById('microphoneButton'),
             soundWaves: document.getElementById('soundWaves'),
             listeningIndicator: null, // 已移除的元素，设为null
@@ -16,178 +39,76 @@ export class UIController {
             resultsContainer: document.getElementById('resultsContainer'),
             debugLevel: document.getElementById('debugLevel')
         };
-
-        this.timerInterval = null;
-        this.startTime = null;
-        this.isRecording = false;
-        this.startTouchY = null;
-        this.currentTouchY = null;
-        this.cancelThreshold = 80; // 向上滑动80px取消
-        this.isCanceling = false;
-        this.lastResultData = null;
-        
-        // 播放状态追踪_7ree
-        this.currentPlayingElement_7ree = null;  // 当前正在播放的气泡元素
-        this.currentPlayingAudio_7ree = null;    // 当前播放的音频对象(用于用户气泡)
-        
-        // 流式渲染器_7ree
-        this.streamRenderer_7ree = new StreamRenderer_7ree();
     }
 
     // 初始化UI事件
     initialize() {
-        // 确保DOM元素存在后再绑定事件
+        // 使用模块化的元素初始化
+        this.initializeElements();
+        this.setupEvents();
+    }
+
+    // 初始化元素
+    async initializeElements() {
         if (!this.elements.microphoneButton) {
             console.error('麦克风按钮元素未找到，延迟初始化...');
-            this.retryElementInitialization();
-        } else {
-            this.setupTouchEvents();
-            // 新增：初始化左右双按钮
-            if (this.setupDualButtons_7ree) {
-                this.setupDualButtons_7ree();
+            if (window.retryElementInitialization) {
+                await window.retryElementInitialization(this.elements, 10);
             }
         }
 
+        if (this.elements.microphoneButton) {
+            this.setupEvents();
+        }
+    }
+
+    // 设置事件
+    setupEvents() {
+        // 使用模块化的触摸事件设置
+        if (window.setupTouchEvents) {
+            window.setupTouchEvents(this);
+        }
+
+        // 新增：初始化左右双按钮
+        if (this.setupDualButtons_7ree) {
+            this.setupDualButtons_7ree();
+        }
+
         this.setupButtonEvents();
-        this.setupDebugControls();
-    }
 
-    // 重试元素初始化
-    retryElementInitialization() {
-        const maxRetries = 10;
-        let retries = 0;
+        // 使用模块化的调试控制设置
+        if (window.setupDebugControls) {
+            window.setupDebugControls();
+        }
 
-        const tryInitialize = () => {
-            retries++;
-            console.log(`尝试初始化UI元素，第${retries}次...`);
-
-            // 重新获取所有元素
-            this.elements = {
-                microphoneButton: document.getElementById('microphoneButton') || this.elements.microphoneButton,
-                soundWaves: document.getElementById('soundWaves') || this.elements.soundWaves,
-                listeningIndicator: null, // 已移除的元素，设为null
-                cancelIndicator: document.getElementById('cancelIndicator') || this.elements.cancelIndicator,
-                timer: null, // 已移除的元素，设为null
-                playbackBtn: document.getElementById('playbackBtn') || this.elements.playbackBtn,
-                clearBtn: document.getElementById('clearBtn') || this.elements.clearBtn,
-                refreshBtn: document.getElementById('refreshBtn') || this.elements.refreshBtn,
-                resultsContainer: document.getElementById('resultsContainer') || this.elements.resultsContainer,
-                debugLevel: document.getElementById('debugLevel') || this.elements.debugLevel
-            };
-
-            // 检查关键元素是否已加载
-            if (this.elements.microphoneButton) {
-                console.log('UI元素初始化成功');
-                this.setupTouchEvents();
-            } else if (retries < maxRetries) {
-                setTimeout(tryInitialize, 200);
-            } else {
-                console.error('UI元素初始化失败，达到最大重试次数');
-            }
-        };
-
-        setTimeout(tryInitialize, 200);
-    }
-
-    // 设置调试控制 - 前台控制已禁用，只能通过配置文件或控制台设置
-    setupDebugControls() {
-        // 前台调试控制已隐藏，调试级别只能通过以下方式设置：
-        // 1. 修改 config/debugConfig.js 中的 CURRENT_DEBUG_LEVEL
-        // 2. 在控制台使用 setDebugLevel("level") 命令
-        
-        // 监听调试级别变化事件（来自控制台设置）
+        // 监听调试级别变化事件
         window.addEventListener('debugLevelChanged', () => {
-            // 如果有结果显示，重新格式化显示
             if (this.lastResultData) {
                 this.showResults(this.lastResultData);
             }
         });
-        
-        console.log('🔧 调试控制提示:');
-        console.log('- 修改 config/debugConfig.js 中的 CURRENT_DEBUG_LEVEL 来永久设置调试级别');
-        console.log('- 使用 setDebugLevel("normal"|"debug"|"full_debug") 来临时设置调试级别');
-        console.log('- 使用 showDebugLevels() 查看所有可用的调试级别');
     }
 
     // 检查用户认证状态
     checkAuthenticationStatus() {
-        // 检查token是否存在
-        const token = localStorage.getItem('zhaoqiuku_access_token');
-        const hasAuthManager = !!window.authManager;
-        const isAuthenticated = window.authManager && window.authManager.isAuthenticated;
-
-        console.log('检查认证状态:', {
-            hasToken: !!token,
-            hasAuthManager: hasAuthManager,
-            isAuthenticated: isAuthenticated,
-            user: window.authManager && window.authManager.user && window.authManager.user.email
-        });
-
-        // 如果有token或者认证管理器显示已登录，则允许录音
-        if (token || (hasAuthManager && isAuthenticated)) {
-            console.log('用户已登录，允许录音');
-            // 如果已登录，确保清除任何登录相关的样式
-            this.clearLoginRequiredState();
-            return true;
+        if (window.checkAuthenticationStatus) {
+            return window.checkAuthenticationStatus(this.elements);
         }
-
-        console.log('用户未登录，显示登录提示');
-        this.showLoginRequired();
         return false;
     }
 
     // 清除登录要求状态
     clearLoginRequiredState() {
-        // 移除麦克风按钮的禁用样式
-        this.elements.microphoneButton.classList.remove('login-required');
-
-        // 如果当前显示的是登录提示，清除它
-        const container = this.elements.resultsContainer;
-        if (container.querySelector('.login-required-message')) {
-            this.clearResults();
+        if (window.clearLoginRequiredState) {
+            window.clearLoginRequiredState(this.elements);
         }
     }
 
     // 显示需要登录的提示并跳转
     showLoginRequired() {
-        // 显示特殊的登录提示消息
-        const container = this.elements.resultsContainer;
-        container.innerHTML = `
-            <div class="login-required-message">
-                请先登录后再使用语音识别功能
-                <br><small>即将跳转到登录页面...</small>
-            </div>
-        `;
-
-        // 给麦克风按钮添加禁用样式
-        this.elements.microphoneButton.classList.add('login-required');
-
-        // 震动提示
-        this.vibrate([100, 50, 100]);
-
-        // 延迟跳转到登录页面
-        setTimeout(() => {
-            // 保存当前页面URL，登录后可以返回
-            const currentUrl = window.location.href;
-            const returnUrl = encodeURIComponent(currentUrl);
-
-            // 跳转到登录页面，带上返回URL参数
-            window.location.href = `auth.html?return=${returnUrl}`;
-        }, 2000); // 2秒后跳转，让用户看到提示消息
-
-        // 添加倒计时显示
-        let countdown = 2;
-        const countdownInterval = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-                const message = container.querySelector('.login-required-message small');
-                if (message) {
-                    message.textContent = `${countdown} 秒后跳转到登录页面...`;
-                }
-            } else {
-                clearInterval(countdownInterval);
-            }
-        }, 1000);
+        if (window.showLoginRequired) {
+            window.showLoginRequired(this.elements);
+        }
     }
 
     // 处理按下开始

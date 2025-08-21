@@ -221,9 +221,9 @@ class HistoryManager {
                             // console.log('SwipeDeleteManager_7ree: 延迟为记录元素设置滑动功能', div);
                         } else {
                             // 如果仍然找不到，记录警告但不影响功能
-                            console.warn('SwipeDeleteManager_7ree: 滑动删除管理器未找到或方法不存在，跳过滑动功能设置');
+                            // console.warn('SwipeDeleteManager_7ree: 滑动删除管理器未找到或方法不存在，跳过滑动功能设置');
                         }
-                    }, 500);
+                    }, 300);
                 }
             };
 
