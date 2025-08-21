@@ -19,11 +19,11 @@ function loadModule(src) {
 async function loadHistoryModules() {
     try {
         // 按依赖顺序加载模块
-        await loadModule('./history/history-utils.js');      // 工具函数
-        await loadModule('./history/history-manager.js');    // 主类
-        await loadModule('./history/history-initializer.js'); // 初始化逻辑
-        await loadModule('./history/history-events.js');     // 事件处理
-        await loadModule('./history/index.js');              // 入口文件
+        await loadModule('js/history/history-utils.js');      // 工具函数
+        await loadModule('js/history/history-manager.js');    // 主类
+        await loadModule('js/history/history-initializer.js'); // 初始化逻辑
+        await loadModule('js/history/history-events.js');     // 事件处理
+        await loadModule('js/history/index.js');              // 入口文件
 
         console.log('历史页面模块加载完成');
     } catch (error) {
