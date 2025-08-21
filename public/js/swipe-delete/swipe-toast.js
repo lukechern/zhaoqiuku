@@ -5,7 +5,7 @@
  * 提供Toast提示功能
  */
 
-export class SwipeToast_7ree {
+window.SwipeToast_7ree = class SwipeToast_7ree {
     /**
      * 显示Toast提示
      */

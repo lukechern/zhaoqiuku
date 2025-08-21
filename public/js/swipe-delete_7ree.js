@@ -4,18 +4,11 @@
  * ========================================
  * 为历史记录项添加左滑删除功能
  * 此文件已拆分为多个模块，位于 swipe-delete/ 目录下
- * 这里保留向后兼容性，导入主入口文件
+ * 这里保留向后兼容性，重定向到新的实现
  */
 
-// 导入拆分后的主入口文件
-import('./swipe-delete/index.js').then(() => {
-    console.log('SwipeDeleteManager_7ree: 已加载拆分后的模块');
-}).catch(error => {
-    console.error('SwipeDeleteManager_7ree: 加载拆分模块失败', error);
-});
-
 // 保持向后兼容的类定义（如果需要的话）
-class SwipeDeleteManager_7ree {
+window.SwipeDeleteManager_7ree = class SwipeDeleteManager_7ree {
     constructor() {
         console.warn('SwipeDeleteManager_7ree: 请使用新的入口文件 js/swipe-delete/index.js');
     }

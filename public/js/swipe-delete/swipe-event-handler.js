@@ -5,7 +5,7 @@
  * 处理触摸事件（开始、移动、结束）
  */
 
-export class SwipeEventHandler_7ree {
+window.SwipeEventHandler_7ree = class SwipeEventHandler_7ree {
     constructor(swipeManager) {
         this.swipeManager = swipeManager;
         this.startX = 0;

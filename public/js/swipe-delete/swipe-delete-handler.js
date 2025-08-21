@@ -5,7 +5,7 @@
  * 处理删除操作、确认对话框和API调用
  */
 
-export class SwipeDeleteHandler_7ree {
+window.SwipeDeleteHandler_7ree = class SwipeDeleteHandler_7ree {
     constructor(swipeManager) {
         this.swipeManager = swipeManager;
     }

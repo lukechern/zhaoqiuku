@@ -5,7 +5,7 @@
  * 管理滑动容器的DOM结构和记录ID提取
  */
 
-export class SwipeDOMManager_7ree {
+window.SwipeDOMManager_7ree = class SwipeDOMManager_7ree {
     constructor(swipeManager) {
         this.swipeManager = swipeManager;
     }

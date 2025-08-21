@@ -6,13 +6,7 @@
  * 整合所有模块，提供统一的接口
  */
 
-import { SwipeEventHandler_7ree } from './swipe-event-handler.js';
-import { SwipeDOMManager_7ree } from './swipe-dom-manager.js';
-import { SwipeDeleteHandler_7ree } from './swipe-delete-handler.js';
-import { SwipeUtils_7ree } from './swipe-utils.js';
-import { SwipeToast_7ree } from './swipe-toast.js';
-
-export class SwipeDeleteManager_7ree {
+window.SwipeDeleteManager_7ree = class SwipeDeleteManager_7ree {
     constructor() {
         this.deleteThreshold = 60; // 删除阈值
         this.actionWidth = 80; // 删除操作区域宽度
@@ -107,10 +101,3 @@ if (document.readyState === 'loading') {
  * 暴露初始化函数供其他模块调用
  */
 window.initSwipeDeleteManager_7ree = initSwipeDeleteManager_7ree;
-
-/**
- * 导出模块
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SwipeDeleteManager_7ree;
-}

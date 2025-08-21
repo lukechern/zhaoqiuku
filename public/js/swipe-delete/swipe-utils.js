@@ -5,7 +5,7 @@
  * 提供各种工具方法和状态管理
  */
 
-export class SwipeUtils_7ree {
+window.SwipeUtils_7ree = class SwipeUtils_7ree {
     constructor(swipeManager) {
         this.swipeManager = swipeManager;
     }
