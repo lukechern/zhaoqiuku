@@ -416,6 +416,30 @@ body[data-page="auth"] .mobile-frame {
     transition: none !important;
 }
 
+/* 移动端禁用进度条相关元素的过渡/动画，避免加载后横向拉伸（_7ree） */
+@media (max-width: 768px) {
+  body[data-page="auth"] .progress-bar_7ree,
+  body[data-page="auth"] .progress-bar_7ree::before,
+  body[data-page="auth"] .progress-bar_7ree::after,
+  body[data-page="auth"] .progress-step_7ree,
+  body[data-page="auth"] .progress-node_7ree,
+  body[data-page="auth"] .progress-icon_7ree,
+  body[data-page="auth"] .progress-text_7ree {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* 移动端进一步压缩进度条占宽，防止内容撑开导致视觉“拉长”（_7ree） */
+@media (max-width: 480px) {
+  body[data-page="auth"] .progress-step_7ree {
+    min-width: 80px;
+  }
+  body[data-page="auth"] .progress-bar_7ree {
+    gap: 1rem;
+  }
+}
+
 /* 验证码输入框美化样式（_7ree） */
 .verify-code-container_7ree {
     display: flex;

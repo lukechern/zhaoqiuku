@@ -98,23 +98,15 @@ class ProgressManager_7ree {
         });
     }
 
-    // 获取当前进度百分比
+    // 获取当前进度百分比（已不再使用宽度驱动，保留兼容，固定返回0）（_7ree）
     getCurrentProgress_7ree() {
-        if (!this.progressBar_7ree) {
-            return 0;
-        }
-        
-        const width = this.progressBar_7ree.style.width;
-        return parseInt(width) || 0;
+        return 0;
     }
 
-    // 设置自定义进度
+    // 设置自定义进度（为避免移动端横向拉伸，禁用宽度赋值，方法保留为兼容）（_7ree）
     setCustomProgress_7ree(percent) {
-        if (!this.progressBar_7ree || percent < 0 || percent > 100) {
-            return;
-        }
-        
-        this.progressBar_7ree.style.width = percent + '%';
+        // no-op: 不再通过 style.width 控制容器宽度
+        return;
     }
 
     // 添加步骤配置
@@ -130,40 +122,18 @@ class ProgressManager_7ree {
         return this.stepConfig_7ree[stepName] || null;
     }
 
-    // 检查进度条是否完成
+    // 检查进度条是否完成（已不再用百分比语义，保持兼容返回false）（_7ree）
     isProgressComplete_7ree() {
-        return this.getCurrentProgress_7ree() >= 100;
+        return false;
     }
 
-    // 平滑动画更新进度
+    // 平滑动画更新进度（为避免移动端横向拉伸，禁用宽度动画，方法保留为兼容）（_7ree）
     animateProgress_7ree(targetPercent, duration = 500) {
-        if (!this.progressBar_7ree) {
-            return;
-        }
-
-        const startPercent = this.getCurrentProgress_7ree();
-        const difference = targetPercent - startPercent;
-        const startTime = performance.now();
-
-        const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            // 使用缓动函数
-            const easeProgress = this.easeInOutCubic_7ree(progress);
-            const currentPercent = startPercent + (difference * easeProgress);
-            
-            this.progressBar_7ree.style.width = currentPercent + '%';
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
-        };
-
-        requestAnimationFrame(animate);
+        // no-op: 不再通过 style.width 做动画
+        return;
     }
 
-    // 缓动函数
+    // 缓动函数（保留以兼容旧代码引用）
     easeInOutCubic_7ree(t) {
         return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
