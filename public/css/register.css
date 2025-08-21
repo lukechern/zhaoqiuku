@@ -402,7 +402,20 @@
         font-size: 0.7rem;
     }
 }
-.progress-node_7ree img.progress-icon_7ree{width:100%;height:100%;position:absolute;top:0;left:0;object-fit:contain;}
+.progress-node_7ree img.progress-icon_7ree{
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0;
+    left:0;
+    object-fit:contain;
+}
+
+/* 避免 auth 页面加载完成时 .mobile-frame 尺寸变化触发过渡，导致进度线条拉伸（_7ree） */
+body[data-page="auth"] .mobile-frame {
+    transition: none !important;
+}
+
 /* 验证码输入框美化样式（_7ree） */
 .verify-code-container_7ree {
     display: flex;
