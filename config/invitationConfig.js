@@ -12,7 +12,7 @@
 
 export const INVITATION_CONFIG_7ree = {
     ENABLED: true,                // 是否启用邀请码
-    MAIN_CODE: '777777',           // 主验证码字串（自行修改）
+    MAIN_CODE: '7777',           // 主验证码字串（自行修改）
     SUFFIX_MODE: 'DAY_HOUR'      // 附加码算法：'YEAR_MONTH' | 'MONTH_DAY' | DAY_HOUR
 };
 
