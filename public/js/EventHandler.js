@@ -142,7 +142,7 @@ export class EventHandler {
             // 2秒后恢复placeholder状态
             setTimeout(() => {
                 if (this.app.uiController.elements.resultsContainer) {
-                    this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？轻触麦克风问问AI助手</div>';
+                    this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
                 }
             }, 2000);
             
@@ -157,7 +157,7 @@ export class EventHandler {
             // 错误时也需要恢复placeholder
             setTimeout(() => {
                 if (this.app.uiController.elements.resultsContainer) {
-                    this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？轻触麦克风问问AI助手</div>';
+                    this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
                 }
             }, 2000);
         }

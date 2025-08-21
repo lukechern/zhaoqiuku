@@ -381,7 +381,7 @@ export class UIController {
 
     // 清除结果
     clearResults() {
-        this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？轻触麦克风问问AI助手</div>';
+        this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
     }
 
     // HTML转义
@@ -477,7 +477,7 @@ export class UIController {
         // 只有在非录音状态下，且结果容器为空时，才显示placeholder
         // 避免在录音过程中被错误地还原为placeholder
         if (!this.isRecording && this.elements.resultsContainer && this.elements.resultsContainer.innerHTML.trim() === '') {
-            this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放还是查找物品？轻触麦克风问问AI助手</div>';
+            this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
         }
     }
 }
