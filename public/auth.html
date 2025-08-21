@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=contain">
     <title>用户认证 - AI语音寻物助手</title>
     
+    <!-- 关键：提前覆盖 .register-form.hidden，避免初次渲染时被全局 .hidden {display:none} 影响布局（_7ree） -->
+    <style>
+        body[data-page="auth"] .register-form.hidden {
+            display: block !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    </style>
+    
     <!-- 防缓存设置 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
