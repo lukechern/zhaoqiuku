@@ -193,6 +193,7 @@
     border-radius: 16px;
     display: inline-block;
     width: fit-content;
+    height: 23px;
     font-weight: 500;
     flex-shrink: 0;
 }
