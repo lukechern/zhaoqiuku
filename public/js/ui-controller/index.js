@@ -11,6 +11,7 @@ import './ui-touch-events.js'; // 触摸事件
 import './ui-recording-states.js'; // 录音状态
 import './ui-audio.js';        // 音频管理
 import './ui-results.js';      // 结果显示
+import './DualButtonHandler_7ree.js'; // 双按钮处理器
 
 console.log('UI控制器模块加载完成');
 

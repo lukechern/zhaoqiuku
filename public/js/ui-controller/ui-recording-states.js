@@ -163,7 +163,7 @@ function hideProcessingState(elements, isRecording) {
     // 只有在非录音状态下，且结果容器为空时，才显示placeholder
     // 避免在录音过程中被错误地还原为placeholder
     if (!isRecording && elements.resultsContainer && elements.resultsContainer.innerHTML.trim() === '') {
-        elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
+        elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手…</div>';
     }
 }
 

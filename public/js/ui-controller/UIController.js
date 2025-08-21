@@ -92,12 +92,18 @@ export class UIController {
 
     // 初始化双按钮处理器
     initializeDualButtonHandler() {
+        console.log('初始化双按钮处理器...');
+        console.log('DualButtonHandler_7ree 是否已定义:', typeof DualButtonHandler_7ree);
+
         // 动态导入 DualButtonHandler_7ree 类
         if (typeof DualButtonHandler_7ree !== 'undefined') {
+            console.log('创建 DualButtonHandler_7ree 实例');
             this.dualButtonHandler_7ree = new DualButtonHandler_7ree(this);
             this.dualButtonHandler_7ree.setupDualButtons_7ree();
+            console.log('双按钮处理器初始化完成');
         } else {
             // 如果类还没有加载，等待一下再试
+            console.log('DualButtonHandler_7ree 未找到，100ms后重试');
             setTimeout(() => this.initializeDualButtonHandler(), 100);
         }
     }
@@ -127,6 +133,13 @@ export class UIController {
     // 处理按下开始
     handlePressStart() {
         console.log('handlePressStart 被调用');
+        console.log('当前录音状态:', this.isRecording);
+
+        // 如果已经在录音中，跳过
+        if (this.isRecording) {
+            console.log('已经在录音中，跳过重复启动');
+            return;
+        }
 
         // 检查用户是否已登录
         if (!this.checkAuthenticationStatus()) {
@@ -143,6 +156,7 @@ export class UIController {
 
     // 处理按下结束
     handlePressEnd() {
+        console.log('handlePressEnd 被调用，结束录音');
         this.isRecording = false;
         if (this.onRecordingStop) {
             this.onRecordingStop();
@@ -151,6 +165,7 @@ export class UIController {
 
     // 处理取消录音
     handleCancel() {
+        console.log('handleCancel 被调用，取消录音');
         this.isRecording = false;
         if (this.onRecordingCancel) {
             this.onRecordingCancel();
@@ -168,13 +183,22 @@ export class UIController {
 
     // 显示录音状态
     showRecordingState() {
+        console.log('显示录音状态');
         if (window.showRecordingState) {
             window.showRecordingState(this.elements);
         }
 
         // 显示双按钮
+        console.log('检查双按钮处理器:', {
+            exists: !!this.dualButtonHandler_7ree,
+            hasShowMethod: !!(this.dualButtonHandler_7ree && this.dualButtonHandler_7ree.showDualButtons_7ree)
+        });
+
         if (this.dualButtonHandler_7ree && this.dualButtonHandler_7ree.showDualButtons_7ree) {
+            console.log('调用双按钮显示方法');
             this.dualButtonHandler_7ree.showDualButtons_7ree();
+        } else {
+            console.warn('双按钮处理器未初始化或方法不存在');
         }
     }
 
@@ -206,12 +230,18 @@ export class UIController {
 
     // 显示结果 - 使用流式渲染器
     async showResults(data) {
+        console.log('显示结果，准备重置录音状态');
         // 保存最后的结果数据，用于调试级别切换时重新显示
         this.lastResultData = data;
 
         if (window.showResults) {
             await window.showResults(data, this.elements);
         }
+
+        // 结果显示完成后，重置录音状态
+        setTimeout(() => {
+            this.resetRecordingState();
+        }, 100);
     }
 
     // 自动朗读API响应内容
@@ -265,6 +295,31 @@ export class UIController {
     hideProcessingState() {
         if (window.hideProcessingState) {
             window.hideProcessingState(this.elements, this.isRecording);
+        }
+    }
+
+    // 重置录音状态（外部接口）
+    resetRecordingState() {
+        console.log('重置录音状态');
+        this.isRecording = false;
+        this.isCanceling = false;
+        this.startTouchY = null;
+        this.currentTouchY = null;
+
+        // 隐藏所有录音相关状态
+        if (window.hideRecordingState) {
+            window.hideRecordingState(this.elements, this.isRecording);
+        }
+        if (window.hideCancelState) {
+            window.hideCancelState(this.elements);
+        }
+        if (window.resetTimer) {
+            window.resetTimer();
+        }
+
+        // 隐藏双按钮
+        if (this.dualButtonHandler_7ree && this.dualButtonHandler_7ree.hideDualButtons_7ree) {
+            this.dualButtonHandler_7ree.hideDualButtons_7ree();
         }
     }
 }

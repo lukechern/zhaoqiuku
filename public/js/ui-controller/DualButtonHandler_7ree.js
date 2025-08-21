@@ -54,3 +54,6 @@ export class DualButtonHandler_7ree {
         }
     }
 }
+
+// 将 DualButtonHandler_7ree 类添加到全局作用域
+window.DualButtonHandler_7ree = DualButtonHandler_7ree;

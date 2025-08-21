@@ -101,7 +101,7 @@ function escapeHtml(text) {
 // 清除结果
 function clearResults(elements) {
     if (elements.resultsContainer) {
-        elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
+        elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手…</div>';
     }
 }
 
