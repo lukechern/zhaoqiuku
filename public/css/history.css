@@ -44,6 +44,30 @@
     touch-action: manipulation;
 }
 
+/* 确保点击时宽度不会变化 */
+.history-record:active,
+.history-record:focus,
+.history-record:focus-within,
+.history-record:target {
+    width: 96%;
+    transform: none !important;
+    scale: none !important;
+}
+
+/* 确保滑动容器状态下宽度保持一致 */
+.history-record.swipe-container_7ree {
+    width: 96%;
+}
+
+.history-record.swipe-container_7ree:active,
+.history-record.swipe-container_7ree:focus,
+.history-record.swipe-container_7ree:focus-within,
+.history-record.swipe-container_7ree:target {
+    width: 96%;
+    transform: none !important;
+    scale: none !important;
+}
+
 /* 当历史记录项变成滑动容器时，调整样式 */
 .history-record.swipe-container_7ree {
     padding: 0;

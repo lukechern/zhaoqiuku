@@ -179,3 +179,9 @@
     transform: scale(1.05);
     transition: all 0.2s ease;
 }
+
+/* 确保滑动容器本身不受transform影响 */
+.swipe-container_7ree.threshold-reached_7ree {
+    transform: none !important;
+    scale: none !important;
+}

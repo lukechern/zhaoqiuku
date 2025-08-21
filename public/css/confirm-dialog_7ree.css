@@ -83,7 +83,7 @@
 
 .confirm-dialog-btn_7ree.confirm {
     background: var(--primary-color);
-    color: var(--text-primary);
+    color: white;
     border-color: var(--primary-color);
 }
 
@@ -91,18 +91,20 @@
     background: var(--primary-dark);
     border-color: var(--primary-dark);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .confirm-dialog-btn_7ree.danger {
-    background: var(--error);
-    color: var(--text-primary);
-    border-color: var(--error);
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
 }
 
 .confirm-dialog-btn_7ree.danger:hover {
-    background: #e53e3e;
-    border-color: #e53e3e;
+    background: #b91c1c;
+    border-color: #b91c1c;
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
 }
 
 /* 响应式设计 */

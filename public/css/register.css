@@ -331,7 +331,7 @@
     width: 32px;
     height: 32px;
     margin-bottom: 0.5rem;
-    background: #1a1a2e; /* 确保节点背景遮盖连接线 */
+    background: #FFFFFF; /* 确保节点背景遮盖连接线 */
     border-radius: 50%;
 }
 
