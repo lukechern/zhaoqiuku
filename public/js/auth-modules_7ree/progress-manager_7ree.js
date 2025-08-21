@@ -14,7 +14,7 @@ class ProgressManager_7ree {
         // 步骤配置
         this.stepConfig_7ree = {
             invitation: { progress: 33, step: 1 },
-            email: { progress: 66, step: 2 },
+            email: { progress: 33, step: 1 },
             verify: { progress: 66, step: 2 },
             success: { progress: 100, step: 3 }
         };
@@ -38,7 +38,9 @@ class ProgressManager_7ree {
         // 更新步骤状态（容器类 + 图标显隐）
         this.progressSteps_7ree.forEach((stepEl, index) => {
             const stepNumber = index + 1;
-            const isCompleted = stepNumber < currentStepNumber || currentStep === 'success';
+            const isCompleted = (stepNumber < currentStepNumber)
+                || (currentStep === 'verify' && stepNumber === currentStepNumber)
+                || (currentStep === 'success');
             const isActive = stepNumber === currentStepNumber && currentStep !== 'success';
 
             // 1) 容器类

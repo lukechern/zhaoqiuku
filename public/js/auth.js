@@ -146,6 +146,7 @@ class UnifiedAuthManager {
                 
                 // 成功后直接进入验证码步骤并开始倒计时（_7ree）
                 this.uiController_7ree.switchStep('verify');
+                this.verificationManager_7ree.clearVerifyCode_7ree();
                 this.verificationManager_7ree.startCountdown();
             } else {
                 // 邀请码错误时，回退到邀请码步骤（_7ree）
@@ -183,8 +184,8 @@ class UnifiedAuthManager {
             console.log('跳转到返回URL:', this.returnUrl);
             window.location.href = this.returnUrl;
         } else {
-            console.log('跳转到默认应用页面');
-            window.location.href = '/app';
+            console.log('跳转到默认首页');
+            window.location.href = 'index.html';
         }
     }
 

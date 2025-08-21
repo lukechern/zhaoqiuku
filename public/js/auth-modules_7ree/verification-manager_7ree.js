@@ -309,6 +309,11 @@ class VerificationManager_7ree {
         if (this.verifyCodeInputs_7ree[nextEmptyIndex]) {
             this.verifyCodeInputs_7ree[nextEmptyIndex].focus();
         }
+
+        // 如果一次性填满6位（如粘贴），自动触发验证（_7ree）
+        if (digits.length === 6 && !this.verifyCodeFailedOnce_7ree) {
+            setTimeout(() => this.verifyCode(), 100);
+        }
     }
 
     // 清空验证码输入框（_7ree）
