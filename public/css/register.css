@@ -280,12 +280,13 @@
 /* 进度条样式 (_7ree) */
 .progress-bar_7ree {
     display: flex;
-    justify-content: center;
+    justify-content: space-between; /* 平均分布节点，确保与连线对齐（_7ree） */
     align-items: flex-start;
     margin-bottom: 2rem;
     padding: 1rem 0;
     gap: 2.5rem; /* 增大25%：2rem * 1.25 = 2.5rem */
     position: relative;
+    width: 100%; /* 确保容器占满可用宽度，连线与箭头定位准确（_7ree） */
 }
 
 /* 进度条连接线 */
@@ -293,9 +294,8 @@
     content: '';
     position: absolute;
     top: calc(1rem + 16px); /* 1rem padding + 节点高度的一半 */
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 2rem); /* 延伸到更靠近右侧箭头，确保无断层 */
+    left: 1rem; /* 从容器内边距起点开始 */
+    right: 2.2rem; /* 为箭头预留空间 */
     height: 2px;
     background: #ccc; /* 使用实线避免末端出现透明空隙 */
     z-index: 0;
@@ -306,7 +306,7 @@
     content: '';
     position: absolute;
     top: calc(1rem + 9px); /* 调整对齐到连线中心 */
-    right: 0.9rem; /* 让箭头顶点与连线末端相接触 */
+    right: 0.6rem; /* 与右侧预留right:2.2rem配合，箭头贴合连线末端 */
     width: 0;
     height: 0;
     border-left: 16px solid #ccc; /* 增大一倍：8px -> 16px */
@@ -321,6 +321,7 @@
     align-items: center;
     position: relative;
     z-index: 2;
+    min-width: 90px; /* 确保节点与文字整体宽度（_7ree） */
 }
 
 .progress-node_7ree {
@@ -374,17 +375,22 @@
 
 /* 响应式调整 */
 @media (max-width: 480px) {   
+    .progress-bar_7ree {
+        gap: 1.25rem;
+    }
+
     .progress-bar_7ree::before {
-        top: calc(1rem + 14px); /* 调整小屏幕下的连接线位置 */
-        width: calc(100% - 2rem); /* 与箭头对齐，消除断层 */
+        top: calc(1rem + 14px);
+        left: 0.75rem;
+        right: 2rem;
     }
     
     .progress-bar_7ree::after {
-        top: calc(1rem + 9px); /* 调整小屏幕下的箭头位置对齐连线中心 */
-        right: 0.9rem; /* 顶点贴合连线末端 */
-        border-left: 12px solid #ccc; /* 增大一倍：6px -> 12px */
-        border-top: 6px solid transparent; /* 增大一倍：3px -> 6px */
-        border-bottom: 6px solid transparent; /* 增大一倍：3px -> 6px */
+        top: calc(1rem + 8px);
+        right: 0.5rem;
+        border-left-width: 12px;
+        border-top-width: 6px;
+        border-bottom-width: 6px;
     }
     
     .progress-node_7ree {

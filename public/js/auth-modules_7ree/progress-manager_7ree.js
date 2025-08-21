@@ -36,8 +36,8 @@ class ProgressManager_7ree {
         const progressPercent = config.progress;
         const currentStepNumber = config.step;
 
-        // 更新进度条宽度
-        this.progressBar_7ree.style.width = progressPercent + '%';
+        // 进度条容器不再用宽度表示进度，改为仅通过步骤状态展示（_7ree）
+        // this.progressBar_7ree.style.width = progressPercent + '%';
 
         // 更新步骤状态
         this.progressSteps_7ree.forEach((step, index) => {
@@ -64,8 +64,8 @@ class ProgressManager_7ree {
             return;
         }
 
-        // 设置进度条为100%
-        this.progressBar_7ree.style.width = '100%';
+        // 不再强制设置容器宽度为100%，避免影响布局（_7ree）
+        // this.progressBar_7ree.style.width = '100%';
         
         // 标记所有步骤为已完成
         this.progressSteps_7ree.forEach(step => {
@@ -88,8 +88,8 @@ class ProgressManager_7ree {
             return;
         }
 
-        // 重置进度条
-        this.progressBar_7ree.style.width = '0%';
+        // 不再重置容器宽度，保持布局稳定（_7ree）
+        // this.progressBar_7ree.style.width = '0%';
         this.progressBar_7ree.classList.remove('completed_7ree', 'success-animation_7ree');
         
         // 重置所有步骤
