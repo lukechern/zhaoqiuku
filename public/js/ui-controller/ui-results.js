@@ -21,6 +21,12 @@ async function showResults(data, elements) {
         } else {
             // 如果流式渲染器不可用，使用简单格式化
             container.innerHTML = `<div class="results-json">${formatSimpleResult(data)}</div>`;
+            // 在回退渲染下，给气泡绑定点击播放事件
+            try {
+                bindFallbackPlayback_7ree(container);
+            } catch (e) {
+                console.warn('绑定回退播放事件失败:', e);
+            }
         }
     }
 
@@ -57,14 +63,17 @@ function formatSimpleResult(data) {
             userSay = '抱歉，没有听清你说了什么';
         }
 
+        const esc = (s) => (window.escapeHtml ? window.escapeHtml(s) : s);
+
         html += `<div class="user-ai-dialog">
-            <span class="user-say">${window.escapeHtml ? window.escapeHtml(userSay) : userSay}</span>
-            <span class="ai-reply">${window.formatAiMessage ? window.formatAiMessage(message) : message}</span>
+            <span class="user-say playable" data-transcript="${esc(userSay)}">${esc(userSay)}</span>
+            <span class="ai-reply playable" data-message="${esc(message)}">${window.formatAiMessage ? window.formatAiMessage(message) : esc(message)}</span>
         </div>`;
     } else if (data.transcript) {
         // 只有转录结果
+        const esc = (s) => (window.escapeHtml ? window.escapeHtml(s) : s);
         html += `<div class="simple-result">
-            <strong>识别结果:</strong> ${window.escapeHtml ? window.escapeHtml(data.transcript) : data.transcript}
+            <strong>识别结果:</strong> ${esc(data.transcript)}
         </div>`;
     }
 
@@ -124,6 +133,105 @@ function showMessage(message, type = 'info', elements) {
                 ${window.escapeHtml ? window.escapeHtml(message) : message}
             </div>
         `;
+    }
+}
+
+// 回退渲染下为用户/AI气泡绑定点击播放事件
+function bindFallbackPlayback_7ree(container) {
+    if (!container) return;
+
+    const uiController = window.app && window.app.uiController ? window.app.uiController : null;
+
+    const userEl = container.querySelector('.user-ai-dialog .user-say.playable');
+    const aiEl = container.querySelector('.user-ai-dialog .ai-reply.playable');
+
+    // 绑定用户录音播放
+    if (userEl) {
+        userEl.addEventListener('click', (event) => {
+            event.stopPropagation();
+
+            const audioUrl = window.app && window.app.audioRecorder ? window.app.audioRecorder.audioUrl : null;
+            if (!audioUrl) return;
+
+            // 若存在UIController则统一管理播放状态
+            if (uiController) {
+                if (uiController.currentPlayingElement_7ree) {
+                    if (uiController.currentPlayingElement_7ree === userEl) {
+                        uiController.stopCurrentPlaying_7ree();
+                        return;
+                    }
+                    uiController.stopCurrentPlaying_7ree();
+                }
+                userEl.classList.add('playing');
+                uiController.currentPlayingElement_7ree = userEl;
+
+                const audio = new Audio(audioUrl);
+                uiController.currentPlayingAudio_7ree = audio;
+                audio.play().then(() => {
+                    audio.onended = () => {
+                        userEl.classList.remove('playing');
+                        if (uiController.currentPlayingElement_7ree === userEl) uiController.currentPlayingElement_7ree = null;
+                        if (uiController.currentPlayingAudio_7ree === audio) uiController.currentPlayingAudio_7ree = null;
+                    };
+                }).catch(() => {
+                    userEl.classList.remove('playing');
+                    if (uiController.currentPlayingElement_7ree === userEl) uiController.currentPlayingElement_7ree = null;
+                    if (uiController.currentPlayingAudio_7ree === audio) uiController.currentPlayingAudio_7ree = null;
+                });
+            } else {
+                // 简单回退：直接播放
+                const audio = new Audio(audioUrl);
+                audio.play().catch(() => {});
+            }
+        });
+    }
+
+    // 绑定AI TTS播放
+    if (aiEl) {
+        aiEl.addEventListener('click', async (event) => {
+            event.stopPropagation();
+            const tts = window.ttsService;
+            if (!tts) return;
+
+            const message = aiEl.getAttribute('data-message') || '';
+
+            if (uiController) {
+                if (uiController.currentPlayingElement_7ree) {
+                    if (uiController.currentPlayingElement_7ree === aiEl) {
+                        // 再次点击则停止
+                        if (tts && tts.isPlaying) tts.stop();
+                        uiController.stopCurrentPlaying_7ree();
+                        return;
+                    }
+                    uiController.stopCurrentPlaying_7ree();
+                }
+                aiEl.classList.add('playing');
+                uiController.currentPlayingElement_7ree = aiEl;
+
+                try {
+                    // 优先使用缓存音频
+                    if (tts.cachedAudioData) {
+                        await tts.playAudio(tts.cachedAudioData);
+                    } else {
+                        await tts.speak(message);
+                    }
+                } catch (err) {
+                    // 忽略错误，仅做状态清理
+                } finally {
+                    aiEl.classList.remove('playing');
+                    if (uiController.currentPlayingElement_7ree === aiEl) uiController.currentPlayingElement_7ree = null;
+                }
+            } else {
+                // 简单回退：直接调用TTS
+                try {
+                    if (tts.cachedAudioData) {
+                        await tts.playAudio(tts.cachedAudioData);
+                    } else {
+                        await tts.speak(message);
+                    }
+                } catch (e) {}
+            }
+        });
     }
 }
 

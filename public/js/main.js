@@ -24,6 +24,12 @@ async function startApp() {
     window.app = app;
     console.log('window.app 设置完成');
     
+    // 将流式渲染器暴露到全局，供回退渲染与事件处理使用
+    if (app && app.uiController && app.uiController.streamRenderer_7ree) {
+        window.streamRenderer_7ree = app.uiController.streamRenderer_7ree;
+        console.log('window.streamRenderer_7ree 设置完成');
+    }
+    
     try {
         await app.appInitializer.initialize();
         console.log('app.appInitializer.initialize() 执行完成');
