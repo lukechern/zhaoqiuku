@@ -208,20 +208,27 @@ class HistoryManager {
                 window.initSwipeDeleteManager_7ree();
             }
 
-            if (window.swipeDeleteManager_7ree) {
-                window.swipeDeleteManager_7ree.setupSwipeForElement(div);
-                // console.log('SwipeDeleteManager_7ree: 为记录元素设置滑动功能', div);
-            } else {
-                // console.error('SwipeDeleteManager_7ree: 滑动删除管理器未找到');
-                // 如果滑动删除管理器还没有初始化，等待一段时间后重试
-                setTimeout(() => {
-                    if (window.swipeDeleteManager_7ree) {
-                        window.swipeDeleteManager_7ree.setupSwipeForElement(div);
-                        // console.log('SwipeDeleteManager_7ree: 延迟为记录元素设置滑动功能', div);
-                    }
-                }, 100);
-            }
-        }, 0);
+            // 等待滑动删除管理器初始化后再设置
+            const setupSwipeForElement = () => {
+                if (window.swipeDeleteManager_7ree && typeof window.swipeDeleteManager_7ree.setupSwipeForElement === 'function') {
+                    window.swipeDeleteManager_7ree.setupSwipeForElement(div);
+                    // console.log('SwipeDeleteManager_7ree: 为记录元素设置滑动功能', div);
+                } else {
+                    // 如果滑动删除管理器还没有初始化，等待一段时间后重试
+                    setTimeout(() => {
+                        if (window.swipeDeleteManager_7ree && typeof window.swipeDeleteManager_7ree.setupSwipeForElement === 'function') {
+                            window.swipeDeleteManager_7ree.setupSwipeForElement(div);
+                            // console.log('SwipeDeleteManager_7ree: 延迟为记录元素设置滑动功能', div);
+                        } else {
+                            // 如果仍然找不到，记录警告但不影响功能
+                            console.warn('SwipeDeleteManager_7ree: 滑动删除管理器未找到或方法不存在，跳过滑动功能设置');
+                        }
+                    }, 500);
+                }
+            };
+
+            setupSwipeForElement();
+        }, 100);
 
         return div;
     }
