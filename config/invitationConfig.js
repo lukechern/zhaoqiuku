@@ -4,15 +4,16 @@
  * ========================================
  * 通过配置开关控制是否启用邀请码；当启用时，完整邀请码由：
  * MAIN_CODE + 动态附加码 组成。
- * 动态附加码支持两种算法：
+ * 动态附加码支持三种算法：
  * - YEAR_MONTH: 年月（yyMM），例如：2025年08月 → 2508
  * - MONTH_DAY:  月日（MMdd），例如：08月09日 → 0809
+ * - DAY_HOUR:   日时（ddHH），例如：08月09日 14时 → 0914
  */
 
 export const INVITATION_CONFIG_7ree = {
     ENABLED: true,                // 是否启用邀请码
     MAIN_CODE: '777777',           // 主验证码字串（自行修改）
-    SUFFIX_MODE: 'MONTH_DAY'      // 附加码算法：'YEAR_MONTH' | 'MONTH_DAY'
+    SUFFIX_MODE: 'DAY_HOUR'      // 附加码算法：'YEAR_MONTH' | 'MONTH_DAY' | DAY_HOUR
 };
 
 // 固定用于计算附加码的时区（与前端显示保持一致）
@@ -33,6 +34,18 @@ function getDatePartsInTZ_7ree(date = new Date(), timeZone = TIMEZONE_7REE) {
     return { y, m, d };
 }
 
+// 基于指定时区获取小时
+function getHourInTZ_7ree(date = new Date(), timeZone = TIMEZONE_7REE) {
+    const fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        hour: '2-digit',
+        hour12: false
+    });
+    const parts = fmt.formatToParts(date);
+    const h = parts.find(p => p.type === 'hour').value;
+    return h.padStart(2, '0');
+}
+
 // 计算动态附加码（按固定时区）
 export function getDynamicSuffix_7ree(date = new Date()) {
     const { y, m, d } = getDatePartsInTZ_7ree(date);
@@ -41,6 +54,10 @@ export function getDynamicSuffix_7ree(date = new Date()) {
     if (INVITATION_CONFIG_7ree.SUFFIX_MODE === 'YEAR_MONTH') {
         // 年月：yyMM → 2508
         return `${yy}${m}`;
+    } else if (INVITATION_CONFIG_7ree.SUFFIX_MODE === 'DAY_HOUR') {
+        // 日时：ddHH → 0914
+        const h = getHourInTZ_7ree(date);
+        return `${d}${h}`;
     }
     // 默认按月日：MMdd → 0809
     return `${m}${d}`;
