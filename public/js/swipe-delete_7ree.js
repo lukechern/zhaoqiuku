@@ -204,7 +204,7 @@ class SwipeDeleteManager_7ree {
         swipeActions.className = 'swipe-actions_7ree';
         swipeActions.innerHTML = `
             <button class="delete-action_7ree" data-record-id="${recordId}">
-                <img src="img/delete-icon_7ree.svg" class="delete-icon_7ree" alt="删除">
+                <img src="img/delete-icon_7ree.svg" class="delete-icon_7ree" alt="删除" style="margin-bottom: 5px;">
                 <span class="delete-text_7ree">删除</span>
             </button>
         `;
