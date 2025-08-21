@@ -35,9 +35,13 @@
     margin: 0 auto;
     width: 96%;
     box-sizing: border-box;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 3px var(--shadow);
     margin-bottom: 8px;
+    /* 防止点击放大效果 */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 /* 当历史记录项变成滑动容器时，调整样式 */
@@ -236,7 +240,6 @@
     margin: 20px auto;
     width: 96%;
     box-sizing: border-box;
-    box-shadow: 0 1px 3px var(--shadow);
 }
 
 .empty-icon {
