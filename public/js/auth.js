@@ -75,6 +75,15 @@ class UnifiedAuthManager {
         this.invitationManager_7ree.initializeElements();
         this.invitationManager_7ree.bindEvents();
         
+        // 如果已登录，直接显示成功页面（_7ree）
+        if (window.authManager && window.authManager.isAuthenticated) {
+            const user = window.authManager.user || {};
+            this.uiController_7ree.setSuccessInfo('existing', user, this.returnUrl);
+            this.uiController_7ree.switchStep('success');
+            this.uiController_7ree.showAuthForm();
+            return;
+        }
+        
         // 初始化邀请码流程
         this.invitationManager_7ree.initInvitationFlow_7ree();
         

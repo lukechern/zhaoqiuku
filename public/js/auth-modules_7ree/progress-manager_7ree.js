@@ -94,6 +94,26 @@ class ProgressManager_7ree {
         }, 300);
     }
 
+    // 手动标记指定步骤为完成（_7ree）
+    setStepCompletedManually_7ree(stepNumber) {
+        if (!this.progressSteps_7ree || this.progressSteps_7ree.length === 0) {
+            return;
+        }
+        const index = Math.max(1, Math.min(stepNumber, this.progressSteps_7ree.length)) - 1;
+        const stepEl = this.progressSteps_7ree[index];
+        if (!stepEl) return;
+
+        stepEl.classList.add('completed_7ree');
+        stepEl.classList.remove('active_7ree');
+
+        const incompleteIcon = stepEl.querySelector('.progress-icon_7ree.incomplete_7ree');
+        const completeIcon = stepEl.querySelector('.progress-icon_7ree.complete_7ree');
+        if (incompleteIcon && completeIcon) {
+            completeIcon.classList.remove('hidden');
+            incompleteIcon.classList.add('hidden');
+        }
+    }
+
     // 重置进度条
     resetProgress_7ree() {
         if (!this.progressBar_7ree) {

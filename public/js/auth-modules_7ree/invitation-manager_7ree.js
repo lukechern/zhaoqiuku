@@ -51,6 +51,8 @@ class InvitationManager_7ree {
                         this.invitationVerified_7ree = true;
                         this.authManager.uiController_7ree.hideLoading();
                     this.authManager.uiController_7ree.switchStep('email');
+                        // 邀请码验证通过后，点亮第一个进度节点（_7ree）
+                        this.authManager.progressManager_7ree && this.authManager.progressManager_7ree.setStepCompletedManually_7ree && this.authManager.progressManager_7ree.setStepCompletedManually_7ree(1);
                         setTimeout(() => this.authManager.uiController_7ree.focusEmailInput(), 0);
                     } else {
                         this.authManager.uiController_7ree.hideLoading();
