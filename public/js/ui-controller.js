@@ -62,4 +62,30 @@ export class UIController extends BaseUIController {
         this.showDualButtons_7ree = this.dualButtonHandler_7ree.showDualButtons_7ree.bind(this.dualButtonHandler_7ree);
         this.hideDualButtons_7ree = this.dualButtonHandler_7ree.hideDualButtons_7ree.bind(this.dualButtonHandler_7ree);
     }
+
+    // 新增：重写事件设置，使用点击开始录音模式，避免旧触摸结束自动发送_7ree
+    setupEvents() {
+        // 使用新的点击开始录音事件处理器（不再调用全局 window.setupTouchEvents）
+        if (this.setupTouchEvents) {
+            this.setupTouchEvents();
+        }
+
+        // 初始化左右双按钮处理器
+        this.initializeDualButtonHandler();
+
+        // 绑定控制按钮事件
+        this.setupButtonEvents();
+
+        // 调试控制
+        if (window.setupDebugControls) {
+            window.setupDebugControls();
+        }
+
+        // 监听调试级别变化事件
+        window.addEventListener('debugLevelChanged', () => {
+            if (this.lastResultData) {
+                this.showResults(this.lastResultData);
+            }
+        });
+    }
 }

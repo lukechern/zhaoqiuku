@@ -200,6 +200,22 @@ export class UIController {
         } else {
             console.warn('双按钮处理器未初始化或方法不存在');
         }
+
+        // 新增：将方法暴露到全局，兼容 ui-recording-states.js 中的直接调用
+        if (!window.showDualButtons_7ree) {
+            window.showDualButtons_7ree = () => {
+                if (this.dualButtonHandler_7ree && this.dualButtonHandler_7ree.showDualButtons_7ree) {
+                    this.dualButtonHandler_7ree.showDualButtons_7ree();
+                }
+            };
+        }
+        if (!window.hideDualButtons_7ree) {
+            window.hideDualButtons_7ree = () => {
+                if (this.dualButtonHandler_7ree && this.dualButtonHandler_7ree.hideDualButtons_7ree) {
+                    this.dualButtonHandler_7ree.hideDualButtons_7ree();
+                }
+            };
+        }
     }
 
     // 隐藏录音状态
