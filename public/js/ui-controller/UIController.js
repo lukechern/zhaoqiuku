@@ -23,6 +23,9 @@ export class UIController {
 
         // 流式渲染器_7ree
         this.streamRenderer_7ree = new StreamRenderer_7ree();
+
+        // 双按钮处理器_7ree
+        this.dualButtonHandler_7ree = null;
     }
 
     // 获取默认元素（备用方法）
@@ -69,10 +72,8 @@ export class UIController {
             window.setupTouchEvents(this);
         }
 
-        // 新增：初始化左右双按钮
-        if (this.setupDualButtons_7ree) {
-            this.setupDualButtons_7ree();
-        }
+        // 新增：初始化左右双按钮处理器
+        this.initializeDualButtonHandler();
 
         this.setupButtonEvents();
 
@@ -87,6 +88,18 @@ export class UIController {
                 this.showResults(this.lastResultData);
             }
         });
+    }
+
+    // 初始化双按钮处理器
+    initializeDualButtonHandler() {
+        // 动态导入 DualButtonHandler_7ree 类
+        if (typeof DualButtonHandler_7ree !== 'undefined') {
+            this.dualButtonHandler_7ree = new DualButtonHandler_7ree(this);
+            this.dualButtonHandler_7ree.setupDualButtons_7ree();
+        } else {
+            // 如果类还没有加载，等待一下再试
+            setTimeout(() => this.initializeDualButtonHandler(), 100);
+        }
     }
 
     // 检查用户认证状态
@@ -142,108 +155,52 @@ export class UIController {
         if (this.onRecordingCancel) {
             this.onRecordingCancel();
         }
-        this.hideRecordingState();
-        this.hideCancelState();
-        this.resetTimer(); // 取消时重置计时器
+        if (window.hideRecordingState) {
+            window.hideRecordingState(this.elements, this.isRecording);
+        }
+        if (window.hideCancelState) {
+            window.hideCancelState(this.elements);
+        }
+        if (window.resetTimer) {
+            window.resetTimer();
+        }
     }
 
     // 显示录音状态
     showRecordingState() {
-        // 隐藏麦克风按钮
-        if (this.elements.microphoneButton) {
-            this.elements.microphoneButton.style.display = 'none';
-        }
-        // 水波动效上移到计时器位置
-        if (this.elements.soundWaves) {
-            this.elements.soundWaves.classList.add('active', 'recording', 'moved-to-timer_7ree');
-        }
-        // 录音期间改用左右按钮，不再显示“上滑取消”
-        if (this.elements.cancelIndicator) {
-            this.elements.cancelIndicator.classList.remove('active', 'canceling');
-        }
-        if (this.elements.timer) {
-            this.elements.timer.classList.add('recording');
+        if (window.showRecordingState) {
+            window.showRecordingState(this.elements);
         }
 
-        // 在 results-json 区域显示"请告诉AI，您是想记录物品的存放位置，或者查找物品…"和计时器（不显示动画效果）
-        if (this.elements.resultsContainer) {
-            this.elements.resultsContainer.innerHTML = `
-                <div class="results-json">
-                    <div class="listening-status">请您告诉我:<br>是想记录物品位置,<br>还是查找物品…</div>
-
-                    <div class="timer-display">您还可以说20秒</div>
-                </div>
-            `;
-        }
-
-        // 启动计时器
-        if (this.startTimer) {
-            this.startTimer();
-        }
-
-        // 新增：显示左右双按钮
-        if (this.showDualButtons_7ree) {
-            this.showDualButtons_7ree();
+        // 显示双按钮
+        if (this.dualButtonHandler_7ree && this.dualButtonHandler_7ree.showDualButtons_7ree) {
+            this.dualButtonHandler_7ree.showDualButtons_7ree();
         }
     }
 
     // 隐藏录音状态
     hideRecordingState() {
-        // 恢复麦克风按钮显示
-        if (this.elements.microphoneButton) {
-            this.elements.microphoneButton.style.display = '';
-            this.elements.microphoneButton.classList.remove('recording');
-        }
-        // 移除水波动效（现在整合在loading-dots中，通过清空resultsContainer来处理）
-        if (this.elements.cancelIndicator) {
-            this.elements.cancelIndicator.classList.remove('active', 'canceling');
-        }
-        if (this.elements.timer) {
-            this.elements.timer.classList.remove('recording');
+        if (window.hideRecordingState) {
+            window.hideRecordingState(this.elements, this.isRecording);
         }
 
-        // 清除 results-json 区域的内容，但不立即显示placeholder
-        // 这样可以让后续的showLoading正常显示
-        if (this.elements.resultsContainer) {
-            this.elements.resultsContainer.innerHTML = '';
-        }
-
-        if (this.stopTimer) {
-            this.stopTimer();
-        }
-
-        // 新增：隐藏左右双按钮
-        if (this.hideDualButtons_7ree) {
-            this.hideDualButtons_7ree();
+        // 隐藏双按钮
+        if (this.dualButtonHandler_7ree && this.dualButtonHandler_7ree.hideDualButtons_7ree) {
+            this.dualButtonHandler_7ree.hideDualButtons_7ree();
         }
     }
 
     // 显示取消状态
     showCancelState() {
-        if (this.elements.cancelIndicator) {
-            this.elements.cancelIndicator.classList.add('canceling');
+        if (window.showCancelState) {
+            window.showCancelState(this.elements);
         }
-        // 通过resultsContainer更新取消状态文本
-        if (this.elements.resultsContainer) {
-            const statusElement = this.elements.resultsContainer.querySelector('.listening-status');
-            if (statusElement) {
-                statusElement.textContent = '松手取消录音';
-            }
-        }
-        this.vibrate([30, 30, 30]); // 震动提示
     }
 
     // 隐藏取消状态
     hideCancelState() {
-        if (this.elements.cancelIndicator) {
-            this.elements.cancelIndicator.classList.remove('canceling');
-        }
-        // 通过resultsContainer恢复状态文本
-        if (this.elements.resultsContainer) {
-            const statusElement = this.elements.resultsContainer.querySelector('.listening-status');
-            if (statusElement) {
-                statusElement.textContent = '请告诉AI，您是想记录物品的存放位置，或者查找物品…';
-            }
+        if (window.hideCancelState) {
+            window.hideCancelState(this.elements);
         }
     }
 
@@ -252,61 +209,30 @@ export class UIController {
         // 保存最后的结果数据，用于调试级别切换时重新显示
         this.lastResultData = data;
 
-        const container = this.elements.resultsContainer;
-
-        // 使用流式渲染器渲染结果
-        if (typeof data === 'string') {
-            // 如果是字符串，使用原始方式显示
-            container.innerHTML = `<div class="results-json">${this.escapeHtml(data)}</div>`;
-        } else {
-            // 使用流式渲染器，自动触发TTS并等待完成（注意：renderResults内部已不再等待TTS）
-            await this.streamRenderer_7ree.renderResults(data, container, true);
+        if (window.showResults) {
+            await window.showResults(data, this.elements);
         }
-
-        // 自动滚动到顶部
-        container.scrollTop = 0;
-
-        // 注意：TTS朗读现在在流式渲染器中异步处理，无需在此调用
     }
 
     // 自动朗读API响应内容
     async autoReadResponse(data) {
-        try {
-            // 检查TTS服务是否可用
-            if (window.ttsService && window.ttsService.isAvailable()) {
-                // 提取需要朗读的消息内容
-                let message = '';
-                
-                // 根据数据结构提取消息
-                if (typeof data === 'string') {
-                    message = data;
-                } else if (data.business_result && data.business_result.message) {
-                    message = data.business_result.message;
-                } else if (data.message) {
-                    message = data.message;
-                }
-                
-                // 如果有消息内容，调用TTS服务朗读
-                if (message) {
-                    await window.ttsService.speak(message);
-                } else {
-                    console.log('没有可朗读的消息内容');
-                }
-            } else {
-                console.log('TTS服务不可用或未配置');
-            }
-        } catch (error) {
-            console.error('自动朗读失败:', error);
+        if (window.autoReadResponse) {
+            await window.autoReadResponse(data);
         }
     }
 
     // 清除结果
     clearResults() {
-        this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
+        if (window.clearResults) {
+            window.clearResults(this.elements);
+        }
     }
 
     // HTML转义
     escapeHtml(text) {
+        if (window.escapeHtml) {
+            return window.escapeHtml(text);
+        }
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
@@ -314,91 +240,31 @@ export class UIController {
 
     // 添加震动反馈（如果支持）
     vibrate(pattern = [100]) {
-        if ('vibrate' in navigator) {
+        if (window.vibrate) {
+            window.vibrate(pattern);
+        } else if ('vibrate' in navigator) {
             navigator.vibrate(pattern);
         }
     }
 
     // 停止当前播放_7ree
     stopCurrentPlaying_7ree() {
-        try {
-            // 移除playing样式
-            if (this.currentPlayingElement_7ree) {
-                this.currentPlayingElement_7ree.classList.remove('playing');
-            }
-            // 停止用户气泡的本地音频
-            if (this.currentPlayingAudio_7ree) {
-                try { this.currentPlayingAudio_7ree.pause(); } catch (_) {}
-                try { this.currentPlayingAudio_7ree.currentTime = 0; } catch (_) {}
-                this.currentPlayingAudio_7ree = null;
-            }
-            // 停止TTS播放
-            if (window.ttsService && window.ttsService.isPlaying) {
-                try { window.ttsService.stop(); } catch (_) {}
-            }
-        } finally {
-            this.currentPlayingElement_7ree = null;
+        if (window.stopCurrentPlaying) {
+            window.stopCurrentPlaying();
         }
     }
 
     // 显示处理状态（加载状态）
     showProcessingState() {
-        console.log('显示处理状态（加载状态）');
-        if (this.elements.microphoneButton) {
-            // 保存原始内容
-            if (!this.elements.microphoneButton.dataset.originalContent) {
-                this.elements.microphoneButton.dataset.originalContent = this.elements.microphoneButton.innerHTML;
-            }
-            
-            // 替换为加载动画，包含水波纹效果
-            this.elements.microphoneButton.innerHTML = `
-                <div class="loading-dots">
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                    <div class="sound-waves_7ree active recording" id="soundWaves_7ree">
-                        <div class="wave_7ree"></div>
-                        <div class="wave_7ree"></div>
-                        <div class="wave_7ree"></div>
-                        <div class="wave_7ree"></div>
-                        <div class="wave_7ree"></div>
-                    </div>
-                </div>
-            `;
-            
-            // 添加加载状态样式
-            this.elements.microphoneButton.classList.add('loading');
-            
-            // 禁用按钮
-            this.elements.microphoneButton.disabled = true;
+        if (window.showProcessingState) {
+            window.showProcessingState(this.elements);
         }
     }
 
     // 隐藏处理状态（还原为空闲状态）
     hideProcessingState() {
-        console.log('隐藏处理状态（还原为空闲状态）');
-        if (this.elements.microphoneButton) {
-            // 移除加载状态样式
-            this.elements.microphoneButton.classList.remove('loading');
-            
-            // 启用按钮
-            this.elements.microphoneButton.disabled = false;
-            
-            // 恢复原始内容
-            if (this.elements.microphoneButton.dataset.originalContent) {
-                this.elements.microphoneButton.innerHTML = this.elements.microphoneButton.dataset.originalContent;
-            } else {
-                // 如果没有保存原始内容，使用默认内容
-                this.elements.microphoneButton.innerHTML = `
-                    <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
-                `;
-            }
-        }
-        
-        // 只有在非录音状态下，且结果容器为空时，才显示placeholder
-        // 避免在录音过程中被错误地还原为placeholder
-        if (!this.isRecording && this.elements.resultsContainer && this.elements.resultsContainer.innerHTML.trim() === '') {
-            this.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手</div>';
+        if (window.hideProcessingState) {
+            window.hideProcessingState(this.elements, this.isRecording);
         }
     }
 }
