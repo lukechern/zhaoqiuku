@@ -65,6 +65,9 @@ class UIController_7ree {
         
         // 启动服务器时间更新（_7ree）
         this.startServerTimeUpdate_7ree();
+        
+        // 初始化时刷新进度（_7ree）
+        this.authManager.progressManager_7ree.updateProgressBar_7ree(this.currentStep);
     }
 
     // 绑定UI相关事件
@@ -128,6 +131,9 @@ class UIController_7ree {
         
         // 更新进度条（_7ree）
         this.authManager.progressManager_7ree.updateProgressBar_7ree(step);
+        if (step === 'success') {
+            this.authManager.progressManager_7ree.markProgressComplete_7ree();
+        }
     }
 
     // 清除邮箱错误信息

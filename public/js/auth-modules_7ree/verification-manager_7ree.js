@@ -135,21 +135,8 @@ class VerificationManager_7ree {
                     console.log('认证成功，已自动登录');
                 }
                 
-                // 显示成功信息
-                if (result.userType === 'new') {
-                    this.authManager.successTitle.textContent = '注册成功！';
-                    this.authManager.successMessage.textContent = '欢迎加入AI语音寻物助手';
-                } else {
-                    this.authManager.successTitle.textContent = '登录成功！';
-                    this.authManager.successMessage.textContent = `欢迎回来，${result.user.email}`;
-                }
-                
-                // 根据是否有返回URL更新按钮文本
-                if (this.authManager.returnUrl) {
-                    this.authManager.goToAppBtn.textContent = '返回应用';
-                } else {
-                    this.authManager.goToAppBtn.textContent = '开始使用';
-                }
+                // 使用 UI 控制器设置成功页面信息（_7ree）
+                this.authManager.uiController_7ree.setSuccessInfo(result.userType, result.user, this.authManager.returnUrl);
                 
                 // 验证成功，重置失败标志（_7ree）
                 this.verifyCodeFailedOnce_7ree = false;

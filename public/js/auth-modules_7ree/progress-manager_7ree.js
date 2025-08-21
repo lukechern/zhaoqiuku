@@ -13,10 +13,10 @@ class ProgressManager_7ree {
         
         // 步骤配置
         this.stepConfig_7ree = {
-            email: { progress: 25, step: 1 },
-            invitation: { progress: 50, step: 2 },
-            verify: { progress: 75, step: 3 },
-            success: { progress: 100, step: 4 }
+            invitation: { progress: 33, step: 1 },
+            email: { progress: 66, step: 2 },
+            verify: { progress: 66, step: 2 },
+            success: { progress: 100, step: 3 }
         };
     }
 
@@ -33,27 +33,38 @@ class ProgressManager_7ree {
         }
 
         const config = this.stepConfig_7ree[currentStep];
-        const progressPercent = config.progress;
         const currentStepNumber = config.step;
 
-        // 进度条容器不再用宽度表示进度，改为仅通过步骤状态展示（_7ree）
-        // this.progressBar_7ree.style.width = progressPercent + '%';
-
-        // 更新步骤状态
-        this.progressSteps_7ree.forEach((step, index) => {
+        // 更新步骤状态（容器类 + 图标显隐）
+        this.progressSteps_7ree.forEach((stepEl, index) => {
             const stepNumber = index + 1;
-            
-            if (stepNumber < currentStepNumber) {
-                // 已完成的步骤
-                step.classList.add('completed_7ree');
-                step.classList.remove('active_7ree');
-            } else if (stepNumber === currentStepNumber) {
-                // 当前步骤
-                step.classList.add('active_7ree');
-                step.classList.remove('completed_7ree');
+            const isCompleted = stepNumber < currentStepNumber || currentStep === 'success';
+            const isActive = stepNumber === currentStepNumber && currentStep !== 'success';
+
+            // 1) 容器类
+            if (isCompleted) {
+                stepEl.classList.add('completed_7ree');
+                stepEl.classList.remove('active_7ree');
+            } else if (isActive) {
+                stepEl.classList.add('active_7ree');
+                stepEl.classList.remove('completed_7ree');
             } else {
-                // 未开始的步骤
-                step.classList.remove('active_7ree', 'completed_7ree');
+                stepEl.classList.remove('active_7ree', 'completed_7ree');
+            }
+
+            // 2) 图标显隐
+            const incompleteIcon = stepEl.querySelector('.progress-icon_7ree.incomplete_7ree');
+            const completeIcon = stepEl.querySelector('.progress-icon_7ree.complete_7ree');
+            if (incompleteIcon && completeIcon) {
+                if (isCompleted) {
+                    // 完成：显示“完成”图标，隐藏“未完成”图标
+                    completeIcon.classList.remove('hidden');
+                    incompleteIcon.classList.add('hidden');
+                } else {
+                    // 未完成/当前步骤：显示“未完成”图标，隐藏“完成”图标
+                    completeIcon.classList.add('hidden');
+                    incompleteIcon.classList.remove('hidden');
+                }
             }
         });
     }
@@ -64,19 +75,18 @@ class ProgressManager_7ree {
             return;
         }
 
-        // 不再强制设置容器宽度为100%，避免影响布局（_7ree）
-        // this.progressBar_7ree.style.width = '100%';
-        
-        // 标记所有步骤为已完成
-        this.progressSteps_7ree.forEach(step => {
-            step.classList.add('completed_7ree');
-            step.classList.remove('active_7ree');
+        this.progressSteps_7ree.forEach(stepEl => {
+            stepEl.classList.add('completed_7ree');
+            stepEl.classList.remove('active_7ree');
+            const incompleteIcon = stepEl.querySelector('.progress-icon_7ree.incomplete_7ree');
+            const completeIcon = stepEl.querySelector('.progress-icon_7ree.complete_7ree');
+            if (incompleteIcon && completeIcon) {
+                completeIcon.classList.remove('hidden');
+                incompleteIcon.classList.add('hidden');
+            }
         });
 
-        // 添加完成动画效果
         this.progressBar_7ree.classList.add('completed_7ree');
-        
-        // 可选：添加成功提示动画
         setTimeout(() => {
             this.progressBar_7ree.classList.add('success-animation_7ree');
         }, 300);
