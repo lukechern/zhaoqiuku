@@ -1,5 +1,3 @@
-import HistoryManager from './history-manager.js';
-
 /**
  * 初始化历史记录管理器
  */
@@ -18,11 +16,8 @@ function initHistoryManager_7ree() {
     }
 
     console.log('初始化HistoryManager...');
-    window.historyManager = new HistoryManager();
+    window.historyManager = new window.HistoryManager();
 }
 
 // 提供全局初始化函数
 window.initHistoryManager_7ree = initHistoryManager_7ree;
-
-// 导出类和函数
-export { HistoryManager, initHistoryManager_7ree };

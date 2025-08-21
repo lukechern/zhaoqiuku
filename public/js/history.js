@@ -1,19 +1,41 @@
 /**
  * 历史页面主入口文件
- * 导入所有历史页面相关的模块
+ * 动态加载所有历史页面相关的模块
  */
 
-// 导入历史页面模块
-import './history/index.js';
+// 动态加载模块文件的函数
+function loadModule(src) {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
 
-// 为了兼容性，也导出主要功能到全局
-import { HistoryManager, initHistoryManager_7ree } from './history/index.js';
+// 加载所有历史页面模块
+async function loadHistoryModules() {
+    try {
+        // 按依赖顺序加载模块
+        await loadModule('./history/history-utils.js');      // 工具函数
+        await loadModule('./history/history-manager.js');    // 主类
+        await loadModule('./history/history-initializer.js'); // 初始化逻辑
+        await loadModule('./history/history-events.js');     // 事件处理
+        await loadModule('./history/index.js');              // 入口文件
 
-// 导出到全局作用域
-window.HistoryManager = HistoryManager;
-window.initHistoryManager_7ree = initHistoryManager_7ree;
+        console.log('历史页面模块加载完成');
+    } catch (error) {
+        console.error('加载历史页面模块失败:', error);
+    }
+}
 
-// 如果需要立即初始化历史管理器
+// 页面加载完成后加载模块
 if (typeof window !== 'undefined') {
-    // 页面加载完成后会自动初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadHistoryModules);
+    } else {
+        loadHistoryModules();
+    }
 }

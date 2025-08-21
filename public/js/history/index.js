@@ -1,15 +1,11 @@
 /**
  * 历史页面模块入口文件
+ * 所有模块已通过动态加载方式加载，此文件仅用于初始化检查
  */
 
-// 导入模块
-import './history-events.js';
-import { initHistoryManager_7ree } from './history-initializer.js';
+// 模块已通过 history.js 中的动态加载完成
+// 此处仅确保全局函数可用
 
-// 导出主要功能供全局使用
-export { default as HistoryManager } from './history-manager.js';
-export { initHistoryManager_7ree } from './history-initializer.js';
-export { escapeHtml, generateRecordId_7ree } from './history-utils.js';
+console.log('历史页面模块入口文件已加载');
 
-// 如果需要自动初始化，可以取消注释以下行
-// initHistoryManager_7ree();
+// 可以在这里添加模块间的初始化逻辑

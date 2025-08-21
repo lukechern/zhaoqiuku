@@ -1,5 +1,3 @@
-import { escapeHtml, generateRecordId_7ree } from './history-utils.js';
-
 /**
  * 历史记录页面管理器
  * 管理历史记录的加载、显示和分页
@@ -176,14 +174,14 @@ class HistoryManager {
         div.className = 'history-record';
 
         // 添加记录ID数据属性
-        const recordId = record.id || record._id || generateRecordId_7ree(record);
+        const recordId = record.id || record._id || window.generateRecordId_7ree(record);
         div.setAttribute('data-record-id', recordId);
 
         div.innerHTML = `
             <div class="record-header">
                 <div class="record-item">
-                    ${record.itemType ? `<span class="item-type">${escapeHtml(record.itemType)}</span>` : ''}
-                    <span class="item-name">${escapeHtml(record.itemName)}</span>
+                    ${record.itemType ? `<span class="item-type">${window.escapeHtml(record.itemType)}</span>` : ''}
+                    <span class="item-name">${window.escapeHtml(record.itemName)}</span>
                 </div>
                 <div class="record-time">
                     <span class="relative-time">${record.relativeTime}</span>
@@ -192,13 +190,13 @@ class HistoryManager {
             <div class="record-location">
                 <div class="location-info">
                     <span class="location-label">存放位置</span>
-                    <span class="location-value">${escapeHtml(record.location)}</span>
+                    <span class="location-value">${window.escapeHtml(record.location)}</span>
                 </div>
                 <span class="absolute-time">${record.formattedTime}</span>
             </div>
             ${record.transcript ? `
                 <div class="record-transcript">
-                    <span class="transcript-label">原始语音</span><span class="transcript-value">${escapeHtml(record.transcript)}</span>
+                    <span class="transcript-label">原始语音</span><span class="transcript-value">${window.escapeHtml(record.transcript)}</span>
                 </div>
             ` : ''}
         `;
@@ -412,4 +410,5 @@ class HistoryManager {
     }
 }
 
-export default HistoryManager;
+// 将 HistoryManager 类添加到全局作用域
+window.HistoryManager = HistoryManager;

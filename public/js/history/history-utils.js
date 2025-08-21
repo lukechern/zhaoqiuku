@@ -22,5 +22,6 @@ function generateRecordId_7ree(record) {
     return `record_${hash}_${Math.random().toString(36).substr(2, 5)}`;
 }
 
-// 导出工具函数
-export { escapeHtml, generateRecordId_7ree };
+// 将工具函数添加到全局作用域
+window.escapeHtml = escapeHtml;
+window.generateRecordId_7ree = generateRecordId_7ree;
