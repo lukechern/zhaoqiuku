@@ -488,3 +488,12 @@ body[data-page="auth"] .mobile-frame {
     75% { transform: translateX(4px); }
 }
 
+
+/* 保持 register-form 在隐藏时仍占位，避免显隐切换引发上方进度条宽度变化（_7ree） */
+.register-form.hidden {
+    display: block !important;   /* 不使用 display:none，保持布局宽度一致 */
+    visibility: hidden !important; /* 元素不可见 */
+    opacity: 0 !important;         /* 视觉上完全透明 */
+    pointer-events: none !important; /* 禁止交互 */
+}
+

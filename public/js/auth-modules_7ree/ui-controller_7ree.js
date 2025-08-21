@@ -86,13 +86,19 @@ class UIController_7ree {
     showLoading(text) {
         this.loadingText.textContent = text;
         this.loading.classList.remove('hidden');
-        this.authForm.style.display = 'none';
+        // this.authForm.style.display = 'none';
+        if (this.authForm) {
+            this.authForm.classList.add('hidden');
+        }
     }
 
     // 隐藏加载状态
     hideLoading() {
         this.loading.classList.add('hidden');
-        this.authForm.style.display = 'block';
+        // this.authForm.style.display = 'block';
+        if (this.authForm) {
+            this.authForm.classList.remove('hidden');
+        }
     }
 
     // 切换步骤
