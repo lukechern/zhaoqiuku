@@ -4,11 +4,16 @@ import { AudioRecorder } from './audio-recorder.js';
 export class EventHandler {
     constructor(app) {
         this.app = app;
+        // 新增：取消占位符定时器句柄，防止竞态覆盖UI_7ree
+        this.cancelPlaceholderTimeout_7ree = null;
     }
 
     // 处理录音开始
     async handleRecordingStart() {
         if (this.app.isProcessing) return;
+
+        // 新增：开始录音前，清理任何尚未触发的取消占位符定时器_7ree
+        this.clearCancelPlaceholderTimeout_7ree();
 
         try {
             // 初始化音频录制器（如果需要）
@@ -62,6 +67,9 @@ export class EventHandler {
     handleRecordingStop() {
         console.log('处理录音停止');
         if (!this.app.audioRecorder.isRecording) return;
+
+        // 新增：停止前也清理可能存在的取消占位符定时器_7ree
+        this.clearCancelPlaceholderTimeout_7ree();
 
         try {
             this.app.audioRecorder.stopRecording();
@@ -139,11 +147,14 @@ export class EventHandler {
             // 显示取消提示，然后延迟恢复placeholder
             this.app.uiController.showMessage('录音已取消', 'info');
             
-            // 2秒后恢复placeholder状态
-            setTimeout(() => {
+            // 新增：先清理旧的占位符定时器，再设置新的，并保存句柄_7ree
+            this.clearCancelPlaceholderTimeout_7ree();
+            this.cancelPlaceholderTimeout_7ree = setTimeout(() => {
                 if (this.app.uiController.elements.resultsContainer) {
                     this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手…</div>';
                 }
+                // 触发后清空句柄_7ree
+                this.cancelPlaceholderTimeout_7ree = null;
             }, 2000);
             
             console.log('录音已取消');
@@ -154,11 +165,13 @@ export class EventHandler {
             // 错误时也确保UI清理_7ree
             this.ensureUICleanup_7ree();
             
-            // 错误时也需要恢复placeholder
-            setTimeout(() => {
+            // 错误时也需要恢复placeholder（同样受控于句柄，避免竞态）
+            this.clearCancelPlaceholderTimeout_7ree();
+            this.cancelPlaceholderTimeout_7ree = setTimeout(() => {
                 if (this.app.uiController.elements.resultsContainer) {
                     this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手…</div>';
                 }
+                this.cancelPlaceholderTimeout_7ree = null;
             }, 2000);
         }
     }
@@ -166,6 +179,9 @@ export class EventHandler {
     // 处理录音完成
     async handleRecordingComplete(audioBlob, mimeType) {
         if (this.app.isProcessing) return;
+
+        // 新增：完成前清理取消占位符定时器，避免覆盖结果或后续录音UI_7ree
+        this.clearCancelPlaceholderTimeout_7ree();
 
         try {
             this.app.isProcessing = true;
@@ -222,7 +238,14 @@ export class EventHandler {
             this.app.isProcessing = false;
         }
     }
-    
+
+    // 新增：统一清理取消占位符定时器的方法_7ree
+    clearCancelPlaceholderTimeout_7ree() {
+        if (this.cancelPlaceholderTimeout_7ree) {
+            clearTimeout(this.cancelPlaceholderTimeout_7ree);
+            this.cancelPlaceholderTimeout_7ree = null;
+        }
+    }
 
     // 处理播放
     handlePlayback() {
