@@ -216,7 +216,7 @@
 
 /* 确保内容不会跳动 */
 .main-content-wrapper_7ree {
-    height: 100%;
+    height: 70vh;
     margin-top: 60px;
     display: flex;
     flex-direction: column;
