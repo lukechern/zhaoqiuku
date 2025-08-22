@@ -2,7 +2,7 @@
 .dual-recording-buttons_7ree {
     position: absolute;
     left: 50%;
-    bottom: 84px; /* 向下移动72px（从12px增加到84px）为音量可视化和计时器留出空间 */
+    top: 100px; 
     transform: translateX(-50%);
     width: 100%;
     max-width: 320px;
