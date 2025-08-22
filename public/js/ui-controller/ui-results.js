@@ -107,7 +107,7 @@ function showError(error, elements) {
     if (elements.resultsContainer) {
         elements.resultsContainer.innerHTML = `
             <div style="color: var(--error); text-align: center;">
-                <strong>错误:</strong> ${window.escapeHtml ? window.escapeHtml(errorMessage) : errorMessage}
+                <strong>抱歉:</strong> AI开小差了，请稍后重试。
             </div>
         `;
     }
