@@ -32,7 +32,7 @@ export class UITimerManager {
         if (!this.uiController.startTime) return;
 
         const elapsed = Math.floor((Date.now() - this.uiController.startTime) / 1000);
-        const maxRecordingTime = 20; // 最大录音时间20秒
+        const maxRecordingTime = 200; // 最大录音时间20秒
         const remaining = Math.max(0, maxRecordingTime - elapsed);
 
         const timeString = `您还可以说${remaining}秒`;
