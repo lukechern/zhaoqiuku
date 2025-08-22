@@ -8,7 +8,7 @@ export class AudioRecorder {
         this.audioChunks = [];
         this.isRecording = false;
         this.recordingStartTime = null;
-        this.maxRecordingTime = 2000000; // 20秒
+        this.maxRecordingTime = 2000; // 20秒
         this.recordingTimer = null;
         this.audioBlob = null;
         this.audioUrl = null;
