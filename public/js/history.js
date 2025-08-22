@@ -23,6 +23,36 @@ async function loadHistoryModules() {
         await loadModule('js/history/history-ui_7ree.js');    // 合并后的UI模块（初始化+事件）
         await loadModule('js/history/index.js');              // 入口文件
 
+        // 显式初始化，避免某些 WebView 环境下事件错过导致未初始化
+        if (typeof window !== 'undefined') {
+            if (window.initHistoryManager_7ree) {
+                try {
+                    console.log('调用 initHistoryManager_7ree 进行初始化');
+                    window.initHistoryManager_7ree();
+                } catch (e) {
+                    console.error('initHistoryManager_7ree 调用失败:', e);
+                }
+            } else if (window.HistoryManager) {
+                try {
+                    console.log('直接实例化 HistoryManager 进行初始化');
+                    window.historyManager = new window.HistoryManager();
+                } catch (e) {
+                    console.error('HistoryManager 初始化失败:', e);
+                }
+            } else {
+                console.warn('未找到 HistoryManager 初始化入口，将在 window.load 后重试');
+                window.addEventListener('load', () => {
+                    if (!window.historyManager && window.HistoryManager) {
+                        try {
+                            window.historyManager = new window.HistoryManager();
+                        } catch (e) {
+                            console.error('HistoryManager 初始化失败(延迟):', e);
+                        }
+                    }
+                });
+            }
+        }
+
         console.log('历史页面模块加载完成');
     } catch (error) {
         console.error('加载历史页面模块失败:', error);

@@ -59,6 +59,59 @@ function loadHistoryComponents_7ree() {
     });
 }
 
+// 新增：内置占位符生成（WebView兜底保障）
+function getFallbackHtml_7ree(type) {
+    if (type === 'header') {
+        return (
+            '<div class="header-top">' +
+            '  <div class="user-actions" id="userActions">' +
+            '    <div class="auth-links" id="authLinks"></div>' +
+            '    <div class="user-info" id="userInfo">' +
+            '      <span class="user-email" id="userEmail"></span>' +
+            '      <button class="logout-btn" id="logoutBtn" aria-label="登出">' +
+            '        <img src="img/logout.svg" alt="登出图标" class="logout-icon">' +
+            '      </button>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>'
+        );
+    }
+    if (type === 'history') {
+        return (
+            '<div class="history-container">' +
+            '  <div id="history-records" class="history-records"></div>' +
+            '  <div id="loading-indicator" class="loading-indicator" style="display: none;">' +
+            '    <div class="loading-spinner"></div><span>加载中...</span>' +
+            '  </div>' +
+            '  <div id="load-more-indicator" class="load-more-indicator" style="display: none;">' +
+            '    <div class="loading-spinner"></div><span>加载更多...</span>' +
+            '  </div>' +
+            '  <div id="no-more-data" class="no-more-data" style="display: none;"><span>没有更多记录了</span></div>' +
+            '  <div id="error-message" class="error-message" style="display: none;"></div>' +
+            '</div>'
+        );
+    }
+    if (type === 'nav') {
+        return (
+            '<nav class="bottom-nav">' +
+            '  <a href="index.html" class="nav-item" data-page="index">' +
+            '    <img src="img/search.svg" alt="查找图标" class="nav-icon">' +
+            '    <span class="nav-label">查找</span>' +
+            '  </a>' +
+            '  <a href="history.html" class="nav-item" data-page="history">' +
+            '    <img src="img/history.svg" alt="记录图标" class="nav-icon">' +
+            '    <span class="nav-label">记录</span>' +
+            '  </a>' +
+            '</nav>' +
+            '<div class="page-loading-indicator hidden" id="pageLoadingIndicator">' +
+            '  <div class="loading-spinner"></div>' +
+            '  <div class="loading-text">载入中，请稍候</div>' +
+            '</div>'
+        );
+    }
+    return '';
+}
+
 // 强制加载缺失的组件
 async function forceLoadMissingComponents_7ree() {
     const loadComponent = async (url, varName) => {
@@ -91,6 +144,24 @@ async function forceLoadMissingComponents_7ree() {
     }
     
     await Promise.all(promises);
+
+    // 兜底：仍有缺失则注入占位符，避免WebView白屏
+    let usedFallback = false;
+    if (!window.preloadedHeaderHtml) {
+        window.preloadedHeaderHtml = getFallbackHtml_7ree('header');
+        usedFallback = true;
+    }
+    if (!window.preloadedHistoryHtml) {
+        window.preloadedHistoryHtml = getFallbackHtml_7ree('history');
+        usedFallback = true;
+    }
+    if (!window.preloadedNavHtml) {
+        window.preloadedNavHtml = getFallbackHtml_7ree('nav');
+        usedFallback = true;
+    }
+    if (usedFallback) {
+        console.warn('部分组件加载失败，已使用内置占位符以保证页面渲染');
+    }
 }
 
 // 等待组件加载完成的函数
@@ -131,7 +202,7 @@ async function waitForHistoryComponents_7ree() {
         nav: !!window.preloadedNavHtml
     });
     
-    // 强制加载缺失的组件
+    // 强制加载缺失的组件（包含占位符兜底）
     await forceLoadMissingComponents_7ree();
     await loadHistoryComponents_7ree();
     return true;
