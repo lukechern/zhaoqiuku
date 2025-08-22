@@ -4,8 +4,8 @@
     justify-content: center;
     align-items: center;
     width: 50%;
-    height: 2rem; /* 2行高度 */
-    margin: 0.5rem 0;
+    height: 1.5rem; /* 减少高度避免与按钮重叠 */
+    margin: 0.3rem auto 0.2rem auto; /* 水平居中，减少上下边距 */
     opacity: 0;
     transform: translateY(10px);
     transition: all 0.3s ease;
@@ -29,11 +29,11 @@
 
 .volume-bar {
     flex: 1;
-    height: 4px;
+    height: 8px; /* 增加基础高度 */
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     border-radius: 2px;
     transform-origin: center bottom;
-    transform: scaleY(0.1);
+    transform: scaleY(0.2); /* 增加初始缩放比例 */
     transition: transform 0.1s ease;
     opacity: 0.6;
     box-shadow: 0 0 4px rgba(99, 102, 241, 0.3);
@@ -59,11 +59,11 @@
 /* 基础跳动动画 */
 @keyframes volume-pulse {
     0%, 100% {
-        transform: scaleY(0.1);
+        transform: scaleY(0.2);
         opacity: 0.6;
     }
     50% {
-        transform: scaleY(0.3);
+        transform: scaleY(0.6);
         opacity: 1;
     }
 }
@@ -71,48 +71,48 @@
 /* 活跃状态的跳动动画 */
 @keyframes volume-active {
     0%, 100% {
-        transform: scaleY(0.2);
+        transform: scaleY(0.4);
         opacity: 0.8;
     }
     50% {
-        transform: scaleY(0.8);
+        transform: scaleY(1.6);
         opacity: 1;
     }
 }
 
 /* 音量级别对应的动画 */
-.volume-bar.level-1 { transform: scaleY(0.1); }
-.volume-bar.level-2 { transform: scaleY(0.2); }
-.volume-bar.level-3 { transform: scaleY(0.3); }
-.volume-bar.level-4 { transform: scaleY(0.4); }
-.volume-bar.level-5 { transform: scaleY(0.5); }
-.volume-bar.level-6 { transform: scaleY(0.6); }
-.volume-bar.level-7 { transform: scaleY(0.7); }
-.volume-bar.level-8 { transform: scaleY(0.8); }
-.volume-bar.level-9 { transform: scaleY(0.9); }
-.volume-bar.level-10 { transform: scaleY(1.0); }
+.volume-bar.level-1 { transform: scaleY(0.2); }
+.volume-bar.level-2 { transform: scaleY(0.4); }
+.volume-bar.level-3 { transform: scaleY(0.6); }
+.volume-bar.level-4 { transform: scaleY(0.8); }
+.volume-bar.level-5 { transform: scaleY(1.0); }
+.volume-bar.level-6 { transform: scaleY(1.2); }
+.volume-bar.level-7 { transform: scaleY(1.4); }
+.volume-bar.level-8 { transform: scaleY(1.6); }
+.volume-bar.level-9 { transform: scaleY(1.8); }
+.volume-bar.level-10 { transform: scaleY(2.0); }
 
 /* 移动端适配 */
 @media (max-width: 768px) {
     .volume-visualizer {
-        height: 1.5rem;
-        margin: 0.3rem 0;
+        height: 1.2rem;
+        margin: 0.2rem auto 0.1rem auto;
     }
 
     .volume-bar {
-        height: 3px;
+        height: 6px;
         border-radius: 1.5px;
     }
 }
 
 @media (max-width: 480px) {
     .volume-visualizer {
-        height: 1.2rem;
-        margin: 0.2rem 0;
+        height: 1rem;
+        margin: 0.15rem auto 0.1rem auto;
     }
 
     .volume-bar {
-        height: 2px;
+        height: 4px;
         border-radius: 1px;
     }
 }

@@ -27,8 +27,8 @@ export class VolumeVisualizer {
 
             // 创建分析器节点
             this.analyser = this.audioContext.createAnalyser();
-            this.analyser.fftSize = 256;
-            this.analyser.smoothingTimeConstant = 0.8;
+            this.analyser.fftSize = 512; // 增加FFT大小提高精度
+            this.analyser.smoothingTimeConstant = 0.3; // 降低平滑时间常数提高响应性
 
             // 连接音频流到分析器
             const source = this.audioContext.createMediaStreamSource(this.audioStream);
@@ -122,8 +122,8 @@ export class VolumeVisualizer {
         let sum = 0;
         const length = this.dataArray.length;
 
-        // 只使用低频部分（人声主要在低频）
-        const lowFreqEnd = Math.floor(length * 0.3);
+        // 使用更宽的频率范围，提高灵敏度
+        const lowFreqEnd = Math.floor(length * 0.5); // 增加到50%
 
         for (let i = 0; i < lowFreqEnd; i++) {
             sum += this.dataArray[i];
@@ -132,8 +132,15 @@ export class VolumeVisualizer {
         const average = sum / lowFreqEnd;
         const normalizedVolume = average / 255; // 0-1
 
-        // 转换为1-10级别，降低灵敏度避免过度跳动
-        const volumeLevel = Math.min(10, Math.max(1, Math.floor(normalizedVolume * 8) + 1));
+        // 提高灵敏度，使用对数缩放
+        let volumeLevel;
+        if (normalizedVolume < 0.01) {
+            volumeLevel = 1;
+        } else {
+            // 使用对数缩放提高小音量的敏感度
+            const logVolume = Math.log10(normalizedVolume * 10 + 1) / Math.log10(11);
+            volumeLevel = Math.max(1, Math.min(10, Math.floor(logVolume * 12) + 1));
+        }
 
         return volumeLevel;
     }
