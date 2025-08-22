@@ -214,6 +214,16 @@ export class EventHandler {
             // 发送到API
             const result = await this.app.apiClient.transcribeAudio(audioBlob, mimeType);
             
+            // 检查API调用是否成功
+            if (!result.success) {
+                // API返回业务逻辑错误，不是异常
+                console.log('API返回错误:', result.error);
+                this.app.uiController.isRecording = false;
+                this.app.uiController.hideProcessingState();
+                this.app.uiController.showError(result.error);
+                return;
+            }
+            
             // 格式化并显示结果，不等待TTS播放完成
             const displayResult = this.app.apiClient.formatResultForDisplay(result);
             await this.app.uiController.showResults(displayResult);

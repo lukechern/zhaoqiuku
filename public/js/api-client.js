@@ -76,6 +76,15 @@ export class APIClient {
                     return this.transcribeAudioLegacy(audioBlob, mimeType);
                 }
                 
+                // 400状态码是业务逻辑错误，不是服务器错误，应该正常返回错误信息
+                if (response.status === 400) {
+                    return {
+                        success: false,
+                        error: errorData.error || '请求参数错误',
+                        details: errorData.details
+                    };
+                }
+                
                 throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
             }
 
