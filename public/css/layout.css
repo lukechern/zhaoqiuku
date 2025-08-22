@@ -131,8 +131,8 @@ body {
     align-items: center;
     position: relative;
     overflow: visible;
-    margin-top:50px;
-    padding:30px 0;
+    margin-bottom:30px;
+    padding:36px 0;
 }
 
 /* WebView环境优化 */
