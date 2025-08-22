@@ -4,8 +4,8 @@
     justify-content: center;
     align-items: center;
     width: 50%;
-    height: 1.5rem; /* 减少高度避免与按钮重叠 */
-    margin: 0.3rem auto 0.2rem auto; /* 水平居中，减少上下边距 */
+    height: 4rem; /* 增加高度以容纳更大的柱子 */
+    margin: 0.2rem auto !important; /* 水平居中，使用!important覆盖.results-json div的通用样式 */
     opacity: 0;
     transform: translateY(10px);
     transition: all 0.3s ease;
@@ -29,11 +29,11 @@
 
 .volume-bar {
     flex: 1;
-    height: 8px; /* 增加基础高度 */
+    height: 40px; /* 大幅增加基础高度，从8px增加到5倍 */
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     border-radius: 2px;
     transform-origin: center bottom;
-    transform: scaleY(0.2); /* 增加初始缩放比例 */
+    transform: scaleY(0.1); /* 起始缩放比例 */
     transition: transform 0.1s ease;
     opacity: 0.6;
     box-shadow: 0 0 4px rgba(99, 102, 241, 0.3);
@@ -81,38 +81,38 @@
 }
 
 /* 音量级别对应的动画 */
-.volume-bar.level-1 { transform: scaleY(0.2); }
-.volume-bar.level-2 { transform: scaleY(0.4); }
+.volume-bar.level-1 { transform: scaleY(0.1); }
+.volume-bar.level-2 { transform: scaleY(0.3); }
 .volume-bar.level-3 { transform: scaleY(0.6); }
-.volume-bar.level-4 { transform: scaleY(0.8); }
-.volume-bar.level-5 { transform: scaleY(1.0); }
-.volume-bar.level-6 { transform: scaleY(1.2); }
-.volume-bar.level-7 { transform: scaleY(1.4); }
-.volume-bar.level-8 { transform: scaleY(1.6); }
-.volume-bar.level-9 { transform: scaleY(1.8); }
-.volume-bar.level-10 { transform: scaleY(2.0); }
+.volume-bar.level-4 { transform: scaleY(1.0); }
+.volume-bar.level-5 { transform: scaleY(1.5); }
+.volume-bar.level-6 { transform: scaleY(2.0); }
+.volume-bar.level-7 { transform: scaleY(3.0); }
+.volume-bar.level-8 { transform: scaleY(4.0); }
+.volume-bar.level-9 { transform: scaleY(6.0); }
+.volume-bar.level-10 { transform: scaleY(10.0); } /* 最大值增加到10倍 */
 
 /* 移动端适配 */
 @media (max-width: 768px) {
     .volume-visualizer {
-        height: 1.2rem;
-        margin: 0.2rem auto 0.1rem auto;
+        height: 3rem; /* 相应调整移动端高度 */
+        margin: 0.15rem auto !important;
     }
 
     .volume-bar {
-        height: 6px;
+        height: 30px; /* 移动端柱子高度 */
         border-radius: 1.5px;
     }
 }
 
 @media (max-width: 480px) {
     .volume-visualizer {
-        height: 1rem;
-        margin: 0.15rem auto 0.1rem auto;
+        height: 2.5rem;
+        margin: 0.1rem auto !important;
     }
 
     .volume-bar {
-        height: 4px;
+        height: 25px;
         border-radius: 1px;
     }
 }

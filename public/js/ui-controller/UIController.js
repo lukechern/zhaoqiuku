@@ -210,7 +210,15 @@ export class UIController {
             const volumeVisualizerElement = document.getElementById('volumeVisualizer');
             if (volumeVisualizerElement && window.app && window.app.audioRecorder) {
                 console.log('在录音状态下找到音量可视化元素，设置容器');
-                window.app.audioRecorder.setVolumeVisualizerContainer(volumeVisualizerElement);
+                
+                // 重新初始化音量可视化器，确保获取正确的音量条元素
+                if (window.app.audioRecorder.volumeVisualizer) {
+                    window.app.audioRecorder.volumeVisualizer.container = volumeVisualizerElement;
+                    window.app.audioRecorder.volumeVisualizer.volumeBars = Array.from(volumeVisualizerElement.querySelectorAll('.volume-bar'));
+                    console.log('重新设置音量可视化器容器和音量条元素');
+                } else {
+                    window.app.audioRecorder.setVolumeVisualizerContainer(volumeVisualizerElement);
+                }
                 
                 // 在录音开始后立即启动音量可视化
                 if (window.app.audioRecorder.audioStream) {
