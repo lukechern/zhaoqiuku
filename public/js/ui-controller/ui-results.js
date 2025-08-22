@@ -34,7 +34,8 @@ async function showResults(data, elements) {
     container.scrollTop = 0;
 
     // 注意：TTS朗读现在在流式渲染器中异步处理，无需在此调用
-    if (window.autoReadResponse) {
+    // 修改为仅在流式渲染器不可用时才触发回退TTS_7ree
+    if (!window.streamRenderer_7ree && window.autoReadResponse) {
         window.autoReadResponse(data);
     }
 }

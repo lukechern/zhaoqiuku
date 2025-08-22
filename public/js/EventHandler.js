@@ -204,6 +204,9 @@ export class EventHandler {
                 await window.streamRenderer_7ree.waitForTTSCompletion();
             }
             
+            // 朗读完成后延迟1秒再还原状态_7ree
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
             // 还原麦克风按钮状态
             this.app.uiController.hideProcessingState();
             
