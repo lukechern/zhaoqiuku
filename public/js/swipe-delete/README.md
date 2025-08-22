@@ -1,79 +1,42 @@
-# 🗑️ 滑动删除功能模块
+# 🗑️ 滑动删除功能模块（合并版）
 
-这个目录包含了拆分后的滑动删除功能模块，将原来523行的单文件拆分为多个职责单一的小模块。
+该目录包含滑动删除功能，已合并为核心与UI两部分，接口不变、职责清晰。
 
-## 📁 目录结构
+## 📁 目录结构（合并后）
 
 ```
 swipe-delete/
-├── index.js                 # 主入口文件，整合所有模块
-├── swipe-event-handler.js   # 触摸事件处理
-├── swipe-dom-manager.js     # DOM结构管理
-├── swipe-delete-handler.js  # 删除操作处理
-├── swipe-utils.js          # 工具方法
-├── swipe-toast.js          # Toast提示功能
-└── README.md               # 说明文档
+├── swipe-core_7ree.js   # 核心：工具方法 + 事件驱动
+├── swipe-ui_7ree.js     # UI：DOM结构管理 + 删除处理 + Toast
+├── index.js             # 入口：统一对外 API（可选使用）
+└── README.md           # 说明文档（本文件）
 ```
-
-## 🔧 模块说明
-
-### 1. `swipe-event-handler.js`
-- **职责**：处理触摸事件（开始、移动、结束）
-- **功能**：监听touch事件，处理滑动逻辑，管理拖拽状态
-
-### 2. `swipe-dom-manager.js`
-- **职责**：管理DOM结构
-- **功能**：创建滑动容器，提取记录ID，确保DOM结构正确
-
-### 3. `swipe-delete-handler.js`
-- **职责**：处理删除操作
-- **功能**：显示确认对话框，调用删除API，处理删除结果
-
-### 4. `swipe-utils.js`
-- **职责**：提供工具方法
-- **功能**：关闭滑动、关闭所有滑动、空状态检查等
-
-### 5. `swipe-toast.js`
-- **职责**：Toast提示功能
-- **功能**：显示成功/错误提示信息
-
-### 6. `index.js`
-- **职责**：主入口文件
-- **功能**：整合所有模块，提供统一的接口，保持向后兼容
 
 ## 🚀 使用方式
 
-### 在HTML中引用
+### 在 HTML 中引用（推荐）
+```html
+<script src="js/swipe-delete/swipe-core_7ree.js"></script>
+<script src="js/swipe-delete/swipe-ui_7ree.js"></script>
+```
+
+或引用入口文件（会调用初始化）：
 ```html
 <script src="js/swipe-delete/index.js"></script>
 ```
 
-### 在JavaScript中导入
-```javascript
-import { SwipeDeleteManager_7ree } from './swipe-delete/index.js';
-```
+### 在 JavaScript 中调用
+- 全局入口：`window.initSwipeDeleteManager_7ree()`
+- 全局实例：`window.swipeDeleteManager_7ree`
 
 ## 🔄 向后兼容
-
-原有的 `js/swipe-delete_7ree.js` 文件已更新为导入新的模块，保持了向后兼容性。所有现有的引用都会继续工作。
+仍保留 `js/swipe-delete_7ree.js` 的对外 API（由入口或 UI 模块实现），历史调用保持可用。
 
 ## 📈 优势
-
-1. **模块化**：每个文件职责单一，易于维护
-2. **可读性**：代码结构清晰，逻辑分离
-3. **可测试**：各个模块可以独立测试
-4. **可扩展**：易于添加新功能或修改现有功能
-5. **性能**：可以按需加载特定模块
-
-## 🔧 开发建议
-
-- 修改特定功能时，只需要编辑对应的模块文件
-- 添加新功能时，考虑创建新的模块或在合适模块中扩展
-- 测试时可以单独测试各个模块
+1. 合并精简：降低碎片化、减少加载失败概率
+2. 模块职责清晰：核心与 UI 分层，易维护
+3. WebView 友好：减少事件错过与样式抖动
 
 ## 📝 变更历史
-
-- **v2.0.0** (2024-01-XX): 拆分为模块化结构
-  - 将523行单文件拆分为6个模块
-  - 保持API兼容性
-  - 改进代码组织结构
+- v3.0：合并为 `swipe-core_7ree.js` + `swipe-ui_7ree.js`，删除旧拆分文件
+- v2.0：拆分为多个小模块
