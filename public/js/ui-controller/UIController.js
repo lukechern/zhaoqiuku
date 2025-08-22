@@ -128,7 +128,22 @@ export class UIController {
                 setTimeout(() => this.initializeVolumeVisualizer(), 100);
             }
         } else {
-            console.error('音量可视化组件元素未找到');
+            console.log('音量可视化组件元素未找到，等待DOM更新...');
+            // 增加重试次数和延迟
+            let retryCount = 0;
+            const maxRetries = 20;
+            const retryInterval = setInterval(() => {
+                retryCount++;
+                const element = document.getElementById('volumeVisualizer');
+                if (element) {
+                    clearInterval(retryInterval);
+                    console.log('音量可视化组件元素已找到（重试）');
+                    this.initializeVolumeVisualizer();
+                } else if (retryCount >= maxRetries) {
+                    clearInterval(retryInterval);
+                    console.error('音量可视化组件元素未找到，已达到最大重试次数');
+                }
+            }, 200);
         }
     }
 

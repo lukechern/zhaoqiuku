@@ -16,6 +16,12 @@ export class VolumeVisualizer {
     // 初始化音量可视化
     init() {
         try {
+            // 检查AudioContext支持
+            if (!VolumeVisualizer.isSupported()) {
+                console.warn('浏览器不支持Web Audio API，音量可视化不可用');
+                return;
+            }
+
             // 创建音频上下文
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -34,9 +40,14 @@ export class VolumeVisualizer {
             // 获取音量条元素
             this.volumeBars = Array.from(this.container.querySelectorAll('.volume-bar'));
 
+            if (this.volumeBars.length === 0) {
+                console.warn('未找到音量条元素，音量可视化可能无法正常工作');
+            }
+
             console.log('音量可视化初始化完成');
         } catch (error) {
             console.error('音量可视化初始化失败:', error);
+            this.volumeBars = [];
         }
     }
 
@@ -117,7 +128,11 @@ export class VolumeVisualizer {
 
     // 更新音量条显示
     updateVolumeBars(volumeLevel) {
+        if (!this.volumeBars || this.volumeBars.length === 0) return;
+
         this.volumeBars.forEach((bar, index) => {
+            if (!bar) return; // 跳过不存在的元素
+
             // 创建波浪效果 - 中间柱子更高
             const distanceFromCenter = Math.abs(index - 4.5);
             const waveMultiplier = 1 - (distanceFromCenter / 5) * 0.3;
