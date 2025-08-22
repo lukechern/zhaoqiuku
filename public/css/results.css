@@ -105,8 +105,8 @@
 
 .results-json {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 1.25rem;
-    line-height: 1.5;
+    font-size: 1.2rem;
+    line-height: 1.25;
     white-space: pre-wrap;
     word-break: break-word;
 }
