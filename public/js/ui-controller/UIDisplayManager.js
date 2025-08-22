@@ -160,7 +160,7 @@ export class UIDisplayManager {
         if (this.uiController.elements.resultsContainer) {
             this.uiController.elements.resultsContainer.innerHTML = `
                 <div style="color: var(--error); text-align: center;">
-                    <strong>抱歉:</strong> AI开小差了，请稍后重试。
+                    抱歉，没听清你说了什么，请稍后重试。
                 </div>
             `;
         }

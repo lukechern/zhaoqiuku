@@ -107,7 +107,7 @@ function showError(error, elements) {
     if (elements.resultsContainer) {
         elements.resultsContainer.innerHTML = `
             <div style="color: var(--error); text-align: center;">
-                <strong>抱歉:</strong> AI开小差了，请稍后重试。
+                抱歉，没听清你说了什么，请稍后重试。
             </div>
         `;
     }
