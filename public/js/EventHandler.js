@@ -235,10 +235,13 @@ export class EventHandler {
 
         } catch (error) {
             console.error('处理录音失败:', error);
-            this.app.uiController.showError(error.message);
             
-            // 发生错误时也要还原麦克风按钮状态
+            // 发生错误时要先重置录音状态，再显示错误
+            this.app.uiController.isRecording = false;
             this.app.uiController.hideProcessingState();
+            
+            // 显示错误信息
+            this.app.uiController.showError(error.message);
         } finally {
             this.app.isProcessing = false;
         }
