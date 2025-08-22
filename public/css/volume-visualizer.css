@@ -10,11 +10,13 @@
     transform: translateY(10px);
     transition: all 0.3s ease;
     pointer-events: none;
+    visibility: visible; /* 确保可见性 */
 }
 
 .volume-visualizer.active {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1 !important; /* 使用!important确保优先级 */
+    transform: translateY(0) !important;
+    visibility: visible !important;
 }
 
 .volume-bars {

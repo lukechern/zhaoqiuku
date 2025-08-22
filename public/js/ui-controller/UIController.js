@@ -224,6 +224,19 @@ export class UIController {
                 if (window.app.audioRecorder.audioStream) {
                     console.log('启动音量可视化...');
                     window.app.audioRecorder.startVolumeVisualizer();
+                    
+                    // 强制显示调试（临时）
+                    setTimeout(() => {
+                        const element = document.getElementById('volumeVisualizer');
+                        if (element) {
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                            element.style.visibility = 'visible';
+                            element.style.display = 'flex';
+                            element.classList.add('active');
+                            console.log('强制显示音量可视化组件');
+                        }
+                    }, 200);
                 }
             } else {
                 console.log('未找到音量可视化元素或AudioRecorder未初始化');

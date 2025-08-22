@@ -28,7 +28,7 @@ function showRecordingState(elements) {
                 <div class="listening-status">请您告诉我:<br>是想记录物品位置,<br>还是查找物品…</div>
 
                 <!-- 音量可视化组件 -->
-                <div class="volume-visualizer" id="volumeVisualizer" style="display: none;">
+                <div class="volume-visualizer" id="volumeVisualizer" style="display: flex;">
                     <div class="volume-bars">
                         <div class="volume-bar"></div>
                         <div class="volume-bar"></div>
