@@ -59,6 +59,18 @@ export class VolumeVisualizer {
         this.container.style.display = 'flex';
         this.container.classList.add('active');
 
+        // 调试日志
+        console.log('音量可视化开始', {
+            element: this.container,
+            classes: this.container.className,
+            style: this.container.style.cssText,
+            computedStyle: {
+                display: getComputedStyle(this.container).display,
+                opacity: getComputedStyle(this.container).opacity,
+                visibility: getComputedStyle(this.container).visibility
+            }
+        });
+
         // 开始动画循环
         this.animate();
 
@@ -185,5 +197,31 @@ export class VolumeVisualizer {
     // 检查是否支持
     static isSupported() {
         return !!(window.AudioContext || window.webkitAudioContext);
+    }
+
+    // 调试用：强制显示音量可视化
+    debugShow() {
+        this.container.style.display = 'flex';
+        this.container.classList.add('active');
+        this.container.style.opacity = '1';
+        this.container.style.transform = 'translateY(0)';
+
+        // 模拟一些音量条跳动
+        setInterval(() => {
+            this.volumeBars.forEach((bar, index) => {
+                const level = Math.floor(Math.random() * 10) + 1;
+                for (let i = 1; i <= 10; i++) {
+                    bar.classList.remove(`level-${i}`);
+                }
+                bar.classList.add(`level-${level}`);
+                if (level > 3) {
+                    bar.classList.add('active');
+                } else {
+                    bar.classList.remove('active');
+                }
+            });
+        }, 100);
+
+        console.log('音量可视化调试显示已启动');
     }
 }

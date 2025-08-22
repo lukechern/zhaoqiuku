@@ -122,6 +122,14 @@ export class UIController {
             if (window.app && window.app.audioRecorder) {
                 window.app.audioRecorder.setVolumeVisualizerContainer(volumeVisualizerElement);
                 console.log('音量可视化容器已设置到AudioRecorder');
+
+                // 调试：启动音量可视化显示
+                setTimeout(() => {
+                    console.log('启动音量可视化调试显示...');
+                    if (window.app.audioRecorder.volumeVisualizer) {
+                        window.app.audioRecorder.volumeVisualizer.debugShow();
+                    }
+                }, 1000);
             } else {
                 console.log('等待AudioRecorder初始化...');
                 // 如果AudioRecorder还没有初始化，等待一下再试
