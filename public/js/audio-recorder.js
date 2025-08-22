@@ -297,6 +297,10 @@ export class AudioRecorder {
     // 设置音量可视化容器
     setVolumeVisualizerContainer(container) {
         this.volumeVisualizerContainer = container;
+        // 如果已经有音量可视化器实例，更新其容器引用
+        if (this.volumeVisualizer) {
+            this.volumeVisualizer.updateContainer(container);
+        }
     }
 
     // 启动音量可视化

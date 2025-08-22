@@ -29,7 +29,7 @@
 
 .volume-bar {
     flex: 1;
-    height: 40px; /* 大幅增加基础高度，从8px增加到5倍 */
+    height: 30px; 
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
     border-radius: 2px;
     transform-origin: center bottom;
@@ -89,8 +89,8 @@
 .volume-bar.level-6 { transform: scaleY(2.0); }
 .volume-bar.level-7 { transform: scaleY(3.0); }
 .volume-bar.level-8 { transform: scaleY(4.0); }
-.volume-bar.level-9 { transform: scaleY(6.0); }
-.volume-bar.level-10 { transform: scaleY(10.0); } /* 最大值增加到10倍 */
+.volume-bar.level-9 { transform: scaleY(5.0); }
+.volume-bar.level-10 { transform: scaleY(6.0); }
 
 /* 移动端适配 */
 @media (max-width: 768px) {

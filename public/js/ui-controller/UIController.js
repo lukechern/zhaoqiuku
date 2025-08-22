@@ -213,8 +213,8 @@ export class UIController {
                 
                 // 重新初始化音量可视化器，确保获取正确的音量条元素
                 if (window.app.audioRecorder.volumeVisualizer) {
-                    window.app.audioRecorder.volumeVisualizer.container = volumeVisualizerElement;
-                    window.app.audioRecorder.volumeVisualizer.volumeBars = Array.from(volumeVisualizerElement.querySelectorAll('.volume-bar'));
+                    // 使用新增的updateContainer方法来更新容器和元素引用
+                    window.app.audioRecorder.volumeVisualizer.updateContainer(volumeVisualizerElement);
                     console.log('重新设置音量可视化器容器和音量条元素');
                 } else {
                     window.app.audioRecorder.setVolumeVisualizerContainer(volumeVisualizerElement);

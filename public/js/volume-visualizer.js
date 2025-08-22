@@ -55,6 +55,9 @@ export class VolumeVisualizer {
     start() {
         if (this.isActive || !this.analyser) return;
 
+        // 重新获取音量条元素引用，确保在DOM重新创建后能正常工作
+        this.refreshVolumeBarReferences();
+
         this.isActive = true;
         this.container.style.display = 'flex';
         this.container.classList.add('active');
@@ -64,6 +67,7 @@ export class VolumeVisualizer {
             element: this.container,
             classes: this.container.className,
             style: this.container.style.cssText,
+            volumeBarsCount: this.volumeBars.length,
             computedStyle: {
                 display: getComputedStyle(this.container).display,
                 opacity: getComputedStyle(this.container).opacity,
@@ -185,6 +189,32 @@ export class VolumeVisualizer {
             bar.classList.remove('active');
             bar.classList.add('level-1');
         });
+    }
+
+    // 刷新音量条元素引用
+    refreshVolumeBarReferences() {
+        if (!this.container) {
+            console.warn('音量可视化容器不存在');
+            return;
+        }
+        
+        // 重新获取音量条元素
+        this.volumeBars = Array.from(this.container.querySelectorAll('.volume-bar'));
+        
+        if (this.volumeBars.length === 0) {
+            console.warn('未找到音量条元素，音量可视化可能无法正常工作');
+        } else {
+            console.log(`成功刷新音量条引用，共${this.volumeBars.length}个元素`);
+        }
+    }
+
+    // 更新容器引用
+    updateContainer(newContainer) {
+        if (newContainer && newContainer !== this.container) {
+            console.log('更新音量可视化容器');
+            this.container = newContainer;
+            this.refreshVolumeBarReferences();
+        }
     }
 
     // 清理资源
