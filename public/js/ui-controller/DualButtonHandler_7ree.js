@@ -25,6 +25,7 @@ export class DualButtonHandler_7ree {
         this.elements.cancelBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log('🐛🐛🐛 双按钮-取消按钮被点击，当前录音状态:', this.uiController.isRecording);
             if (!this.uiController.isRecording) return;
             this.hideDualButtons_7ree();
             this.uiController.handleCancel();
@@ -34,6 +35,7 @@ export class DualButtonHandler_7ree {
         this.elements.confirmBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            console.log('🐛🐛🐛 双按钮-确认按钮被点击，当前录音状态:', this.uiController.isRecording);
             if (!this.uiController.isRecording) return;
             this.hideDualButtons_7ree();
             this.uiController.handlePressEnd();

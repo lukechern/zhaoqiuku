@@ -44,7 +44,7 @@ export class VolumeVisualizer {
                 console.warn('未找到音量条元素，音量可视化可能无法正常工作');
             }
 
-            console.log('音量可视化初始化完成');
+            console.log('🐛🐛🐛 音量可视化初始化完成，音量条数量:', this.volumeBars.length);
         } catch (error) {
             console.error('音量可视化初始化失败:', error);
             this.volumeBars = [];
@@ -70,7 +70,7 @@ export class VolumeVisualizer {
         // 开始动画循环
         this.animate();
 
-        console.log('音量可视化启动完成');
+        console.log('🐛🐛🐛 音量可视化启动完成，容器显示状态:', this.container.style.display, '透明度:', this.container.style.opacity, '音量条数量:', this.volumeBars.length);
     }
 
     // 停止音量可视化
@@ -196,7 +196,7 @@ export class VolumeVisualizer {
         if (this.volumeBars.length === 0) {
             console.warn('未找到音量条元素，音量可视化可能无法正常工作');
         } else {
-            console.log(`成功刷新音量条引用，共${this.volumeBars.length}个元素`);
+            console.log('🐛🐛🐛 成功刷新音量条引用，共', this.volumeBars.length, '个元素，容器存在:', !!this.container);
         }
     }
 
