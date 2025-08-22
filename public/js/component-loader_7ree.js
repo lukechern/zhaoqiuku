@@ -277,7 +277,8 @@ async function loadScripts_7ree(scripts, isPageRefresh = false) {
     // 需要作为模块加载的脚本
     const moduleScripts = new Set([
         'js/main.js',
-        'js/UserStateManager.js'
+        'js/UserStateManager.js',
+        'js/volume-visualizer.js'  // 新增：音量可视化模块
     ]);
 
     // 强制清除缓存并加载脚本
@@ -324,7 +325,8 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
     // 需要作为模块加载的脚本
     const moduleScripts = new Set([
         'js/main.js',
-        'js/UserStateManager.js'
+        'js/UserStateManager.js',
+        'js/volume-visualizer.js'  // 新增：音量可视化模块
     ]);
 
     // 动态加载JavaScript文件，防止缓存
