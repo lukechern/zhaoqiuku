@@ -135,9 +135,6 @@
     overflow-x: auto;
 }
 
-.results-json div {
-    margin: 10px 0;
-}
 
 /* TTS 朗读状态样式 */
 .tts-playing {
