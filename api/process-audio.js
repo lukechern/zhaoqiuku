@@ -114,7 +114,10 @@ export default async function handler(req, res) {
         
         if (!transcriptionResult.success) {
             console.error('❌ 音频转录失败:', transcriptionResult.error);
-            return res.status(500).json(transcriptionResult);
+            return res.status(400).json({ 
+                error: transcriptionResult.error || '音频转录失败',
+                details: process.env.NODE_ENV === 'development' ? transcriptionResult : undefined
+            });
         }
 
         console.log('✅ 音频转录成功');
