@@ -53,10 +53,7 @@ export class VolumeVisualizer {
 
     // 开始音量可视化
     start() {
-        if (this.isActive || !this.analyser) {
-            console.log('音量可视化启动被阻止:', { isActive: this.isActive, hasAnalyser: !!this.analyser });
-            return;
-        }
+        if (this.isActive || !this.analyser) return;
 
         // 重新获取音量条元素引用，确保在DOM重新创建后能正常工作
         this.refreshVolumeBarReferences();
@@ -69,30 +66,6 @@ export class VolumeVisualizer {
         this.container.style.opacity = '1';
         this.container.style.transform = 'translateY(0)';
         this.container.style.visibility = 'visible';
-
-        // 详细调试日志
-        console.log('音量可视化开始', {
-            element: this.container,
-            classes: this.container.className,
-            style: this.container.style.cssText,
-            volumeBarsCount: this.volumeBars.length,
-            containerVisible: this.container.offsetWidth > 0 && this.container.offsetHeight > 0,
-            computedStyle: {
-                display: getComputedStyle(this.container).display,
-                opacity: getComputedStyle(this.container).opacity,
-                visibility: getComputedStyle(this.container).visibility,
-                transform: getComputedStyle(this.container).transform
-            }
-        });
-
-        // 检查音量条元素状态
-        if (this.volumeBars.length > 0) {
-            console.log('音量条元素状态:', {
-                firstBarVisible: this.volumeBars[0].offsetWidth > 0 && this.volumeBars[0].offsetHeight > 0,
-                firstBarStyle: this.volumeBars[0].style.cssText,
-                firstBarClasses: this.volumeBars[0].className
-            });
-        }
 
         // 开始动画循环
         this.animate();
@@ -125,28 +98,13 @@ export class VolumeVisualizer {
 
     // 动画循环
     animate() {
-        if (!this.isActive) {
-            console.log('动画循环停止：isActive =', this.isActive);
-            return;
-        }
+        if (!this.isActive) return;
 
         // 获取频域数据
         this.analyser.getByteFrequencyData(this.dataArray);
 
         // 计算音量级别
         const volume = this.calculateVolume();
-
-        // 调试日志（只在前几次输出）
-        if (!this.debugCount) this.debugCount = 0;
-        if (this.debugCount < 5) {
-            console.log('音量数据:', {
-                volume: volume,
-                dataArraySample: Array.from(this.dataArray.slice(0, 10)),
-                volumeBarsCount: this.volumeBars.length,
-                isActive: this.isActive
-            });
-            this.debugCount++;
-        }
 
         // 更新音量条
         this.updateVolumeBars(volume);
