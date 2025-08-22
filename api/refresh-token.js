@@ -94,6 +94,6 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('刷新令牌错误:', error);
-        return res.status(500).json({ error: '服务器内部错误' });
+        return res.status(500).json({ error: 'AI开小差了，请稍后重试。' });
     }
 }

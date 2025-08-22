@@ -187,7 +187,7 @@ export function withAuth(handler, options = {}) {
         } catch (error) {
             console.error('认证中间件错误:', error);
             return res.status(500).json({
-                error: '服务器内部错误',
+                error: 'AI开小差了，请稍后重试。',
                 code: 'INTERNAL_ERROR'
             });
         }

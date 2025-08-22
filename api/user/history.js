@@ -153,7 +153,7 @@ async function handleGetHistory(req, res) {
     } catch (error) {
         return res.status(500).json({
             success: false,
-            error: '服务器内部错误'
+            error: 'AI开小差了，请稍后重试。'
         });
     }
 }
@@ -220,7 +220,7 @@ async function handleDeleteRecord_7ree(req, res) {
     } catch (error) {
         return res.status(500).json({
             success: false,
-            error: '服务器内部错误'
+            error: 'AI开小差了，请稍后重试。'
         });
     }
 }

@@ -166,7 +166,7 @@ export default async function handler(req, res) {
             return res.status(504).json({ error: '请求超时，请稍后重试' });
         } else {
             return res.status(500).json({ 
-                error: '服务器内部错误',
+                error: 'AI开小差了，请稍后重试。',
                 details: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }

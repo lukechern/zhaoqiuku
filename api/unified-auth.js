@@ -115,7 +115,7 @@ async function handleSendCode(email, res, invitation_7ree) {
 
     } catch (error) {
         console.error('发送验证码错误:', error);
-        return res.status(500).json({ error: '服务器内部错误' });
+        return res.status(500).json({ error: 'AI开小差了，请稍后重试。' });
     }
 }
 
@@ -171,7 +171,7 @@ async function handleVerifyCode(email, code, res) {
 
     } catch (error) {
         console.error('验证验证码错误:', error);
-        return res.status(500).json({ error: '服务器内部错误' });
+        return res.status(500).json({ error: 'AI开小差了，请稍后重试。' });
     }
 }
 
@@ -221,6 +221,6 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('统一认证API错误:', error);
-        return res.status(500).json({ error: '服务器内部错误' });
+        return res.status(500).json({ error: 'AI开小差了，请稍后重试。' });
     }
 }

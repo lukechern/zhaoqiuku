@@ -129,7 +129,7 @@ export default async function handler(req, res) {
         console.error('删除记录时发生错误:', error);
         return res.status(500).json({
             success: false,
-            error: '服务器内部错误'
+            error: 'AI开小差了，请稍后重试。'
         });
     }
 }

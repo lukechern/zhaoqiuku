@@ -151,7 +151,7 @@ export default async function handler(req, res) {
     } catch (error) {
         console.error('处理音频请求失败:', error);
         return res.status(500).json({ 
-            error: '服务器内部错误',
+            error: 'AI开小差了，请稍后重试。',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
