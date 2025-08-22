@@ -38,7 +38,7 @@ export class EventHandler {
             this.app.uiController.showRecordingState();
             this.app.uiController.vibrate([50]); // 震动反馈
             
-            console.log('🐛🐛🐛 麦克风被点击开始录音，音频流状态:', !!this.app.audioRecorder.audioStream, '录音状态:', this.app.audioRecorder.isRecording);
+            console.log('开始录音');
 
         } catch (error) {
             console.error('开始录音失败:', error);
@@ -65,7 +65,7 @@ export class EventHandler {
 
     // 处理录音停止
     handleRecordingStop() {
-        console.log('🐛🐛🐛 提交按钮被点击，当前录音状态:', this.app.audioRecorder.isRecording, '取消占位符定时器存在:', !!this.cancelPlaceholderTimeout_7ree);
+        console.log('处理录音停止');
         if (!this.app.audioRecorder.isRecording) return;
 
         // 新增：停止前也清理可能存在的取消占位符定时器_7ree
@@ -132,7 +132,7 @@ export class EventHandler {
 
     // 处理录音取消
     handleRecordingCancel() {
-        console.log('🐛🐛🐛 取消按钮被点击，当前录音状态:', this.app.audioRecorder.isRecording, '取消占位符定时器存在:', !!this.cancelPlaceholderTimeout_7ree);
+        console.log('处理录音取消');
         if (!this.app.audioRecorder.isRecording) return;
 
         try {
@@ -150,9 +150,9 @@ export class EventHandler {
             
             // 新增：先清理旧的占位符定时器，再设置新的，并保存句柄_7ree
             this.clearCancelPlaceholderTimeout_7ree();
-            console.log('🐛🐛🐛 取消录音后设置2秒延迟恢复占位符定时器');
+            console.log('设置延迟恢复占位符');
             this.cancelPlaceholderTimeout_7ree = setTimeout(() => {
-                console.log('🐛🐛🐛 取消录音2秒后恢复占位符，resultsContainer存在:', !!this.app.uiController.elements.resultsContainer);
+                console.log('延迟恢复占位符');
                 if (this.app.uiController.elements.resultsContainer) {
                     this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手…</div>';
                 }
@@ -170,9 +170,9 @@ export class EventHandler {
             
             // 错误时也需要恢复placeholder（同样受控于句柄，避免竞态）
             this.clearCancelPlaceholderTimeout_7ree();
-            console.log('🐛🐛🐛 取消录音错误处理中设置2秒延迟恢复占位符定时器');
+            console.log('错误处理中设置延迟恢复占位符');
             this.cancelPlaceholderTimeout_7ree = setTimeout(() => {
-                console.log('🐛🐛🐛 取消录音错误处理2秒后恢复占位符，resultsContainer存在:', !!this.app.uiController.elements.resultsContainer);
+                console.log('延迟恢复占位符');
                 if (this.app.uiController.elements.resultsContainer) {
                     this.app.uiController.elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手…</div>';
                 }
@@ -247,7 +247,7 @@ export class EventHandler {
     // 新增：统一清理取消占位符定时器的方法_7ree
     clearCancelPlaceholderTimeout_7ree() {
         if (this.cancelPlaceholderTimeout_7ree) {
-            console.log('🐛🐛🐛 清理取消占位符定时器，避免竞态覆盖UI');
+            console.log('清理取消占位符定时器');
             clearTimeout(this.cancelPlaceholderTimeout_7ree);
             this.cancelPlaceholderTimeout_7ree = null;
         }

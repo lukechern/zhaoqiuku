@@ -209,7 +209,7 @@ export class UIController {
         setTimeout(() => {
             const volumeVisualizerElement = document.getElementById('volumeVisualizer');
             if (volumeVisualizerElement && window.app && window.app.audioRecorder) {
-                console.log('🐛🐛🐛 在录音状态下找到音量可视化元素，设置容器，元素ID:', volumeVisualizerElement.id);
+                console.log('设置音量可视化容器');
                 
                 // 重新初始化音量可视化器，确保获取正确的音量条元素
                 if (window.app.audioRecorder.volumeVisualizer) {
@@ -222,7 +222,7 @@ export class UIController {
                 
                 // 在录音开始后立即启动音量可视化
                 if (window.app.audioRecorder.audioStream) {
-                    console.log('🐛🐛🐛 启动音量可视化，音频流存在:', !!window.app.audioRecorder.audioStream, '音量可视化器存在:', !!window.app.audioRecorder.volumeVisualizer);
+                    console.log('启动音量可视化');
                     window.app.audioRecorder.startVolumeVisualizer();
                 }
             } else {

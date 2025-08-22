@@ -44,7 +44,7 @@ export class VolumeVisualizer {
                 console.warn('未找到音量条元素，音量可视化可能无法正常工作');
             }
 
-            console.log('🐛🐛🐛 音量可视化初始化完成，音量条数量:', this.volumeBars.length);
+            console.log('音量可视化初始化完成');
         } catch (error) {
             console.error('音量可视化初始化失败:', error);
             this.volumeBars = [];
@@ -53,7 +53,12 @@ export class VolumeVisualizer {
 
     // 开始音量可视化
     start() {
-        if (this.isActive || !this.analyser) return;
+        if (!this.analyser) return;
+
+        // 如果已经激活，先停止再重新启动
+        if (this.isActive) {
+            this.stop();
+        }
 
         // 重新获取音量条元素引用，确保在DOM重新创建后能正常工作
         this.refreshVolumeBarReferences();
@@ -70,7 +75,7 @@ export class VolumeVisualizer {
         // 开始动画循环
         this.animate();
 
-        console.log('🐛🐛🐛 音量可视化启动完成，容器显示状态:', this.container.style.display, '透明度:', this.container.style.opacity, '音量条数量:', this.volumeBars.length);
+        console.log('音量可视化启动完成');
     }
 
     // 停止音量可视化
@@ -80,6 +85,11 @@ export class VolumeVisualizer {
         this.isActive = false;
         this.container.classList.remove('active');
 
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = null;
+        }
+
         // 延迟隐藏，避免闪烁
         setTimeout(() => {
             if (!this.isActive) {
@@ -87,11 +97,6 @@ export class VolumeVisualizer {
                 this.resetBars();
             }
         }, 300);
-
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-            this.animationFrame = null;
-        }
 
         console.log('音量可视化停止');
     }
@@ -196,7 +201,7 @@ export class VolumeVisualizer {
         if (this.volumeBars.length === 0) {
             console.warn('未找到音量条元素，音量可视化可能无法正常工作');
         } else {
-            console.log('🐛🐛🐛 成功刷新音量条引用，共', this.volumeBars.length, '个元素，容器存在:', !!this.container);
+            console.log(`成功刷新音量条引用，共${this.volumeBars.length}个元素`);
         }
     }
 
