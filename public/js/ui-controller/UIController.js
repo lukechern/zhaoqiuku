@@ -60,6 +60,9 @@ export class UIController {
             }
         }
 
+        // 初始化音量可视化组件
+        this.initializeVolumeVisualizer();
+
         if (this.elements.microphoneButton) {
             this.setupEvents();
         }
@@ -105,6 +108,27 @@ export class UIController {
             // 如果类还没有加载，等待一下再试
             console.log('DualButtonHandler_7ree 未找到，100ms后重试');
             setTimeout(() => this.initializeDualButtonHandler(), 100);
+        }
+    }
+
+    // 初始化音量可视化组件
+    initializeVolumeVisualizer() {
+        console.log('初始化音量可视化组件...');
+
+        const volumeVisualizerElement = document.getElementById('volumeVisualizer');
+        if (volumeVisualizerElement) {
+            console.log('音量可视化组件元素已找到');
+            // 将音量可视化容器传递给AudioRecorder
+            if (window.app && window.app.audioRecorder) {
+                window.app.audioRecorder.setVolumeVisualizerContainer(volumeVisualizerElement);
+                console.log('音量可视化容器已设置到AudioRecorder');
+            } else {
+                console.log('等待AudioRecorder初始化...');
+                // 如果AudioRecorder还没有初始化，等待一下再试
+                setTimeout(() => this.initializeVolumeVisualizer(), 100);
+            }
+        } else {
+            console.error('音量可视化组件元素未找到');
         }
     }
 

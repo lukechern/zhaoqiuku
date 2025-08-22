@@ -1,4 +1,6 @@
 // 音频录制模块
+import { VolumeVisualizer } from './volume-visualizer.js';
+
 export class AudioRecorder {
     constructor() {
         this.mediaRecorder = null;
@@ -10,6 +12,7 @@ export class AudioRecorder {
         this.recordingTimer = null;
         this.audioBlob = null;
         this.audioUrl = null;
+        this.volumeVisualizer = null;
     }
 
     // 初始化音频权限
@@ -81,14 +84,14 @@ export class AudioRecorder {
 
             this.audioChunks = [];
             this.recordingStartTime = Date.now();
-            
+
             // 设置录音格式
             const options = {
                 mimeType: this.getSupportedMimeType()
             };
 
             this.mediaRecorder = new MediaRecorder(this.audioStream, options);
-            
+
             this.mediaRecorder.ondataavailable = (event) => {
                 if (event.data && event.data.size > 0) {
                     this.audioChunks.push(event.data);
@@ -101,6 +104,9 @@ export class AudioRecorder {
 
             this.mediaRecorder.start(100); // 每100ms收集一次数据
             this.isRecording = true;
+
+            // 启动音量可视化
+            this.startVolumeVisualizer();
 
             // 设置最大录音时间
             this.recordingTimer = setTimeout(() => {
@@ -119,7 +125,7 @@ export class AudioRecorder {
         if (!this.isRecording || !this.mediaRecorder) return;
 
         this.isRecording = false;
-        
+
         if (this.recordingTimer) {
             clearTimeout(this.recordingTimer);
             this.recordingTimer = null;
@@ -128,6 +134,9 @@ export class AudioRecorder {
         if (this.mediaRecorder.state !== 'inactive') {
             this.mediaRecorder.stop();
         }
+
+        // 停止音量可视化
+        this.stopVolumeVisualizer();
     }
 
     // 取消录音（不触发完成事件）
@@ -233,6 +242,9 @@ export class AudioRecorder {
 
     // 清理资源
     cleanup() {
+        // 停止音量可视化
+        this.destroyVolumeVisualizer();
+
         if (this.recordingTimer) {
             clearTimeout(this.recordingTimer);
             this.recordingTimer = null;
@@ -271,14 +283,48 @@ export class AudioRecorder {
     // 检查音频大小
     checkAudioSize() {
         if (!this.audioBlob) return { valid: false, size: 0 };
-        
+
         const maxSize = 20 * 1024 * 1024; // 20MB
         const size = this.audioBlob.size;
-        
+
         return {
             valid: size <= maxSize,
             size: size,
             sizeMB: (size / 1024 / 1024).toFixed(2)
         };
+    }
+
+    // 设置音量可视化容器
+    setVolumeVisualizerContainer(container) {
+        this.volumeVisualizerContainer = container;
+    }
+
+    // 启动音量可视化
+    startVolumeVisualizer() {
+        if (!this.volumeVisualizerContainer || !this.audioStream) return;
+
+        try {
+            if (!this.volumeVisualizer) {
+                this.volumeVisualizer = new VolumeVisualizer(this.audioStream, this.volumeVisualizerContainer);
+            }
+            this.volumeVisualizer.start();
+        } catch (error) {
+            console.error('启动音量可视化失败:', error);
+        }
+    }
+
+    // 停止音量可视化
+    stopVolumeVisualizer() {
+        if (this.volumeVisualizer) {
+            this.volumeVisualizer.stop();
+        }
+    }
+
+    // 销毁音量可视化
+    destroyVolumeVisualizer() {
+        if (this.volumeVisualizer) {
+            this.volumeVisualizer.destroy();
+            this.volumeVisualizer = null;
+        }
     }
 }
