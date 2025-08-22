@@ -21,11 +21,27 @@ function showRecordingState(elements) {
         elements.timer.classList.add('recording');
     }
 
-    // 在 results-json 区域显示"请告诉AI，您是想记录物品的存放位置，或者查找物品…"和计时器（不显示动画效果）
+    // 在 results-json 区域显示"请告诉AI，您是想记录物品的存放位置，或者查找物品…"、音量可视化和计时器
     if (elements.resultsContainer) {
         elements.resultsContainer.innerHTML = `
             <div class="results-json">
                 <div class="listening-status">请您告诉我:<br>是想记录物品位置,<br>还是查找物品…</div>
+
+                <!-- 音量可视化组件 -->
+                <div class="volume-visualizer" id="volumeVisualizer" style="display: none;">
+                    <div class="volume-bars">
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                        <div class="volume-bar"></div>
+                    </div>
+                </div>
 
                 <div class="timer-display">您还可以说20秒</div>
             </div>

@@ -115,43 +115,13 @@ export class UIController {
     initializeVolumeVisualizer() {
         console.log('初始化音量可视化组件...');
 
-        const volumeVisualizerElement = document.getElementById('volumeVisualizer');
-        if (volumeVisualizerElement) {
-            console.log('音量可视化组件元素已找到');
-            // 将音量可视化容器传递给AudioRecorder
-            if (window.app && window.app.audioRecorder) {
-                window.app.audioRecorder.setVolumeVisualizerContainer(volumeVisualizerElement);
-                console.log('音量可视化容器已设置到AudioRecorder');
-
-                // 调试：启动音量可视化显示
-                setTimeout(() => {
-                    console.log('启动音量可视化调试显示...');
-                    if (window.app.audioRecorder.volumeVisualizer) {
-                        window.app.audioRecorder.volumeVisualizer.debugShow();
-                    }
-                }, 1000);
-            } else {
-                console.log('等待AudioRecorder初始化...');
-                // 如果AudioRecorder还没有初始化，等待一下再试
-                setTimeout(() => this.initializeVolumeVisualizer(), 100);
-            }
+        // 在录音状态下，音量可视化元素会动态创建，所以需要在录音开始时设置
+        if (window.app && window.app.audioRecorder) {
+            console.log('音量可视化组件初始化完成，将在录音时动态设置容器');
         } else {
-            console.log('音量可视化组件元素未找到，等待DOM更新...');
-            // 增加重试次数和延迟
-            let retryCount = 0;
-            const maxRetries = 20;
-            const retryInterval = setInterval(() => {
-                retryCount++;
-                const element = document.getElementById('volumeVisualizer');
-                if (element) {
-                    clearInterval(retryInterval);
-                    console.log('音量可视化组件元素已找到（重试）');
-                    this.initializeVolumeVisualizer();
-                } else if (retryCount >= maxRetries) {
-                    clearInterval(retryInterval);
-                    console.error('音量可视化组件元素未找到，已达到最大重试次数');
-                }
-            }, 200);
+            console.log('等待AudioRecorder初始化...');
+            // 如果AudioRecorder还没有初始化，等待一下再试
+            setTimeout(() => this.initializeVolumeVisualizer(), 100);
         }
     }
 
@@ -235,6 +205,23 @@ export class UIController {
             window.showRecordingState(this.elements);
         }
 
+        // 新增：在显示录音状态后设置音量可视化容器
+        setTimeout(() => {
+            const volumeVisualizerElement = document.getElementById('volumeVisualizer');
+            if (volumeVisualizerElement && window.app && window.app.audioRecorder) {
+                console.log('在录音状态下找到音量可视化元素，设置容器');
+                window.app.audioRecorder.setVolumeVisualizerContainer(volumeVisualizerElement);
+                
+                // 在录音开始后立即启动音量可视化
+                if (window.app.audioRecorder.audioStream) {
+                    console.log('启动音量可视化...');
+                    window.app.audioRecorder.startVolumeVisualizer();
+                }
+            } else {
+                console.log('未找到音量可视化元素或AudioRecorder未初始化');
+            }
+        }, 100); // 稍微延迟以确保DOM元素已创建
+
         // 显示双按钮
         console.log('检查双按钮处理器:', {
             exists: !!this.dualButtonHandler_7ree,
@@ -269,6 +256,12 @@ export class UIController {
     hideRecordingState() {
         if (window.hideRecordingState) {
             window.hideRecordingState(this.elements, this.isRecording);
+        }
+
+        // 新增：停止音量可视化
+        if (window.app && window.app.audioRecorder) {
+            console.log('停止音量可视化');
+            window.app.audioRecorder.stopVolumeVisualizer();
         }
 
         // 隐藏双按钮
