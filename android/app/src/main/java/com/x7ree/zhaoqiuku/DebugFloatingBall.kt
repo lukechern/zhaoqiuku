@@ -35,6 +35,8 @@ class DebugFloatingBall @JvmOverloads constructor(
         private const val MARGIN = 16
         private const val ANIMATION_DURATION = 300L
         private const val AUTO_HIDE_DELAY = 15000L // 增加到15秒
+        private const val VERTICAL_POSITION_RATIO_7ree = 0.85f // 初始垂直位置占屏幕高度的比例，略偏下
+        private const val RIGHT_EDGE_MARGIN_7ree = 0 // 初始贴右侧时的水平边距（px），0表示完全贴边
     }
 
     private var windowManager: WindowManager? = null
@@ -314,9 +316,24 @@ class DebugFloatingBall @JvmOverloads constructor(
         val animatorSet = AnimatorSet()
         
         // 获取存储的菜单位置
-        val refreshPos = refreshBall.tag as? Pair<Float, Float> ?: Pair(0f, -250f)
-        val trashPos = trashBall.tag as? Pair<Float, Float> ?: Pair(-216.5f, -125f)
-        val settingsPos = settingsBall.tag as? Pair<Float, Float> ?: Pair(-216.5f, 125f)
+        val refreshPos = if (refreshBall.tag is Pair<*, *>) {
+            @Suppress("UNCHECKED_CAST")
+            refreshBall.tag as Pair<Float, Float>
+        } else {
+            Pair(0f, -250f)
+        }
+        val trashPos = if (trashBall.tag is Pair<*, *>) {
+            @Suppress("UNCHECKED_CAST")
+            trashBall.tag as Pair<Float, Float>
+        } else {
+            Pair(-216.5f, -125f)
+        }
+        val settingsPos = if (settingsBall.tag is Pair<*, *>) {
+            @Suppress("UNCHECKED_CAST")
+            settingsBall.tag as Pair<Float, Float>
+        } else {
+            Pair(-216.5f, 125f)
+        }
         
         val refreshX = refreshPos.first
         val refreshY = refreshPos.second
@@ -367,6 +384,17 @@ class DebugFloatingBall @JvmOverloads constructor(
         autoHideHandler.removeCallbacks(autoHideRunnable)
     }
 
+    // 计算初始位置：右侧贴边 + 垂直方向略偏下
+    private fun computeInitialPosition_7ree(screenWidth: Int, screenHeight: Int, windowWidth: Int, windowHeight: Int): Pair<Int, Int> {
+        val ballOffsetInWindow = (windowWidth - BALL_SIZE) / 2
+        // 期望球的左上角位置
+        val desiredBallLeft = screenWidth - BALL_SIZE - RIGHT_EDGE_MARGIN_7ree
+        val desiredBallTop = (screenHeight * VERTICAL_POSITION_RATIO_7ree).toInt() - BALL_SIZE / 2
+        val x = desiredBallLeft - ballOffsetInWindow
+        val y = desiredBallTop - ballOffsetInWindow
+        return Pair(x, y)
+    }
+
     fun show() {
         if (windowManager != null) return
 
@@ -389,11 +417,12 @@ class DebugFloatingBall @JvmOverloads constructor(
             height = BALL_SIZE + 600
             gravity = Gravity.TOP or Gravity.START
 
-            // 初始位置在右下角，考虑新的窗口尺寸
+            // 初始位置：右侧贴边 + 略偏下
             val screenWidth = resources.displayMetrics.widthPixels
             val screenHeight = resources.displayMetrics.heightPixels
-            x = screenWidth - width - MARGIN
-            y = screenHeight - height - MARGIN - 100 // 留出一些导航栏空间
+            val (startX_7ree, startY_7ree) = computeInitialPosition_7ree(screenWidth, screenHeight, width, height)
+            x = startX_7ree
+            y = startY_7ree
         }
 
         windowManager?.addView(this, layoutParams)

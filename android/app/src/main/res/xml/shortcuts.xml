@@ -3,7 +3,7 @@
     <shortcut
         android:shortcutId="debug_mode_v2"
         android:enabled="true"
-        android:icon="@mipmap/ic_debug_shortcut_v2"
+        android:icon="@drawable/ic_debug_shortcut_v2"
         android:shortcutShortLabel="@string/debug_mode_short"
         android:shortcutLongLabel="@string/debug_mode_long">
         <intent

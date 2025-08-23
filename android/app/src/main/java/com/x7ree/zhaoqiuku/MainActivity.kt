@@ -493,9 +493,12 @@ class MainActivity : AppCompatActivity() {
 
     // 显示应用信息对话框
     private fun showAppInfoDialog() {
+        val packageInfo = packageManager.getPackageInfo(packageName, 0)
+        val versionName = packageInfo.versionName
+        
         val info = """
             应用名称: 找秋裤
-            版本号: 2.0
+            版本号: ${versionName}
             包名: $packageName
             调试模式: ${if (debugModeManager.isDebugModeEnabled()) "已启用" else "未启用"}
         """.trimIndent()
