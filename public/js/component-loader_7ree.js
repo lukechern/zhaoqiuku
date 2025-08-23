@@ -64,7 +64,7 @@ function getFallbackHtml_7ree(type) {
     if (type === 'header') {
         return (
             '<div class="header-top">' +
-            '  <div class="user-actions" id="userActions">' +
+            '  <div class="user-actions-left" id="userActions">' +
             '    <div class="auth-links" id="authLinks"></div>' +
             '    <div class="user-info" id="userInfo">' +
             '      <span class="user-email" id="userEmail"></span>' +
@@ -72,6 +72,8 @@ function getFallbackHtml_7ree(type) {
             '        <img src="img/logout.svg" alt="登出图标" class="logout-icon">' +
             '      </button>' +
             '    </div>' +
+            '  </div>' +
+            '  <div class="header-actions-right" id="headerActionsRight">' +
             '  </div>' +
             '</div>'
         );

@@ -282,7 +282,7 @@ class ComponentManager {
             if (!header.querySelector('.auth-title')) {
                 const titleDiv = document.createElement('div');
                 titleDiv.className = 'header-top';
-                titleDiv.innerHTML = '<div class="user-actions"><div class="auth-title">找秋裤 - AI语音寻物助手</div></div>';
+                titleDiv.innerHTML = '<div class="user-actions-left"><div class="auth-title">找秋裤 - AI语音寻物助手</div></div>';
                 header.insertAdjacentElement('afterbegin', titleDiv);
             }
         }

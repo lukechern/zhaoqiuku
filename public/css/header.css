@@ -8,7 +8,7 @@
     height: 50px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between; /* 改为两端对齐 */
     margin-bottom: 1rem;
     background: var(--surface-light);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -19,6 +19,7 @@
     top: 0;
     left: 0;
     right: 0;
+    padding: 0 16px; /* 添加左右内边距 */
 }
 
 /* header-top占位元素样式 */
@@ -30,6 +31,20 @@
 .user-actions {
     display: flex;
     align-items: center;
+}
+
+/* 左侧用户信息区域 */
+.user-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 右侧功能图标区域 */
+.header-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .auth-links .auth-link,

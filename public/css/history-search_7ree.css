@@ -3,12 +3,7 @@
     position: absolute;
 }
 
-/* 顶部左侧搜索图标按钮 */
-.search-toggle-btn_7ree {
-    /* 其余样式保持不变 */
-    margin-left: 6px;
-    margin-right: auto; /* 推动其余内容到右侧，确保位于左侧 */
-}
+/* 顶部右侧搜索图标按钮 */
 .search-toggle-btn_7ree {
     width: 40px;
     height: 40px;
@@ -18,7 +13,6 @@
     border: none;
     background: transparent;
     cursor: pointer;
-    margin-left: 6px;
     border-radius: 8px;
     transition: background 0.2s ease, opacity 0.2s ease;
 }

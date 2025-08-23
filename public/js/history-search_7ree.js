@@ -34,15 +34,22 @@
       return;
     }
 
-    // 在现有 header-top 的最左侧插入按钮
+    // 获取或创建右侧功能图标容器
+    let rightContainer = header.querySelector('.header-actions-right');
+    if (!rightContainer) {
+      rightContainer = document.createElement('div');
+      rightContainer.className = 'header-actions-right';
+      rightContainer.id = 'headerActionsRight';
+      header.appendChild(rightContainer);
+    }
+
+    // 在右侧容器中插入搜索按钮
     const btn = document.createElement('button');
     btn.className = 'search-toggle-btn_7ree';
     btn.setAttribute('aria-label', '搜索');
     btn.innerHTML = `<img class="search-icon_7ree" src="${ICONS.search}" alt="搜索">`;
 
-    // header 当前结构是右对齐，我们将按钮插到最前面
-    header.insertBefore(btn, header.firstChild);
-
+    rightContainer.appendChild(btn);
     btn.addEventListener('click', () => enterSearchMode_7ree());
   }
 
@@ -104,7 +111,7 @@
     header.innerHTML = originalHeaderHtml_7ree;
     isSearchMode_7ree = false;
 
-    // 重新插入搜索切换按钮（放回左侧）
+    // 重新插入搜索切换按钮（放回右侧）
     injectToggleSearchBtn_7ree();
 
     // 恢复后需重新绑定登出按钮事件
