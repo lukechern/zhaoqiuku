@@ -397,6 +397,8 @@ class HistoryManager {
 
     setSearchKeyword_7ree(keyword) {
         this.currentSearchKeyword_7ree = keyword || '';
+        // 设置搜索关键词后立即重新加载数据
+        this.loadHistoryRecords(true);
     }
 
     clearSearch_7ree() {
