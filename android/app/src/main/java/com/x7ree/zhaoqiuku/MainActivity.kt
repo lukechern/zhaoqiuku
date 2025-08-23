@@ -3,6 +3,9 @@ package com.x7ree.zhaoqiuku
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -88,6 +91,9 @@ class MainActivity : AppCompatActivity() {
             // 初始化调试模式悬浮球
             initializeDebugMode()
         }
+        
+        // 刷新快捷方式图标（强制更新）
+        refreshShortcuts()
     }
     
     private fun checkAndRequestPermissions(): Boolean {
@@ -427,10 +433,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 刷新快捷方式图标（强制更新）
+    private fun refreshShortcuts() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            try {
+                val shortcutManager = getSystemService(ShortcutManager::class.java)
+                
+                // 创建新的快捷方式，使用新的ID和图标
+                val debugShortcut = ShortcutInfo.Builder(this, "debug_mode_v2")
+                    .setShortLabel(getString(R.string.debug_mode_short))
+                    .setLongLabel(getString(R.string.debug_mode_long))
+                    .setIcon(Icon.createWithResource(this, R.drawable.ic_debug_shortcut_v2))
+                    .setIntent(
+                        Intent(Intent.ACTION_VIEW, Uri.parse("zhaoqiuku://debug"))
+                            .setClass(this, MainActivity::class.java)
+                    )
+                    .build()
+                
+                // 先移除旧的快捷方式（如果存在）
+                try {
+                    shortcutManager.removeDynamicShortcuts(listOf("debug_mode"))
+                } catch (e: Exception) {
+                    Log.d("MainActivity", "移除旧快捷方式失败: ${e.message}")
+                }
+                
+                // 设置新的快捷方式（使用setDynamicShortcuts强制更新）
+                shortcutManager.setDynamicShortcuts(listOf(debugShortcut))
+                
+                Log.d("MainActivity", "快捷方式图标已强制更新")
+            } catch (e: Exception) {
+                Log.e("MainActivity", "更新快捷方式失败", e)
+            }
+        }
+    }
+
     // 显示设置对话框
     private fun showSettingsDialog() {
         val options = arrayOf(
-            "禁用调试模式",
+            "关闭调试模式",
             "查看应用信息"
         )
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
-        android:shortcutId="debug_mode"
+        android:shortcutId="debug_mode_v2"
         android:enabled="true"
-        android:icon="@mipmap/ic_debug_wrench_shortcut"
+        android:icon="@mipmap/ic_debug_shortcut_v2"
         android:shortcutShortLabel="@string/debug_mode_short"
         android:shortcutLongLabel="@string/debug_mode_long">
         <intent
