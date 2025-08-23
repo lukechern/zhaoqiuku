@@ -141,8 +141,8 @@ class DebugFloatingBall @JvmOverloads constructor(
 
                 android.util.Log.d("DebugFloatingBall", "ACTION_UP: deltaX=$deltaX, deltaY=$deltaY, total=$totalDelta")
 
-                // 放宽点击阈值，提高点击识别率
-                if (totalDelta < 30) {
+                // 增大点击阈值，提高拖动操作的灵敏度
+                if (totalDelta < 80) {
                     android.util.Log.d("DebugFloatingBall", "识别为点击事件，切换菜单")
                     toggleMenu()
                     // 如果菜单展开，不设置自动隐藏
@@ -201,25 +201,47 @@ class DebugFloatingBall @JvmOverloads constructor(
         trashBall.visibility = View.VISIBLE
         settingsBall.visibility = View.VISIBLE
 
+        // 智能判断菜单弹出方向
+        val screenWidth = resources.displayMetrics.widthPixels
+        val currentX = layoutParams?.x ?: 0
+        val windowWidth = layoutParams?.width ?: BALL_SIZE
+        val ballCenterX = currentX + windowWidth / 2
+        val isOnLeftSide = ballCenterX < screenWidth / 2
+        
+        android.util.Log.d("DebugFloatingBall", "智能菜单方向: 球心X=$ballCenterX, 屏幕宽度=$screenWidth, 在左侧=$isOnLeftSide")
+
         // 创建动画 - 设计圆形布局，围绕主球显示
         val animatorSet = AnimatorSet()
-        val radius = 250f // 增加半径，确保菜单球不与主球重叠（主琇12dp + 菜单球77dp + 间距20dp = 217dp）
+        val radius = 250f // 增加半径，确保菜单球不与主球重叠
         
-        // 重新设计三个菜单球的位置，优化角度分布避免下方遮挡
-        // 刷新球：上方 (90°)
-        val refreshAngle = Math.toRadians(90.0)
-        val refreshX = -radius * Math.cos(refreshAngle).toFloat()
-        val refreshY = -radius * Math.sin(refreshAngle).toFloat()
+        // 根据主球位置调整菜单球的角度分布
+        val (refreshAngle, trashAngle, settingsAngle) = if (isOnLeftSide) {
+            // 主球在左侧，菜单从右侧弹出 (0°-180°区域)
+            Triple(
+                Math.toRadians(45.0),   // 右上方
+                Math.toRadians(0.0),    // 正右方  
+                Math.toRadians(315.0)   // 右下方
+            )
+        } else {
+            // 主球在右侧，菜单从左侧弹出 (180°-360°区域)
+            Triple(
+                Math.toRadians(135.0),  // 左上方
+                Math.toRadians(180.0),  // 正左方
+                Math.toRadians(225.0)   // 左下方
+            )
+        }
         
-        // 垃圾桶球：左上方 (150°)
-        val trashAngle = Math.toRadians(150.0)
-        val trashX = -radius * Math.cos(trashAngle).toFloat()
+        // 计算菜单球的位置
+        val refreshX = radius * Math.cos(refreshAngle).toFloat()
+        val refreshY = -radius * Math.sin(refreshAngle).toFloat() // 负号是因为Android坐标系Y轴向下
+        
+        val trashX = radius * Math.cos(trashAngle).toFloat()
         val trashY = -radius * Math.sin(trashAngle).toFloat()
         
-        // 设置球：左下方 (210°)，但不太下
-        val settingsAngle = Math.toRadians(210.0)
-        val settingsX = -radius * Math.cos(settingsAngle).toFloat()
+        val settingsX = radius * Math.cos(settingsAngle).toFloat()
         val settingsY = -radius * Math.sin(settingsAngle).toFloat()
+
+        android.util.Log.d("DebugFloatingBall", "菜单位置: refresh=($refreshX,$refreshY), trash=($trashX,$trashY), settings=($settingsX,$settingsY)")
 
         // 刷新球动画
         val refreshAnimX = ObjectAnimator.ofFloat(refreshBall, "translationX", 0f, refreshX)
@@ -244,6 +266,11 @@ class DebugFloatingBall @JvmOverloads constructor(
         animatorSet.duration = ANIMATION_DURATION
         animatorSet.start()
 
+        // 存储当前菜单位置，供collapseMenu使用
+        refreshBall.tag = Pair(refreshX, refreshY)
+        trashBall.tag = Pair(trashX, trashY)
+        settingsBall.tag = Pair(settingsX, settingsY)
+
         // 不立即设置自动隐藏，让菜单保持显示
         // scheduleAutoHide() // 注释掉这行
     }
@@ -252,22 +279,22 @@ class DebugFloatingBall @JvmOverloads constructor(
         if (!isMenuExpanded) return
         isMenuExpanded = false
 
-        // 创建动画 - 与展开动画保持一致
+        // 创建动画 - 使用存储的位置信息
         val animatorSet = AnimatorSet()
-        val radius = 250f // 与展开动画保持一致
         
-        // 计算三个菜单球的返回位置，与展开动画保持一致
-        val refreshAngle = Math.toRadians(90.0)
-        val refreshX = -radius * Math.cos(refreshAngle).toFloat()
-        val refreshY = -radius * Math.sin(refreshAngle).toFloat()
+        // 获取存储的菜单位置
+        val refreshPos = refreshBall.tag as? Pair<Float, Float> ?: Pair(0f, -250f)
+        val trashPos = trashBall.tag as? Pair<Float, Float> ?: Pair(-216.5f, -125f)
+        val settingsPos = settingsBall.tag as? Pair<Float, Float> ?: Pair(-216.5f, 125f)
         
-        val trashAngle = Math.toRadians(150.0)
-        val trashX = -radius * Math.cos(trashAngle).toFloat()
-        val trashY = -radius * Math.sin(trashAngle).toFloat()
-        
-        val settingsAngle = Math.toRadians(210.0)
-        val settingsX = -radius * Math.cos(settingsAngle).toFloat()
-        val settingsY = -radius * Math.sin(settingsAngle).toFloat()
+        val refreshX = refreshPos.first
+        val refreshY = refreshPos.second
+        val trashX = trashPos.first
+        val trashY = trashPos.second
+        val settingsX = settingsPos.first
+        val settingsY = settingsPos.second
+
+        android.util.Log.d("DebugFloatingBall", "收缩菜单位置: refresh=($refreshX,$refreshY), trash=($trashX,$trashY), settings=($settingsX,$settingsY)")
 
         // 刷新球动画
         val refreshAnimX = ObjectAnimator.ofFloat(refreshBall, "translationX", refreshX, 0f)
