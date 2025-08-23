@@ -13,6 +13,10 @@ export class AudioRecorder {
         this.audioBlob = null;
         this.audioUrl = null;
         this.volumeVisualizer = null;
+        
+        // 新增：静音自动结束功能
+        this.silenceAutoStop = true; // 是否启用静音自动结束
+        this.onSilenceAutoStop = null; // 静音自动结束回调
     }
 
     // 初始化音频权限
@@ -311,6 +315,17 @@ export class AudioRecorder {
             if (!this.volumeVisualizer) {
                 this.volumeVisualizer = new VolumeVisualizer(this.audioStream, this.volumeVisualizerContainer);
             }
+            
+            // 新增：设置静音自动结束回调
+            if (this.silenceAutoStop && this.onSilenceAutoStop) {
+                this.volumeVisualizer.setSilenceTimeoutCallback(() => {
+                    console.log('音量可视化器检测到静音超时，触发自动结束录音');
+                    if (this.onSilenceAutoStop && typeof this.onSilenceAutoStop === 'function') {
+                        this.onSilenceAutoStop();
+                    }
+                });
+            }
+            
             this.volumeVisualizer.start();
         } catch (error) {
             console.error('启动音量可视化失败:', error);
@@ -320,8 +335,22 @@ export class AudioRecorder {
     // 停止音量可视化
     stopVolumeVisualizer() {
         if (this.volumeVisualizer) {
+            // 新增：停止时重置静音检测状态
+            this.volumeVisualizer.resetSilenceDetection();
             this.volumeVisualizer.stop();
         }
+    }
+
+    // 新增：设置静音自动结束回调
+    setSilenceAutoStopCallback(callback) {
+        this.onSilenceAutoStop = callback;
+        console.log('设置静音自动结束回调函数');
+    }
+    
+    // 新增：启用/禁用静音自动结束功能
+    setSilenceAutoStop(enabled) {
+        this.silenceAutoStop = enabled;
+        console.log(`静音自动结束功能${enabled ? '已启用' : '已禁用'}`);
     }
 
     // 销毁音量可视化

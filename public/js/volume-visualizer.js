@@ -9,6 +9,13 @@ export class VolumeVisualizer {
         this.analyser = null;
         this.dataArray = null;
         this.volumeBars = [];
+        
+        // 新增：静音检测相关属性
+        this.silenceThreshold = 0.02; // 静音阈值，低于此值视为静音
+        this.silenceStartTime = null; // 静音开始时间
+        this.silenceTimeout = 4000; // 静音超时时间（4秒）
+        this.onSilenceTimeout = null; // 静音超时回调函数
+        this.lastVolumeLevel = 0; // 上一次的音量级别
 
         this.init();
     }
@@ -133,6 +140,9 @@ export class VolumeVisualizer {
         const average = sum / lowFreqEnd;
         const normalizedVolume = average / 255; // 0-1
 
+        // 新增：检测静音
+        this.checkSilence(normalizedVolume);
+
         // 提高灵敏度，使用对数缩放
         let volumeLevel;
         if (normalizedVolume < 0.01) {
@@ -143,6 +153,7 @@ export class VolumeVisualizer {
             volumeLevel = Math.max(1, Math.min(10, Math.floor(logVolume * 12) + 1));
         }
 
+        this.lastVolumeLevel = volumeLevel;
         return volumeLevel;
     }
 
@@ -231,6 +242,52 @@ export class VolumeVisualizer {
     // 检查是否支持
     static isSupported() {
         return !!(window.AudioContext || window.webkitAudioContext);
+    }
+
+    // 新增：检测静音
+    checkSilence(normalizedVolume) {
+        const currentTime = Date.now();
+        
+        // 判断是否为静音
+        const isSilent = normalizedVolume < this.silenceThreshold;
+        
+        if (isSilent) {
+            // 如果是静音，记录静音开始时间
+            if (this.silenceStartTime === null) {
+                this.silenceStartTime = currentTime;
+                console.log('检测到静音开始');
+            } else {
+                // 检查静音持续时间
+                const silenceDuration = currentTime - this.silenceStartTime;
+                if (silenceDuration >= this.silenceTimeout) {
+                    console.log(`静音持续${silenceDuration}ms，触发自动结束录音`);
+                    // 触发静音超时回调
+                    if (this.onSilenceTimeout && typeof this.onSilenceTimeout === 'function') {
+                        this.onSilenceTimeout();
+                        // 重置静音检测状态，避免重复触发
+                        this.silenceStartTime = null;
+                    }
+                }
+            }
+        } else {
+            // 如果有声音，重置静音检测
+            if (this.silenceStartTime !== null) {
+                console.log('检测到声音，重置静音检测');
+                this.silenceStartTime = null;
+            }
+        }
+    }
+    
+    // 新增：设置静音超时回调
+    setSilenceTimeoutCallback(callback) {
+        this.onSilenceTimeout = callback;
+        console.log('设置静音超时回调函数');
+    }
+    
+    // 新增：重置静音检测状态
+    resetSilenceDetection() {
+        this.silenceStartTime = null;
+        console.log('重置静音检测状态');
     }
 
     // 调试用：强制显示音量可视化

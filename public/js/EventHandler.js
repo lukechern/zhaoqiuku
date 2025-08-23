@@ -6,6 +6,36 @@ export class EventHandler {
         this.app = app;
         // 新增：取消占位符定时器句柄，防止竞态覆盖UI_7ree
         this.cancelPlaceholderTimeout_7ree = null;
+        
+        // 新增：初始化静音自动结束功能
+        this.initSilenceAutoStop();
+    }
+
+    // 新增：初始化静音自动结束功能
+    initSilenceAutoStop() {
+        // 设置音频录制器的静音自动结束回调
+        this.app.audioRecorder.setSilenceAutoStopCallback(() => {
+            console.log('检测到用户静音超时4秒，自动结束录音');
+            this.handleSilenceAutoStop();
+        });
+    }
+    
+    // 新增：处理静音自动结束录音
+    handleSilenceAutoStop() {
+        if (!this.app.audioRecorder.isRecording) {
+            console.log('当前未在录音，忽略静音自动结束');
+            return;
+        }
+        
+        console.log('执行静音自动结束录音流程');
+        
+        // 直接调用停止录音方法，这会触发正常的录音完成流程
+        this.handleRecordingStop();
+        
+        // 可选：显示提示信息
+        setTimeout(() => {
+            this.app.uiController.showMessage('检测到您停止说话，已自动结束录音', 'info');
+        }, 100);
     }
 
     // 处理录音开始
