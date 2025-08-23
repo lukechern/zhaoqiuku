@@ -9,12 +9,14 @@
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"/>
   <img src="https://img.shields.io/badge/platform-Android%20%7C%20Web-orange.svg" alt="Platform"/>
   <img src="https://img.shields.io/badge/Node.js-18+-green.svg" alt="Node.js"/>
+  <img src="https://img.shields.io/badge/JavaScript-ES2023-yellow.svg" alt="JavaScript ES2023"/>
   <img src="https://img.shields.io/badge/Kotlin-1.8+-purple.svg" alt="Kotlin"/>
   <img src="https://img.shields.io/badge/AI-Google%20Gemini-blue.svg" alt="Google Gemini"/>
   <img src="https://img.shields.io/badge/Speech-Azure%20TTS-purple.svg" alt="Azure TTS"/>
   <img src="https://img.shields.io/badge/Database-Supabase-yellow.svg" alt="Supabase"/>
   <img src="https://img.shields.io/badge/Email-Resend-red.svg" alt="Resend"/>
   <img src="https://img.shields.io/badge/Deployment-Vercel-black.svg" alt="Vercel"/>
+  <img src="https://img.shields.io/badge/DNS-Cloudflare-orange.svg" alt="Cloudflare DNS"/>
 </p>
 
 一个基于WebView的语音识别应用，支持物品存放和查找的语音指令识别。
@@ -581,6 +583,49 @@ POST /api/tts
 - **安全认证**: JWT Token, 邮箱验证码, 邀请码系统
 - **部署平台**: Vercel (自动部署, 环境变量管理)
 - **开发工具**: Git, VSCode, Chrome DevTools调试
+
+## 免责声明
+
+**⚠️ 重要声明**
+
+本项目为个人学习和研究目的开发，完全**为爱发电**，没有任何商业利益。
+
+- **不提供任何服务**: 本项目仅作为开源代码分享，不提供任何形式的云服务、托管服务或技术支持
+- **不承担任何责任**: 使用本项目的风险由使用者自行承担，开发者不对使用过程中产生的任何问题负责
+- **非商业用途**: 本项目仅供学习、研究和个人使用，不得用于任何商业用途
+- **技术风险提示**: 项目涉及AI服务、语音识别等技术，使用时请注意相关法律法规和伦理要求
+
+**请在使用前仔细阅读并理解以上声明。**
+
+## 致谢
+
+**🙏 衷心感谢**
+
+- **为全人类科技进步而努力的人们**: 感谢所有为科技发展做出贡献的科学家、工程师和研究人员
+- **AI技术的创造者们**: 特别感谢Google Gemini、Azure AI等AI技术的开发者，为语音识别和自然语言处理技术的发展奠定了基础
+- **AI开发工具的先驱者们**: 感谢所有AI编程工具的开发者，让代码编写变得更加智能和高效
+  - **大语言模型**: Claude 4, Qwen Code 3, Gemini 2.5 Pro, GPT-5等先进的AI模型
+  - **AI IDE工具**: KIRO, TRAE, Qoder, RooCode, Cline等创新的AI编程助手
+
+### 🔗 服务供应商致谢
+
+本项目依赖以下优秀的服务供应商提供的服务，在此表示诚挚的感谢：
+
+- **Google Cloud Platform**: 提供Gemini AI模型支持，使智能语音识别成为可能
+- **Microsoft Azure**: 提供Speech Services (TTS)服务，带来高质量的中文语音合成体验
+- **Supabase**: 提供PostgreSQL数据库服务和实时数据同步，让数据管理变得简单可靠
+- **Resend**: 提供邮件服务API，支持安全的用户邮箱验证功能
+- **Vercel**: 提供Serverless平台和自动部署服务，让项目快速上线和持续集成
+- **Cloudflare**: 提供域名解析和CDN服务，确保网站访问的稳定性和速度
+- **Android Open Source Project**: 提供Android开发框架和WebView组件，支持跨平台应用开发
+
+### 🌟 社区与支持
+
+- **开源社区**: 感谢所有开源项目的贡献者，让技术创新变得更加开放和可及
+- **开发者工具提供商**: 感谢VSCode、Git、Node.js等开发工具的开发者
+- **用户和反馈者**: 感谢使用和测试本项目的朋友们，你们的反馈是项目改进的动力
+
+**愿科技之光照亮人类前行的道路，愿AI技术真正服务于人类的福祉。**
 
 ## 许可证
 
