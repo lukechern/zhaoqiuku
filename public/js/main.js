@@ -23,17 +23,26 @@ function showMicrophoneIcon() {
     const waitForMicrophoneElements = () => {
         const microphoneIcon = document.getElementById('microphoneIcon');
         const microphoneButton = document.getElementById('microphoneButton');
+        const loadingIcon = document.getElementById('loadingIcon');
         
-        if (microphoneIcon && microphoneButton) {
-            // 显示麦克风图标
-            microphoneIcon.classList.remove('hidden-initial');
-            microphoneIcon.classList.add('show');
+        if (microphoneIcon && microphoneButton && loadingIcon) {
+            console.log('开始从加载图标切换到麦克风图标');
             
-            // 启用麦克风按钮
-            microphoneButton.classList.remove('initializing');
-            microphoneButton.classList.add('ready');
+            // 首先隐藏加载图标
+            loadingIcon.classList.add('hidden');
             
-            console.log('麦克风按钮和图标已启用');
+            // 等待加载图标淡出动画完成后显示麦克风图标
+            setTimeout(() => {
+                // 显示麦克风图标
+                microphoneIcon.classList.remove('hidden-initial');
+                microphoneIcon.classList.add('show');
+                
+                // 启用麦克风按钮
+                microphoneButton.classList.remove('initializing');
+                microphoneButton.classList.add('ready');
+                
+                console.log('麦克风按钮和图标已启用');
+            }, 300); // 等待加载图标淡出动画完成
         } else {
             // 如果元素还没加载，等待100ms后重试
             setTimeout(waitForMicrophoneElements, 100);
@@ -145,8 +154,10 @@ window.testMicrophoneButton = function() {
     
     const button = document.getElementById('microphoneButton');
     const icon = document.getElementById('microphoneIcon');
+    const loadingIcon = document.getElementById('loadingIcon');
     console.log('按钮元素:', button);
-    console.log('图标元素:', icon);
+    console.log('麦克风图标元素:', icon);
+    console.log('加载图标元素:', loadingIcon);
     
     if (button) {
         console.log('按钮样式:', {
@@ -161,10 +172,18 @@ window.testMicrophoneButton = function() {
     }
     
     if (icon) {
-        console.log('图标样式:', {
+        console.log('麦克风图标样式:', {
             opacity: getComputedStyle(icon).opacity,
             pointerEvents: getComputedStyle(icon).pointerEvents,
             classList: Array.from(icon.classList)
+        });
+    }
+    
+    if (loadingIcon) {
+        console.log('加载图标样式:', {
+            opacity: getComputedStyle(loadingIcon).opacity,
+            pointerEvents: getComputedStyle(loadingIcon).pointerEvents,
+            classList: Array.from(loadingIcon.classList)
         });
     }
     
@@ -188,6 +207,7 @@ window.checkAppInitStatus = function() {
         initialized: window.voiceAppInitialized,
         microphoneReady: document.getElementById('microphoneButton')?.classList.contains('ready'),
         iconVisible: document.getElementById('microphoneIcon')?.classList.contains('show'),
+        loadingIconHidden: document.getElementById('loadingIcon')?.classList.contains('hidden'),
         authReady: !!window.authManager,
         appReady: !!window.app
     };

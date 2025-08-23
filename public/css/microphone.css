@@ -34,21 +34,42 @@
 /* 初始化时的麦克风按钮状态（包含隐藏图标的按钮） */
 .microphone-button:has(.microphone-icon.hidden-initial) {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.8;
     pointer-events: none;
+    /* 添加轻微的脉冲效果表示正在加载 */
+    animation: pulse-loading 2s ease-in-out infinite;
 }
 
 /* 兼容性备用方案（对于不支持:has()的浏览器） */
 .microphone-button.initializing {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.8;
     pointer-events: none;
+    /* 添加轻微的脉冲效果表示正在加载 */
+    animation: pulse-loading 2s ease-in-out infinite;
 }
 
 .microphone-button.ready {
     cursor: pointer;
     opacity: 1;
     pointer-events: auto;
+    animation: none;
+}
+
+/* 加载状态的脉冲动画 */
+@keyframes pulse-loading {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 
+            0 10px 30px rgba(102, 126, 234, 0.3),
+            0 0 0 0 rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 
+            0 15px 35px rgba(102, 126, 234, 0.4),
+            0 0 0 5px rgba(102, 126, 234, 0.2);
+    }
 }
 
 .microphone-button:hover {
@@ -90,6 +111,33 @@
 .microphone-icon.show {
     opacity: 1;
     pointer-events: auto;
+}
+
+/* 加载图标样式 */
+.loading-icon {
+    width: 48px;
+    height: 48px;
+    color: white;
+    fill: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    animation: rotate-loading 1.5s linear infinite;
+    transition: opacity 0.3s ease;
+}
+
+/* 隐藏加载图标 */
+.loading-icon.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 旋转动画 */
+@keyframes rotate-loading {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .listening-indicator {
