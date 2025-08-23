@@ -34,19 +34,23 @@
 /* 初始化时的麦克风按钮状态（包含隐藏图标的按钮） */
 .microphone-button:has(.microphone-icon.hidden-initial) {
     cursor: not-allowed;
-    opacity: 0.8;
+    opacity: 0; /* 完全透明 */
     pointer-events: none;
-    /* 添加轻微的脉冲效果表示正在加载 */
-    animation: pulse-loading 2s ease-in-out infinite;
+    /* 移除所有按钮动效，减少视觉过载 */
+    animation: none;
+    transform: none;
+    box-shadow: none;
 }
 
 /* 兼容性备用方案（对于不支持:has()的浏览器） */
 .microphone-button.initializing {
     cursor: not-allowed;
-    opacity: 0.8;
+    opacity: 0; /* 完全透明 */
     pointer-events: none;
-    /* 添加轻微的脉冲效果表示正在加载 */
-    animation: pulse-loading 2s ease-in-out infinite;
+    /* 移除所有按钮动效，减少视觉过载 */
+    animation: none;
+    transform: none;
+    box-shadow: none;
 }
 
 .microphone-button.ready {
@@ -56,7 +60,8 @@
     animation: none;
 }
 
-/* 加载状态的脉冲动画 */
+/* 加载状态的脉冲动画 - 已禁用，按钮在加载时完全透明 */
+/*
 @keyframes pulse-loading {
     0%, 100% {
         transform: scale(1);
@@ -71,6 +76,7 @@
             0 0 0 5px rgba(102, 126, 234, 0.2);
     }
 }
+*/
 
 .microphone-button:hover {
     transform: translateY(-2px) scale(1.05);
