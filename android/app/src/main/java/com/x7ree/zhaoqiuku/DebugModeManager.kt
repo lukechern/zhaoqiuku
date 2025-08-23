@@ -24,6 +24,7 @@ class DebugModeManager private constructor(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private var debugFloatingBall: DebugFloatingBall? = null
     private var isDebugModeActive = false
+    private var shouldShowFloatingBall = false // 记录悬浯球是否应该显示
 
     fun isDebugModeEnabled(): Boolean {
         return prefs.getBoolean(KEY_DEBUG_MODE_ENABLED, false)
@@ -46,6 +47,8 @@ class DebugModeManager private constructor(context: Context) {
             return
         }
 
+        shouldShowFloatingBall = true // 记录应该显示悬浮球
+        
         if (debugFloatingBall == null) {
             debugFloatingBall = DebugFloatingBall(context)
             debugFloatingBall?.setOnMenuItemClickListener(onMenuItemClick)
@@ -58,11 +61,22 @@ class DebugModeManager private constructor(context: Context) {
         }
     }
 
-    fun hideDebugFloatingBall() {
+    fun hideDebugFloatingBall(permanently: Boolean = true) {
         debugFloatingBall?.hide()
         debugFloatingBall = null
         isDebugModeActive = false
+        if (permanently) {
+            shouldShowFloatingBall = false // 永久隐藏
+        }
         Log.d(TAG, "调试悬浮球已隐藏")
+    }
+    
+    fun temporarilyHideFloatingBall() {
+        hideDebugFloatingBall(false) // 临时隐藏，不改变shouldShowFloatingBall状态
+    }
+    
+    fun shouldShowFloatingBall(): Boolean {
+        return shouldShowFloatingBall && isDebugModeEnabled()
     }
 
     fun isDebugModeActive(): Boolean {

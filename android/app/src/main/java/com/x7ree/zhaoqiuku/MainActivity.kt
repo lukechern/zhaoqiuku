@@ -430,7 +430,6 @@ class MainActivity : AppCompatActivity() {
     // 显示设置对话框
     private fun showSettingsDialog() {
         val options = arrayOf(
-            "启用调试模式",
             "禁用调试模式",
             "查看应用信息"
         )
@@ -440,18 +439,10 @@ class MainActivity : AppCompatActivity() {
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> {
-                        debugModeManager.enableDebugMode()
-                        // 只有从调试模式进入时才显示悬浮球
-                        if (isFromDebugMode) {
-                            initializeDebugMode()
-                        }
-                        Log.d("MainActivity", "调试模式已启用")
-                    }
-                    1 -> {
                         debugModeManager.disableDebugMode()
                         Log.d("MainActivity", "调试模式已禁用")
                     }
-                    2 -> {
+                    1 -> {
                         showAppInfoDialog()
                     }
                 }
@@ -482,12 +473,20 @@ class MainActivity : AppCompatActivity() {
         webView.clearCache(true)
 
         // 检查是否从设置页面返回并获得了悬浮窗权限
-        // 只有从调试模式进入时才显示悬浮球
-        if (isFromDebugMode && debugModeManager.isDebugModeEnabled() && !debugModeManager.isDebugModeActive() && checkOverlayPermission()) {
+        // 或者应用从后台返回前台时恢复悬浮球显示
+        if (isFromDebugMode && debugModeManager.shouldShowFloatingBall() && checkOverlayPermission()) {
             showDebugFloatingBall()
         } else if (!isFromDebugMode && debugModeManager.isDebugModeActive()) {
             // 如果是从正常模式进入但悬浮球正在显示，则隐藏它
             debugModeManager.hideDebugFloatingBall()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // 应用进入后台或最小化时临时隐藏悬浮球，确保悬浮球只在app内显示
+        if (debugModeManager.isDebugModeActive()) {
+            debugModeManager.temporarilyHideFloatingBall()
         }
     }
 
