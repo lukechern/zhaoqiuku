@@ -11,7 +11,8 @@ data class WebViewConfig(
     val enableDebug: Boolean = false,
     val enableJavaScript: Boolean = true,
     val enableDomStorage: Boolean = true,
-    val mediaPlaybackRequiresUserGesture: Boolean = true
+    val mediaPlaybackRequiresUserGesture: Boolean = true,
+    val appName: String = "找秋裤"  // 添加应用名称配置，默认值为"找秋裤"
 ) {
     companion object {
         private const val TAG = "WebViewConfig"
@@ -28,7 +29,8 @@ data class WebViewConfig(
                     enableDebug = jsonObject.optBoolean("enableDebug", false),
                     enableJavaScript = jsonObject.optBoolean("enableJavaScript", true),
                     enableDomStorage = jsonObject.optBoolean("enableDomStorage", true),
-                    mediaPlaybackRequiresUserGesture = jsonObject.optBoolean("mediaPlaybackRequiresUserGesture", true)
+                    mediaPlaybackRequiresUserGesture = jsonObject.optBoolean("mediaPlaybackRequiresUserGesture", true),
+                    appName = jsonObject.optString("appName", "找秋裤")  // 从配置文件读取应用名称
                 )
             } catch (e: IOException) {
                 Log.e(TAG, "无法读取配置文件: ${e.message}")

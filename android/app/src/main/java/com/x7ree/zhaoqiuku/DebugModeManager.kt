@@ -3,6 +3,7 @@ package com.x7ree.zhaoqiuku
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import com.x7ree.zhaoqiuku.debug.DebugMenuItem
 
 class DebugModeManager private constructor(context: Context) {
 
@@ -41,7 +42,7 @@ class DebugModeManager private constructor(context: Context) {
         Log.d(TAG, "调试模式已禁用")
     }
 
-    fun showDebugFloatingBall(context: Context, onMenuItemClick: (DebugFloatingBall.MenuItem) -> Unit) {
+    fun showDebugFloatingBall(context: Context, onMenuItemClick: (DebugMenuItem) -> Unit) {
         if (!isDebugModeEnabled()) {
             Log.d(TAG, "调试模式未启用，无法显示悬浮球")
             return

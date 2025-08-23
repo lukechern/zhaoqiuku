@@ -6,5 +6,6 @@
     "enableDomStorage": true,
     "mediaPlaybackRequiresUserGesture": false,
     "disableCache": true,
-    "forceRefresh": true
+    "forceRefresh": true,
+    "appName": "找秋裤"
 }

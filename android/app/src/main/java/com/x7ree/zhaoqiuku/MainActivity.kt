@@ -25,7 +25,7 @@ import com.x7ree.zhaoqiuku.utils.*
 class MainActivity : AppCompatActivity() {
 
     lateinit var webView: WebView
-    private lateinit var config: WebViewConfig
+    lateinit var config: WebViewConfig  // 将config改为public访问权限并延迟初始化
     private lateinit var debugModeManager: DebugModeManager
     private lateinit var webViewSetupHelper: WebViewSetupHelper
     private lateinit var permissionHelper: PermissionHelper

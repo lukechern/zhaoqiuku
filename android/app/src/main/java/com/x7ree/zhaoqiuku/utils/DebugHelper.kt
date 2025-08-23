@@ -7,7 +7,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import com.x7ree.zhaoqiuku.DebugFloatingBall
+import com.x7ree.zhaoqiuku.debug.DebugMenuItem
 import com.x7ree.zhaoqiuku.DebugModeManager
 import com.x7ree.zhaoqiuku.MainActivity
 import com.x7ree.zhaoqiuku.R
@@ -78,15 +78,15 @@ class DebugHelper(private val activity: MainActivity, private val debugModeManag
     private fun showDebugFloatingBall() {
         debugModeManager.showDebugFloatingBall(activity) { menuItem ->
             when (menuItem) {
-                DebugFloatingBall.MenuItem.REFRESH -> {
+                DebugMenuItem.REFRESH -> {
                     Log.d("DebugHelper", "执行页面刷新")
                     activity.forceRefresh()
                 }
-                DebugFloatingBall.MenuItem.CLEAR_CACHE -> {
+                DebugMenuItem.CLEAR_CACHE -> {
                     Log.d("DebugHelper", "执行清空缓存")
                     clearAppCache()
                 }
-                DebugFloatingBall.MenuItem.SETTINGS -> {
+                DebugMenuItem.SETTINGS -> {
                     Log.d("DebugHelper", "打开参数配置")
                     showSettingsDialog()
                 }
@@ -149,9 +149,11 @@ class DebugHelper(private val activity: MainActivity, private val debugModeManag
     private fun showAppInfoDialog() {
         val packageInfo = activity.packageManager.getPackageInfo(activity.packageName, 0)
         val versionName = packageInfo.versionName
+        // 从配置中读取应用名称
+        val appName = activity.config.appName
         
         val info = """
-            应用名称: 找秋裤
+            应用名称: $appName
             版本号: ${versionName}
             包名: ${activity.packageName}
             调试模式: ${if (debugModeManager.isDebugModeEnabled()) "已启用" else "未启用"}
@@ -160,7 +162,7 @@ class DebugHelper(private val activity: MainActivity, private val debugModeManag
         AlertDialog.Builder(activity)
             .setTitle("应用信息")
             .setMessage(info)
-            .setPositiveButton("确定", null)
+            .setPositiveButton("我知道了", null)
             .show()
     }
 }
