@@ -17,6 +17,9 @@
     <!-- WebView相关权限 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- 悬浮窗权限 - 用于调试模式 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <!-- 硬件特性声明 - 重要 -->
     <uses-feature 
         android:name="android.hardware.microphone" 
@@ -40,6 +43,21 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- 调试模式自定义URI处理 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="zhaoqiuku"
+                    android:host="debug" />
+            </intent-filter>
+
+            <!-- 调试模式快捷方式 -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
     </application>
 

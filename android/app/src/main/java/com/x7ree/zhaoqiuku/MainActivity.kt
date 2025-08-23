@@ -22,11 +22,13 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.x7ree.zhaoqiuku.config.WebViewConfig
 
 class MainActivity : AppCompatActivity() {
-    
+
     private lateinit var webView: WebView
     private lateinit var config: WebViewConfig
     private val PERMISSION_REQUEST_CODE = 1001
     private var pendingPermissionRequest: PermissionRequest? = null
+    private lateinit var debugModeManager: DebugModeManager
+    private var isFromDebugMode = false
     
     private fun setupFullScreen() {
         // 隐藏标题栏
@@ -59,24 +61,32 @@ class MainActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
+        // 初始化调试模式管理器
+        debugModeManager = DebugModeManager.getInstance(this)
+
+        // 处理调试模式intent
+        handleDebugModeIntent()
+
         // 加载配置
         config = WebViewConfig.loadFromAssets(this)
-        
+
         // 设置全屏显示
         setupFullScreen()
-        
+
         setContentView(R.layout.activity_main)
-        
+
         webView = findViewById(R.id.webview)
-        
+
         // 设置返回键处理
         setupBackPressedHandler()
-        
+
         // 先检查权限，再设置WebView
         if (checkAndRequestPermissions()) {
             setupWebView()
             loadWebPage()
+            // 初始化调试模式悬浮球
+            initializeDebugMode()
         }
     }
     
@@ -301,23 +311,190 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
     
-
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        webView.destroy()
-    }
-    
-    override fun onResume() {
-        super.onResume()
-        // 每次恢复时清除缓存，确保获取最新内容
-        webView.clearCache(true)
-    }
-    
     // 强制刷新方法
     private fun forceRefresh() {
         webView.clearCache(true)
         webView.clearHistory()
         webView.reload()
+    }
+
+    // 处理调试模式intent
+    private fun handleDebugModeIntent() {
+        val intent = intent
+        val data = intent.data
+
+        if (data != null && data.toString() == "zhaoqiuku://debug") {
+            // 标记为从调试模式进入
+            isFromDebugMode = true
+            // 启用调试模式
+            debugModeManager.enableDebugMode()
+            Log.d("MainActivity", "通过长按菜单进入调试模式")
+
+            // 显示确认提示
+            AlertDialog.Builder(this)
+                .setTitle("调试模式")
+                .setMessage("调试模式已启用，右下角将显示调试悬浮球")
+                .setPositiveButton("确定", null)
+                .show()
+        }
+    }
+
+    // 初始化调试模式
+    private fun initializeDebugMode() {
+        // 只有从调试模式进入时才显示悬浮球
+        if (isFromDebugMode && debugModeManager.isDebugModeEnabled()) {
+            // 检查悬浮窗权限
+            if (checkOverlayPermission()) {
+                showDebugFloatingBall()
+            } else {
+                requestOverlayPermission()
+            }
+        }
+    }
+
+    // 检查悬浮窗权限
+    private fun checkOverlayPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(this)
+        } else {
+            true
+        }
+    }
+
+    // 请求悬浮窗权限
+    private fun requestOverlayPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            AlertDialog.Builder(this)
+                .setTitle("需要权限")
+                .setMessage("调试模式需要悬浮窗权限才能显示调试按钮")
+                .setPositiveButton("去设置") { _, _ ->
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                    intent.data = Uri.parse("package:$packageName")
+                    startActivity(intent)
+                }
+                .setNegativeButton("取消") { _, _ ->
+                    debugModeManager.disableDebugMode()
+                }
+                .setCancelable(false)
+                .show()
+        }
+    }
+
+    // 显示调试悬浮球
+    private fun showDebugFloatingBall() {
+        debugModeManager.showDebugFloatingBall(this) { menuItem ->
+            when (menuItem) {
+                DebugFloatingBall.MenuItem.REFRESH -> {
+                    Log.d("MainActivity", "执行页面刷新")
+                    forceRefresh()
+                }
+                DebugFloatingBall.MenuItem.CLEAR_CACHE -> {
+                    Log.d("MainActivity", "执行清空缓存")
+                    clearAppCache()
+                }
+                DebugFloatingBall.MenuItem.SETTINGS -> {
+                    Log.d("MainActivity", "打开参数配置")
+                    showSettingsDialog()
+                }
+            }
+        }
+    }
+
+    // 清空应用缓存
+    private fun clearAppCache() {
+        try {
+            webView.clearCache(true)
+            webView.clearHistory()
+            webView.clearFormData()
+
+            // 清空应用缓存目录
+            cacheDir?.deleteRecursively()
+
+            AlertDialog.Builder(this)
+                .setTitle("缓存清理")
+                .setMessage("缓存已清空完成")
+                .setPositiveButton("确定", null)
+                .show()
+
+            Log.d("MainActivity", "应用缓存已清空")
+        } catch (e: Exception) {
+            Log.e("MainActivity", "清空缓存失败", e)
+            AlertDialog.Builder(this)
+                .setTitle("缓存清理")
+                .setMessage("清空缓存失败: ${e.message}")
+                .setPositiveButton("确定", null)
+                .show()
+        }
+    }
+
+    // 显示设置对话框
+    private fun showSettingsDialog() {
+        val options = arrayOf(
+            "启用调试模式",
+            "禁用调试模式",
+            "查看应用信息"
+        )
+
+        AlertDialog.Builder(this)
+            .setTitle("参数配置")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        debugModeManager.enableDebugMode()
+                        // 只有从调试模式进入时才显示悬浮球
+                        if (isFromDebugMode) {
+                            initializeDebugMode()
+                        }
+                        Log.d("MainActivity", "调试模式已启用")
+                    }
+                    1 -> {
+                        debugModeManager.disableDebugMode()
+                        Log.d("MainActivity", "调试模式已禁用")
+                    }
+                    2 -> {
+                        showAppInfoDialog()
+                    }
+                }
+            }
+            .setNegativeButton("取消", null)
+            .show()
+    }
+
+    // 显示应用信息对话框
+    private fun showAppInfoDialog() {
+        val info = """
+            应用名称: 找秋裤
+            版本号: 2.0
+            包名: $packageName
+            调试模式: ${if (debugModeManager.isDebugModeEnabled()) "已启用" else "未启用"}
+        """.trimIndent()
+
+        AlertDialog.Builder(this)
+            .setTitle("应用信息")
+            .setMessage(info)
+            .setPositiveButton("确定", null)
+            .show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 每次恢复时清除缓存，确保获取最新内容
+        webView.clearCache(true)
+
+        // 检查是否从设置页面返回并获得了悬浮窗权限
+        // 只有从调试模式进入时才显示悬浮球
+        if (isFromDebugMode && debugModeManager.isDebugModeEnabled() && !debugModeManager.isDebugModeActive() && checkOverlayPermission()) {
+            showDebugFloatingBall()
+        } else if (!isFromDebugMode && debugModeManager.isDebugModeActive()) {
+            // 如果是从正常模式进入但悬浮球正在显示，则隐藏它
+            debugModeManager.hideDebugFloatingBall()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        webView.destroy()
+        // 隐藏调试悬浮球
+        debugModeManager.hideDebugFloatingBall()
     }
 }
