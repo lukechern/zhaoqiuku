@@ -140,12 +140,44 @@ class StateSyncManager {
         }
     }
 
-    // 手动触发同步
+    // 手动触发同步（优化：增加智能检查）
     forcSync() {
         console.log('手动触发状态同步...');
-        this.syncAttempts = 0;
-        this.isSynced = false; // 重置同步状态
-        this.performSync();
+        
+        // 检查是否真的需要同步
+        if (this.checkIfSyncNeeded()) {
+            this.syncAttempts = 0;
+            this.isSynced = false; // 重置同步状态
+            this.performSync();
+        } else {
+            console.log('状态已一致，跳过同步操作');
+        }
+    }
+    
+    // 检查是否需要同步
+    checkIfSyncNeeded() {
+        if (!window.authManager) {
+            return false;
+        }
+        
+        const authLinks = document.getElementById('authLinks');
+        const userInfo = document.getElementById('userInfo');
+        const userEmail = document.getElementById('userEmail');
+
+        if (!authLinks || !userInfo || !userEmail) {
+            return true; // DOM元素不存在，需要同步
+        }
+
+        // 检查状态是否一致
+        const isAuthenticated = window.authManager.isAuthenticated;
+        const authLinksVisible = authLinks.style.display !== 'none' && !authLinks.classList.contains('hidden');
+        const userInfoVisible = !userInfo.classList.contains('hidden') && userInfo.style.display !== 'none';
+
+        // 检查是否需要同步
+        return (isAuthenticated && authLinksVisible) ||
+            (!isAuthenticated && userInfoVisible) ||
+            (isAuthenticated && !userInfoVisible) ||
+            (!isAuthenticated && !authLinksVisible);
     }
 }
 

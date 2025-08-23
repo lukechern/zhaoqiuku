@@ -5,6 +5,9 @@ export class UserStateManager {
         this.app = app;
         this.stateCheckCount = 0; // 添加状态检查计数器
         this.maxInitialChecks = 5; // 限制初始化时的检查次数
+        this.lastUpdateTime = 0; // 记录上次更新时间
+        this.updateCooldown = 500; // 更新冷却时间（毫秒）
+        this.isInitialized = false; // 初始化状态标志
     }
 
     // 初始化用户状态
@@ -71,7 +74,8 @@ export class UserStateManager {
 
             if (window.authManager) {
                 // console.log('认证管理器已就绪，初始化用户状态显示');
-                this.updateUserDisplay();
+                this.updateUserDisplay(true); // 初始化时强制更新
+                this.isInitialized = true;
 
                 // 设置定期检查，确保状态同步
                 this.startPeriodicStateCheck();
@@ -79,7 +83,8 @@ export class UserStateManager {
                 setTimeout(checkAuthManager, 50);
             } else {
                 // 即使没有认证管理器，也要显示默认状态
-                this.updateUserDisplay();
+                this.updateUserDisplay(true); // 初始化时强制更新
+                this.isInitialized = true;
             }
         };
 
@@ -104,7 +109,7 @@ export class UserStateManager {
                     (!isAuthenticated && !userInfoHidden);
 
                 if (stateInconsistent) {
-                    this.updateUserDisplay();
+                    this.updateUserDisplay(); // 不强制更新，使用冷却机制
                 }
             }
 
@@ -116,7 +121,16 @@ export class UserStateManager {
     }
 
     // 更新用户显示状态
-    updateUserDisplay() {
+    updateUserDisplay(forceUpdate = false) {
+        const now = Date.now();
+        
+        // 防重复更新：如果不是强制更新且在冷却时间内，则跳过
+        if (!forceUpdate && (now - this.lastUpdateTime) < this.updateCooldown) {
+            return;
+        }
+        
+        this.lastUpdateTime = now;
+        
         // 限制日志输出，只在前几次调用时输出详细日志
         this.stateCheckCount++;
         const isDebug = this.stateCheckCount <= this.maxInitialChecks;
@@ -125,7 +139,9 @@ export class UserStateManager {
             console.log('更新用户显示状态:', {
                 hasAuthManager: !!window.authManager,
                 isAuthenticated: window.authManager?.isAuthenticated,
-                user: window.authManager?.user?.email
+                user: window.authManager?.user?.email,
+                forceUpdate,
+                cooldownRemaining: this.updateCooldown - (now - this.lastUpdateTime)
             });
         }
 
@@ -138,7 +154,7 @@ export class UserStateManager {
         this.setupLogoutHandler();
 
         if (!this.authLinks || !this.userInfo || !this.userEmail) {
-            // 延迟重试
+            // 延迟重试（但不强制更新，使用冷却机制）
             setTimeout(() => {
                 this.updateUserDisplay();
             }, 100);
@@ -194,7 +210,7 @@ export class UserStateManager {
 
     // 处理认证状态变化
     handleAuthStateChange(detail) {
-        // 立即更新用户显示
+        // 立即更新用户显示（使用防重复机制）
         this.updateUserDisplay();
 
         // 清除UI中的登录要求状态

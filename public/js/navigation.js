@@ -320,12 +320,31 @@ window.handleGlobalLogout = async function() {
     }
 };
 
-// 创建全局用户显示更新函数
+// 创建全局用户显示更新函数（优化：增加防重复检查）
 window.forceUpdateUserDisplay = function() {
     try {
         if (window.stateSyncManager) {
-            console.log('强制更新用户显示状态...');
-            window.stateSyncManager.forcSync();
+            // 检查是否真的需要更新
+            const authLinks = document.getElementById('authLinks');
+            const userInfo = document.getElementById('userInfo');
+            
+            if (authLinks && userInfo && window.authManager) {
+                const isAuthenticated = window.authManager.isAuthenticated;
+                const authLinksVisible = authLinks.style.display !== 'none' && !authLinks.classList.contains('hidden');
+                const userInfoVisible = !userInfo.classList.contains('hidden') && userInfo.style.display !== 'none';
+                
+                // 只在状态不一致时才强制更新
+                const needsUpdate = (isAuthenticated && authLinksVisible) || (!isAuthenticated && userInfoVisible);
+                if (needsUpdate) {
+                    console.log('强制更新用户显示状态...');
+                    window.stateSyncManager.forcSync();
+                } else {
+                    console.log('用户显示状态已经一致，跳过强制更新');
+                }
+            } else {
+                console.log('强制更新用户显示状态...');
+                window.stateSyncManager.forcSync();
+            }
         } else {
             console.warn('状态同步管理器未找到');
         }

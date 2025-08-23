@@ -379,12 +379,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 页面完全加载后的额外检查
+// 页面完全加载后的额外检查（优化：减少冗余调用）
 window.addEventListener('load', () => {
     console.log('页面完全加载，最终检查认证状态...');
     setTimeout(() => {
         if (window.authManager && window.authManager.isAuthenticated) {
-            console.log('页面加载完成后检测到已登录状态，强制触发状态更新');
+            // 检查是否已经有用户状态管理器并且已初始化
+            if (window.app && window.app.userStateManager && window.app.userStateManager.isInitialized) {
+                console.log('页面加载完成后检测到已登录状态，但用户状态管理器已初始化，跳过重复更新');
+                return;
+            }
+            
+            console.log('页面加载完成后检测到已登录状态，触发状态更新');
             window.authManager.dispatchAuthEvent('restore', { user: window.authManager.user });
             
             // 如果有强制更新函数，也调用它

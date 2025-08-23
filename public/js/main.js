@@ -44,11 +44,11 @@ async function startApp() {
         app.userStateManager.initializeUserState();
         console.log('app.userStateManager.initializeUserState() 执行完成');
         
-        // 应用初始化完成后，检查用户状态
+        // 应用初始化完成后，检查用户状态（减少冗余调用）
         setTimeout(() => {
             console.log('应用初始化完成，检查用户状态...');
-            if (window.authManager) {
-                app.userStateManager.updateUserDisplay();
+            if (window.authManager && !app.userStateManager.isInitialized) {
+                app.userStateManager.updateUserDisplay(true);
             }
         }, 100);
         
@@ -79,12 +79,26 @@ if (document.readyState === 'loading') {
     startApp();
 }
 
-// 页面完全加载后的最终检查
+// 页面完全加载后的最终检查（优化：只在必要时执行）
 window.addEventListener('load', () => {
     setTimeout(() => {
         console.log('页面完全加载，执行最终用户状态检查...');
-        if (window.app && window.authManager) {
-            window.app.userStateManager.updateUserDisplay();
+        if (window.app && window.authManager && window.app.userStateManager.isInitialized) {
+            // 如果已经初始化，只在状态可能不一致时才更新
+            const authLinks = document.getElementById('authLinks');
+            const userInfo = document.getElementById('userInfo');
+            
+            if (authLinks && userInfo) {
+                const isAuthenticated = window.authManager.isAuthenticated;
+                const authLinksVisible = authLinks.style.display !== 'none' && !authLinks.classList.contains('hidden');
+                const userInfoVisible = !userInfo.classList.contains('hidden') && userInfo.style.display !== 'none';
+                
+                // 只在状态不一致时才更新
+                const needsUpdate = (isAuthenticated && authLinksVisible) || (!isAuthenticated && userInfoVisible);
+                if (needsUpdate) {
+                    window.app.userStateManager.updateUserDisplay(true);
+                }
+            }
         }
     }, 200);
 });
