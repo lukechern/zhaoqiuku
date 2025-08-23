@@ -105,6 +105,39 @@ function showError(error, elements) {
     }
 
     if (elements.resultsContainer) {
+        // 使用流式渲染器显示错误，采用统一的打字效果
+        if (window.streamRenderer_7ree) {
+            // 构建错误数据结构，模拟正常的响应格式
+            const errorData = {
+                transcript: '❓❓❓❓❓❓',
+                action: 'error',
+                business_result: {
+                    success: false,
+                    message: '抱歉，没听清你说了什么，请稍后重试。'
+                }
+            };
+            
+            // 使用流式渲染器渲染错误信息，不自动播放TTS
+            window.streamRenderer_7ree.renderResults(errorData, elements.resultsContainer, false)
+                .then(() => {
+                    console.log('错误信息流式渲染完成');
+                })
+                .catch((renderError) => {
+                    console.warn('错误信息流式渲染失败，回退到静态显示:', renderError);
+                    showErrorFallback(error, elements);
+                });
+        } else {
+            // 如果流式渲染器不可用，使用回退方式
+            showErrorFallback(error, elements);
+        }
+    }
+}
+
+// 错误显示的回退方法（保持原有的静态HTML显示方式）
+function showErrorFallback(error, elements) {
+    const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
+    
+    if (elements.resultsContainer) {
         // 使用与action: unknown相同的对话气泡UI格式
         const esc = (s) => (window.escapeHtml ? window.escapeHtml(s) : s);
         const errorDisplayMessage = '抱歉，没听清你说了什么，请稍后重试。';
@@ -122,7 +155,7 @@ function showError(error, elements) {
         setTimeout(() => {
             try {
                 bindFallbackPlayback_7ree(elements.resultsContainer);
-                console.log('错误显示事件绑定完成');
+                console.log('错误显示回退事件绑定完成');
             } catch (e) {
                 console.warn('绑定错误显示回退播放事件失败:', e);
             }

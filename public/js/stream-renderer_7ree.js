@@ -63,6 +63,9 @@ export class StreamRenderer_7ree {
         let userSay = data.transcript;
         if (!userSay || (data.action && data.action === 'unknown')) {
             userSay = '抱歉，没有听清你说了什么';
+        } else if (data.action === 'error') {
+            // 错误情况下显示红色问号
+            userSay = '❓❓❓❓❓❓';
         }
         return userSay;
     }
@@ -151,6 +154,12 @@ export class StreamRenderer_7ree {
     async renderUserBubble_7ree(container, text, transcript) {
         const userBubble = document.createElement('span');
         userBubble.className = 'user-say playable';
+        
+        // 如果是错误情况，添加特殊的CSS类
+        if (this.currentData && this.currentData.action === 'error') {
+            userBubble.classList.add('error-user');
+        }
+        
         userBubble.setAttribute('data-transcript', this.escapeHtml_7ree(transcript));
         container.appendChild(userBubble);
         

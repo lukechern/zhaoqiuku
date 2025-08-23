@@ -158,6 +158,39 @@ export class UIDisplayManager {
         }
         
         if (this.uiController.elements.resultsContainer) {
+            // 使用流式渲染器显示错误，采用统一的打字效果
+            if (window.streamRenderer_7ree) {
+                // 构建错误数据结构，模拟正常的响应格式
+                const errorData = {
+                    transcript: '❓❓❓❓❓❓',
+                    action: 'error',
+                    business_result: {
+                        success: false,
+                        message: '抱歉，没听清你说了什么，请稍后重试。'
+                    }
+                };
+                
+                // 使用流式渲染器渲染错误信息，不自动播放TTS
+                window.streamRenderer_7ree.renderResults(errorData, this.uiController.elements.resultsContainer, false)
+                    .then(() => {
+                        console.log('UIDisplayManager 错误信息流式渲染完成');
+                    })
+                    .catch((renderError) => {
+                        console.warn('UIDisplayManager 错误信息流式渲染失败，回退到静态显示:', renderError);
+                        this.showErrorFallback(error);
+                    });
+            } else {
+                // 如果流式渲染器不可用，使用回退方式
+                this.showErrorFallback(error);
+            }
+        }
+    }
+    
+    // 错误显示的回退方法（保持原有的静态HTML显示方式）
+    showErrorFallback(error) {
+        const errorMessage = typeof error === 'string' ? error : error.message || '发生未知错误';
+        
+        if (this.uiController.elements.resultsContainer) {
             // 使用与action: unknown相同的对话气泡UI格式
             const esc = (s) => (this.uiController.escapeHtml ? this.uiController.escapeHtml(s) : s);
             const errorDisplayMessage = '抱歉，没听清你说了什么，请稍后重试。';
@@ -176,7 +209,7 @@ export class UIDisplayManager {
                 try {
                     if (window.bindFallbackPlayback_7ree) {
                         window.bindFallbackPlayback_7ree(this.uiController.elements.resultsContainer);
-                        console.log('UIDisplayManager 错误显示事件绑定完成');
+                        console.log('UIDisplayManager 错误显示回退事件绑定完成');
                     }
                 } catch (e) {
                     console.warn('绑定错误显示回退播放事件失败:', e);

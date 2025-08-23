@@ -6,7 +6,74 @@
  */
 
 /**
- * 测试错误显示和点击事件的调试函数
+ * 测试流式错误显示的调试函数
+ */
+export function testStreamErrorDisplay() {
+    console.log('=== 测试流式错误显示 ===');
+    
+    const container = document.querySelector('.results-container');
+    if (!container) {
+        console.log('未找到结果容器');
+        return;
+    }
+    
+    // 检查流式渲染器是否可用
+    if (!window.streamRenderer_7ree) {
+        console.log('流式渲染器不可用');
+        return;
+    }
+    
+    // 清空容器
+    container.innerHTML = '';
+    
+    // 构建错误数据
+    const errorData = {
+        transcript: '❓❓❓❓❓❓',
+        action: 'error',
+        business_result: {
+            success: false,
+            message: '抱歉，没听清你说了什么，请稍后重试。'
+        }
+    };
+    
+    console.log('开始流式渲染错误信息...');
+    
+    // 使用流式渲染器渲染错误
+    window.streamRenderer_7ree.renderResults(errorData, container, false)
+        .then(() => {
+            console.log('流式错误显示完成');
+            
+            // 等待一下然后测试点击事件
+            setTimeout(() => {
+                const userBubble = container.querySelector('.user-say.error-user');
+                const aiBubble = container.querySelector('.ai-reply');
+                
+                console.log('流式渲染结果检查:', {
+                    userBubble: !!userBubble,
+                    aiBubble: !!aiBubble,
+                    userHasErrorClass: userBubble ? userBubble.classList.contains('error-user') : false,
+                    aiAction: aiBubble ? aiBubble.getAttribute('data-action') : null
+                });
+                
+                // 测试点击事件
+                if (userBubble) {
+                    console.log('测试点击用户错误气泡...');
+                    userBubble.click();
+                }
+                
+                if (aiBubble) {
+                    console.log('测试点击AI错误气泡...');
+                    aiBubble.click();
+                }
+            }, 1000);
+        })
+        .catch((error) => {
+            console.error('流式错误显示失败:', error);
+        });
+}
+
+/**
+ * 测试普通错误显示和点击事件的调试函数
  */
 export function testErrorDisplay() {
     console.log('=== 测试错误显示 ===');
@@ -48,6 +115,38 @@ export function testErrorDisplay() {
         }, 100);
     } else {
         console.log('showError函数不可用');
+    }
+}
+
+/**
+ * 对比测试流式错误显示和静态错误显示
+ */
+export function compareErrorDisplayMethods() {
+    console.log('=== 对比测试：流式 vs 静态错误显示 ===');
+    
+    const container = document.querySelector('.results-container');
+    if (!container) {
+        console.log('未找到结果容器');
+        return;
+    }
+    
+    console.log('1. 测试静态错误显示（原始方式）');
+    
+    // 先测试静态错误显示
+    if (window.showError) {
+        window.showError('测试错误 - 静态方式', { resultsContainer: container });
+        
+        setTimeout(() => {
+            console.log('静态错误显示完成，5秒后将测试流式显示...');
+            
+            setTimeout(() => {
+                console.log('2. 测试流式错误显示（新方式）');
+                testStreamErrorDisplay();
+            }, 5000);
+        }, 1000);
+    } else {
+        console.log('showError函数不可用，直接测试流式显示');
+        testStreamErrorDisplay();
     }
 }
 
@@ -191,6 +290,8 @@ export function initializeDebugTools() {
     window.checkAppInitStatus = checkAppInitStatus;
     window.testIconSwitch = testIconSwitch;
     window.testErrorDisplay = testErrorDisplay;
+    window.testStreamErrorDisplay = testStreamErrorDisplay;
+    window.compareErrorDisplayMethods = compareErrorDisplayMethods;
     window.checkGlobalFunctions = checkGlobalFunctions;
     
     console.log('调试工具已初始化并暴露到全局作用域');
