@@ -211,6 +211,9 @@ export class EventHandler {
                 this.app.uiController.showLoading('AI助手正在思考中，请您稍候…');
             }
             
+            // 异步播放AI思考提示音频
+            this.playAIThinkingSound();
+            
             // 发送到API
             const result = await this.app.apiClient.transcribeAudio(audioBlob, mimeType);
             
@@ -263,6 +266,27 @@ export class EventHandler {
             console.log('清理取消占位符定时器');
             clearTimeout(this.cancelPlaceholderTimeout_7ree);
             this.cancelPlaceholderTimeout_7ree = null;
+        }
+    }
+
+    // 新增：异步播放AI思考提示音频
+    playAIThinkingSound() {
+        try {
+            const audio = new Audio('/mp3/AIthinking.mp3');
+            
+            // 设置音量（可选）
+            audio.volume = 0.7;
+            
+            // 异步播放，不等待播放完成
+            audio.play().catch(error => {
+                console.warn('AI思考提示音播放失败:', error);
+                // 音频播放失败不影响主流程，只记录警告
+            });
+            
+            console.log('AI思考提示音开始播放');
+        } catch (error) {
+            console.warn('创建AI思考提示音失败:', error);
+            // 不抛出异常，保证主流程不受影响
         }
     }
 
