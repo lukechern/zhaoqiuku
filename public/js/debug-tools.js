@@ -6,9 +6,74 @@
  */
 
 /**
- * 麦克风按钮测试函数
- * 检查麦克风按钮和相关图标的状态
+ * 测试错误显示和点击事件的调试函数
  */
+export function testErrorDisplay() {
+    console.log('=== 测试错误显示 ===');
+    
+    const container = document.querySelector('.results-container');
+    if (!container) {
+        console.log('未找到结果容器');
+        return;
+    }
+    
+    // 手动触发错误显示
+    if (window.showError) {
+        console.log('触发错误显示...');
+        window.showError('测试错误消息', { resultsContainer: container });
+        
+        // 等待DOM渲染完成后检查元素
+        setTimeout(() => {
+            const userBubble = container.querySelector('.user-say.error-user');
+            const aiBubble = container.querySelector('.ai-reply');
+            
+            console.log('错误显示检查结果:', {
+                userBubble: !!userBubble,
+                aiBubble: !!aiBubble,
+                userBubbleText: userBubble ? userBubble.textContent : null,
+                aiBubbleAction: aiBubble ? aiBubble.getAttribute('data-action') : null,
+                bindFallbackAvailable: !!window.bindFallbackPlayback_7ree
+            });
+            
+            // 测试点击事件
+            if (userBubble) {
+                console.log('模拟点击用户气泡...');
+                userBubble.click();
+            }
+            
+            if (aiBubble) {
+                console.log('模拟点击AI气泡...');
+                aiBubble.click();
+            }
+        }, 100);
+    } else {
+        console.log('showError函数不可用');
+    }
+}
+
+/**
+ * 检查所有全局函数是否正确暴露
+ */
+export function checkGlobalFunctions() {
+    const expectedFunctions = [
+        'showResults',
+        'clearResults', 
+        'showLoading',
+        'showError',
+        'showMessage',
+        'bindFallbackPlayback_7ree'
+    ];
+    
+    console.log('=== 检查全局函数 ===');
+    const results = {};
+    
+    expectedFunctions.forEach(func => {
+        results[func] = !!window[func];
+        console.log(`${func}: ${results[func] ? '✓ 可用' : '✗ 不可用'}`);
+    });
+    
+    return results;
+}
 export function testMicrophoneButton() {
     console.log('=== 麦克风按钮测试 ===');
     
@@ -125,6 +190,8 @@ export function initializeDebugTools() {
     window.testMicrophoneButton = testMicrophoneButton;
     window.checkAppInitStatus = checkAppInitStatus;
     window.testIconSwitch = testIconSwitch;
+    window.testErrorDisplay = testErrorDisplay;
+    window.checkGlobalFunctions = checkGlobalFunctions;
     
     console.log('调试工具已初始化并暴露到全局作用域');
 }
