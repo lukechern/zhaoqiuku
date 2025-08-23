@@ -255,6 +255,9 @@ export class EventHandler {
         } catch (error) {
             console.error('处理录音失败:', error);
             
+            // 播放错误提示音
+            this.playErrorSound();
+            
             // 发生错误时要先重置录音状态，再显示错误
             this.app.uiController.isRecording = false;
             this.app.uiController.hideProcessingState();
@@ -313,6 +316,27 @@ export class EventHandler {
             console.log('意图不明确提示音开始播放');
         } catch (error) {
             console.warn('创建意图不明确提示音失败:', error);
+            // 不抛出异常，保证主流程不受影响
+        }
+    }
+
+    // 新增：异步播放错误提示音频
+    playErrorSound() {
+        try {
+            const audio = new Audio('/mp3/unclear.mp3');
+            
+            // 设置音量（可选）
+            audio.volume = 0.7;
+            
+            // 异步播放，不等待播放完成
+            audio.play().catch(error => {
+                console.warn('错误提示音播放失败:', error);
+                // 音频播放失败不影响主流程，只记录警告
+            });
+            
+            console.log('错误提示音开始播放');
+        } catch (error) {
+            console.warn('创建错误提示音失败:', error);
             // 不抛出异常，保证主流程不受影响
         }
     }
