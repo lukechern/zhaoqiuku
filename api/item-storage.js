@@ -196,7 +196,7 @@ async function handleGetAction(object, userId) {
         console.log('错误信息:', error?.message || '无匹配记录');
         return {
             success: false,
-            message: `没有找到${object}的存放记录，请确认物品名称是否正确`
+            message: `没有找到${object}的存放记录，请确认物品名称是否正确或者物品是否记录了。`
         };
     }
 

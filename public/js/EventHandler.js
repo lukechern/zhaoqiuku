@@ -227,6 +227,12 @@ export class EventHandler {
                 return;
             }
             
+            // 检测意图不明确的情况并播放对应提示音
+            if (result.action === 'unknown') {
+                console.log('🔊 检测到意图不明确，播放Unknow.mp3');
+                this.playUnknownIntentSound();
+            }
+            
             // 格式化并显示结果，不等待TTS播放完成
             const displayResult = this.app.apiClient.formatResultForDisplay(result);
             await this.app.uiController.showResults(displayResult);
@@ -286,6 +292,27 @@ export class EventHandler {
             console.log('AI思考提示音开始播放');
         } catch (error) {
             console.warn('创建AI思考提示音失败:', error);
+            // 不抛出异常，保证主流程不受影响
+        }
+    }
+
+    // 新增：异步播放意图不明确提示音频
+    playUnknownIntentSound() {
+        try {
+            const audio = new Audio('/mp3/Unknow.mp3');
+            
+            // 设置音量（可选）
+            audio.volume = 0.7;
+            
+            // 异步播放，不等待播放完成
+            audio.play().catch(error => {
+                console.warn('意图不明确提示音播放失败:', error);
+                // 音频播放失败不影响主流程，只记录警告
+            });
+            
+            console.log('意图不明确提示音开始播放');
+        } catch (error) {
+            console.warn('创建意图不明确提示音失败:', error);
             // 不抛出异常，保证主流程不受影响
         }
     }
