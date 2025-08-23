@@ -128,8 +128,25 @@ class DebugFloatingBall @JvmOverloads constructor(
                 val deltaY = (event.rawY - initialTouchY).toInt()
 
                 layoutParams?.let { params ->
-                    params.x = initialX + deltaX
-                    params.y = initialY + deltaY
+                    val screenWidth = resources.displayMetrics.widthPixels
+                    val screenHeight = resources.displayMetrics.heightPixels
+                    val windowWidth = params.width
+                    val windowHeight = params.height
+                    val ballOffsetInWindow = (windowWidth - BALL_SIZE) / 2
+                    
+                    // 计算新位置
+                    val newX = initialX + deltaX
+                    val newY = initialY + deltaY
+                    
+                    // 设置边界限制，确保球可以贴紧边缘但不超出屏幕
+                    val minX = -ballOffsetInWindow // 球贴左边缘
+                    val maxX = screenWidth - BALL_SIZE - ballOffsetInWindow // 球贴右边缘
+                    val minY = -ballOffsetInWindow // 球贴上边缘
+                    val maxY = screenHeight - BALL_SIZE - ballOffsetInWindow - 200 // 留出导航栏空间
+                    
+                    params.x = max(minX, min(maxX, newX))
+                    params.y = max(minY, min(maxY, newY))
+                    
                     windowManager?.updateViewLayout(this, params)
                 }
                 return true
@@ -166,18 +183,28 @@ class DebugFloatingBall @JvmOverloads constructor(
             val screenWidth = resources.displayMetrics.widthPixels
             val currentX = params.x
             val windowWidth = params.width
+            val actualBallSize = BALL_SIZE // 使用实际球的尺寸
+            
+            // 计算球在窗口中的偏移位置（由于窗口比球大，球在窗口中心）
+            val ballOffsetInWindow = (windowWidth - actualBallSize) / 2
+            val ballCurrentX = currentX + ballOffsetInWindow
 
             // 计算到左右边缘的距离
-            val distanceToLeft = currentX
-            val distanceToRight = screenWidth - currentX - windowWidth
+            val distanceToLeft = ballCurrentX
+            val distanceToRight = screenWidth - ballCurrentX - actualBallSize
 
-            // 吸附到最近的边缘
+            android.util.Log.d("DebugFloatingBall", "边缘吸附: 球X=$ballCurrentX, 屏幕宽=$screenWidth, 左距=$distanceToLeft, 右距=$distanceToRight")
+
+            // 吸附到最近的边缘，允许真正贴紧边缘（0px边距）
             params.x = if (distanceToLeft < distanceToRight) {
-                MARGIN
+                // 贴左边缘：球的左边缘对齐屏幕左边缘
+                -ballOffsetInWindow
             } else {
-                screenWidth - windowWidth - MARGIN
+                // 贴右边缘：球的右边缘对齐屏幕右边缘
+                screenWidth - actualBallSize - ballOffsetInWindow
             }
 
+            android.util.Log.d("DebugFloatingBall", "吸附后窗口X=${params.x}, 球X=${params.x + ballOffsetInWindow}")
             windowManager?.updateViewLayout(this, params)
         }
     }
@@ -205,7 +232,11 @@ class DebugFloatingBall @JvmOverloads constructor(
         val screenWidth = resources.displayMetrics.widthPixels
         val currentX = layoutParams?.x ?: 0
         val windowWidth = layoutParams?.width ?: BALL_SIZE
-        val ballCenterX = currentX + windowWidth / 2
+        
+        // 使用实际球的位置进行计算
+        val ballOffsetInWindow = (windowWidth - BALL_SIZE) / 2
+        val ballCurrentX = currentX + ballOffsetInWindow
+        val ballCenterX = ballCurrentX + BALL_SIZE / 2
         val isOnLeftSide = ballCenterX < screenWidth / 2
         
         android.util.Log.d("DebugFloatingBall", "智能菜单方向: 球心X=$ballCenterX, 屏幕宽度=$screenWidth, 在左侧=$isOnLeftSide")
