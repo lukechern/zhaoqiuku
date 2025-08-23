@@ -68,7 +68,7 @@ function formatSimpleResult(data) {
 
         html += `<div class="user-ai-dialog">
             <span class="user-say playable" data-transcript="${esc(userSay)}">${esc(userSay)}</span>
-            <span class="ai-reply playable" data-message="${esc(message)}">${window.formatAiMessage ? window.formatAiMessage(message) : esc(message)}</span>
+            <span class="ai-reply playable" data-message="${esc(message)}" data-action="${data.action || 'unknown'}">${window.formatAiMessage ? window.formatAiMessage(message) : esc(message)}</span>
         </div>`;
     } else if (data.transcript) {
         // 只有转录结果
@@ -191,10 +191,57 @@ function bindFallbackPlayback_7ree(container) {
     if (aiEl) {
         aiEl.addEventListener('click', async (event) => {
             event.stopPropagation();
+            
+            const message = aiEl.getAttribute('data-message') || '';
+            const action = aiEl.getAttribute('data-action');
+            
+            // 检测意图不明确的情况，直接播放本地Unknow.mp3
+            if (action === 'unknown') {
+                console.log('意图不明确，播放本地Unknow.mp3文件');
+                
+                if (uiController) {
+                    if (uiController.currentPlayingElement_7ree) {
+                        if (uiController.currentPlayingElement_7ree === aiEl) {
+                            uiController.stopCurrentPlaying_7ree();
+                            return;
+                        }
+                        uiController.stopCurrentPlaying_7ree();
+                    }
+                    aiEl.classList.add('playing');
+                    uiController.currentPlayingElement_7ree = aiEl;
+                    
+                    try {
+                        const audio = new Audio('/mp3/Unknow.mp3');
+                        audio.volume = 0.7;
+                        uiController.currentPlayingAudio_7ree = audio;
+                        
+                        await audio.play();
+                        audio.onended = () => {
+                            aiEl.classList.remove('playing');
+                            if (uiController.currentPlayingElement_7ree === aiEl) uiController.currentPlayingElement_7ree = null;
+                            if (uiController.currentPlayingAudio_7ree === audio) uiController.currentPlayingAudio_7ree = null;
+                        };
+                    } catch (error) {
+                        console.warn('播放Unknow.mp3失败:', error);
+                        aiEl.classList.remove('playing');
+                        if (uiController.currentPlayingElement_7ree === aiEl) uiController.currentPlayingElement_7ree = null;
+                    }
+                } else {
+                    // 简单回退：直接播放
+                    try {
+                        const audio = new Audio('/mp3/Unknow.mp3');
+                        audio.volume = 0.7;
+                        await audio.play();
+                    } catch (error) {
+                        console.warn('播放Unknow.mp3失败:', error);
+                    }
+                }
+                return;
+            }
+            
+            // 正常情况：使用TTS服务
             const tts = window.ttsService;
             if (!tts) return;
-
-            const message = aiEl.getAttribute('data-message') || '';
 
             if (uiController) {
                 if (uiController.currentPlayingElement_7ree) {

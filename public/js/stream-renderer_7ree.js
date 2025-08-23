@@ -18,6 +18,9 @@ export class StreamRenderer_7ree {
         try {
             this.isRendering = true;
             
+            // 存储data对象以供后续使用
+            this.currentData = data;
+            
             // 清空容器
             container.innerHTML = '';
             
@@ -32,7 +35,7 @@ export class StreamRenderer_7ree {
             
             // 如果需要自动TTS，则立即异步启动TTS请求（不等待完成，后台处理）
             if (autoTTS) {
-                this.startAsyncTTS_7ree(aiText);
+                this.startAsyncTTS_7ree(aiText, data);
             }
             
             // 1. 先渲染用户气泡
@@ -73,8 +76,14 @@ export class StreamRenderer_7ree {
     }
 
     // 异步启动TTS请求
-    async startAsyncTTS_7ree(text) {
+    async startAsyncTTS_7ree(text, data) {
         try {
+            // 检测意图不明确的情况，不调用TTS API
+            if (data && data.action === 'unknown') {
+                console.log('意图不明确，跳过TTS API调用');
+                return;
+            }
+            
             if (window.ttsService && window.ttsService.isAvailable()) {
                 console.log('异步启动TTS请求:', text);
                 // 不等待TTS完成，让它在后台处理
@@ -151,6 +160,12 @@ export class StreamRenderer_7ree {
         const aiBubble = document.createElement('span');
         aiBubble.className = 'ai-reply playable';
         aiBubble.setAttribute('data-message', this.escapeHtml_7ree(text));
+        
+        // 添加action信息供点击时判断
+        if (this.currentData && this.currentData.action) {
+            aiBubble.setAttribute('data-action', this.currentData.action);
+        }
+        
         container.appendChild(aiBubble);
         
         // 流式打字效果渲染AI文本
@@ -272,6 +287,46 @@ export class StreamRenderer_7ree {
     playAiAudio_7ree(element, uiController) {
         if (window.ttsService && window.ttsService.isPlaying) {
             window.ttsService.stop();
+        }
+        
+        // 检测意图不明确的情况，直接播放本地Unknow.mp3
+        const action = element.getAttribute('data-action');
+        if (action === 'unknown') {
+            console.log('意图不明确，播放本地Unknow.mp3文件');
+            
+            try {
+                const audio = new Audio('/mp3/Unknow.mp3');
+                audio.volume = 0.7;
+                uiController.currentPlayingAudio_7ree = audio;
+                
+                audio.play().then(() => {
+                    audio.onended = () => {
+                        element.classList.remove('playing');
+                        if (uiController.currentPlayingElement_7ree === element) {
+                            uiController.currentPlayingElement_7ree = null;
+                        }
+                        if (uiController.currentPlayingAudio_7ree === audio) {
+                            uiController.currentPlayingAudio_7ree = null;
+                        }
+                    };
+                }).catch(error => {
+                    console.warn('播放Unknow.mp3失败:', error);
+                    element.classList.remove('playing');
+                    if (uiController.currentPlayingElement_7ree === element) {
+                        uiController.currentPlayingElement_7ree = null;
+                    }
+                    if (uiController.currentPlayingAudio_7ree === audio) {
+                        uiController.currentPlayingAudio_7ree = null;
+                    }
+                });
+            } catch (error) {
+                console.warn('创建Unknow.mp3播放器失败:', error);
+                element.classList.remove('playing');
+                if (uiController.currentPlayingElement_7ree === element) {
+                    uiController.currentPlayingElement_7ree = null;
+                }
+            }
+            return;
         }
         
         const message = element.getAttribute('data-message');

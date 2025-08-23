@@ -45,7 +45,7 @@ export class UIDisplayManager {
             
             html += `<div class="user-ai-dialog">
                 <span class="user-say playable" data-transcript="${this.uiController.escapeHtml(data.transcript || '')}">${this.uiController.escapeHtml(userSay)}</span>
-                <span class="ai-reply playable" data-message="${this.uiController.escapeHtml(business.message)}">${this.formatAiMessage_7ree(business.message)}</span>
+                <span class="ai-reply playable" data-message="${this.uiController.escapeHtml(business.message)}" data-action="${data.action || 'unknown'}">${this.formatAiMessage_7ree(business.message)}</span>
             </div>`;
         } else if (debugConfig.showTranscript && data.transcript && data.action !== 'unknown') {
             // 如果没有业务结果，但有转录结果且在调试模式下，显示转录结果
