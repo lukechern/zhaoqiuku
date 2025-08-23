@@ -14,6 +14,35 @@ window.APIClient = APIClient;
 window.VoiceRecognitionApp = VoiceRecognitionApp;
 window.TTSService = TTSService;
 
+// 全局初始化状态标志
+window.voiceAppInitialized = false;
+
+// 显示麦克风图标函数
+function showMicrophoneIcon() {
+    // 等待DOM元素加载完成
+    const waitForMicrophoneElements = () => {
+        const microphoneIcon = document.getElementById('microphoneIcon');
+        const microphoneButton = document.getElementById('microphoneButton');
+        
+        if (microphoneIcon && microphoneButton) {
+            // 显示麦克风图标
+            microphoneIcon.classList.remove('hidden-initial');
+            microphoneIcon.classList.add('show');
+            
+            // 启用麦克风按钮
+            microphoneButton.classList.remove('initializing');
+            microphoneButton.classList.add('ready');
+            
+            console.log('麦克风按钮和图标已启用');
+        } else {
+            // 如果元素还没加载，等待100ms后重试
+            setTimeout(waitForMicrophoneElements, 100);
+        }
+    };
+    
+    waitForMicrophoneElements();
+}
+
 // 应用启动函数
 async function startApp() {
     console.log('开始初始化应用');
@@ -43,6 +72,13 @@ async function startApp() {
         // 初始化用户状态
         app.userStateManager.initializeUserState();
         console.log('app.userStateManager.initializeUserState() 执行完成');
+        
+        // 所有初始化完成后，显示麦克风图标
+        showMicrophoneIcon();
+        
+        // 设置全局初始化完成标志
+        window.voiceAppInitialized = true;
+        console.log('语音识别应用初始化完成');
         
         // 应用初始化完成后，检查用户状态（减少冗余调用）
         setTimeout(() => {
@@ -108,30 +144,32 @@ window.testMicrophoneButton = function() {
     console.log('=== 麦克风按钮测试 ===');
     
     const button = document.getElementById('microphoneButton');
+    const icon = document.getElementById('microphoneIcon');
     console.log('按钮元素:', button);
+    console.log('图标元素:', icon);
     
     if (button) {
         console.log('按钮样式:', {
             display: getComputedStyle(button).display,
             visibility: getComputedStyle(button).visibility,
             pointerEvents: getComputedStyle(button).pointerEvents,
-            zIndex: getComputedStyle(button).zIndex
+            opacity: getComputedStyle(button).opacity,
+            classList: Array.from(button.classList)
         });
         
         console.log('按钮位置:', button.getBoundingClientRect());
-        console.log('按钮类名:', button.className);
-        
-        // 尝试手动触发事件
-        console.log('尝试触发 mousedown 事件...');
-        button.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-        
-        setTimeout(() => {
-            console.log('尝试触发 mouseup 事件...');
-            button.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
-        }, 100);
     }
     
-    console.log('认证状态:', {
+    if (icon) {
+        console.log('图标样式:', {
+            opacity: getComputedStyle(icon).opacity,
+            pointerEvents: getComputedStyle(icon).pointerEvents,
+            classList: Array.from(icon.classList)
+        });
+    }
+    
+    console.log('初始化状态:', {
+        voiceAppInitialized: window.voiceAppInitialized,
         hasAuthManager: !!window.authManager,
         isAuthenticated: window.authManager?.isAuthenticated,
         user: window.authManager?.user
@@ -142,6 +180,17 @@ window.testMicrophoneButton = function() {
         hasUIController: !!window.app?.uiController,
         hasAudioRecorder: !!window.app?.audioRecorder
     });
+};
+
+// 检查应用初始化状态的便捷函数
+window.checkAppInitStatus = function() {
+    return {
+        initialized: window.voiceAppInitialized,
+        microphoneReady: document.getElementById('microphoneButton')?.classList.contains('ready'),
+        iconVisible: document.getElementById('microphoneIcon')?.classList.contains('show'),
+        authReady: !!window.authManager,
+        appReady: !!window.app
+    };
 };
 
 // window.forceStartRecording = function() {
