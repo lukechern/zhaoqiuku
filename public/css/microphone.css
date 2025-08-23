@@ -34,7 +34,8 @@
 /* 初始化时的麦克风按钮状态（包含隐藏图标的按钮） */
 .microphone-button:has(.microphone-icon.hidden-initial) {
     cursor: not-allowed;
-    opacity: 0; /* 完全透明 */
+    /* 使用背景透明而不是整个按钮透明，确保加载图标可见 */
+    background: transparent !important;
     pointer-events: none;
     /* 移除所有按钮动效，减少视觉过载 */
     animation: none;
@@ -45,7 +46,8 @@
 /* 兼容性备用方案（对于不支持:has()的浏览器） */
 .microphone-button.initializing {
     cursor: not-allowed;
-    opacity: 0; /* 完全透明 */
+    /* 使用背景透明而不是整个按钮透明，确保加载图标可见 */
+    background: transparent !important;
     pointer-events: none;
     /* 移除所有按钮动效，减少视觉过载 */
     animation: none;
@@ -58,6 +60,8 @@
     opacity: 1;
     pointer-events: auto;
     animation: none;
+    /* 恢复正常的背景渐变 */
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
 }
 
 /* 加载状态的脉冲动画 - 已禁用，按钮在加载时完全透明 */
