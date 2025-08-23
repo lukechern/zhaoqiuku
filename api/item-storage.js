@@ -156,6 +156,7 @@ async function handlePutAction(object, location, userId, clientIP, transcript, t
 
 /**
  * 处理查找物品操作 (action: get)
+ * 支持完全匹配和模糊搜索两种方式
  */
 async function handleGetAction(object, userId) {
     console.log('🔍 GET操作 - 数据验证');
@@ -172,8 +173,8 @@ async function handleGetAction(object, userId) {
 
     const supabase = await createSupabaseClient();
 
-    // 🔍 调试日志：SQL查询操作
-    console.log('📊 执行SQL SELECT操作');
+    // 🔍 第一步：尝试完全匹配查询
+    console.log('📊 执行SQL SELECT操作 - 完全匹配');
     console.log('表名:', ITEMS_TABLE);
     console.log('查询条件:', {
         user_id: userId,
@@ -181,26 +182,45 @@ async function handleGetAction(object, userId) {
     });
     console.log('SQL等效语句:', `SELECT * FROM ${ITEMS_TABLE} WHERE user_id = '${userId}' AND item_name = '${object}' ORDER BY operation_time DESC LIMIT 1`);
 
-    // 查找最新的存放记录
-    const { data, error } = await supabase
+    // 先尝试完全匹配查询
+    let { data, error } = await supabase
         .from(ITEMS_TABLE)
         .select('*')
         .eq('user_id', userId)
         .eq('item_name', object)
         .order('operation_time', { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
 
-    if (error || !data) {
-        console.log('❌ SQL SELECT失败或无数据');
-        console.log('错误信息:', error?.message || '无匹配记录');
-        return {
-            success: false,
-            message: `没有找到${object}的存放记录，请确认物品名称是否正确或者物品是否记录了。`
-        };
+    // 🔍 如果完全匹配没找到，尝试模糊搜索
+    if (error || !data || data.length === 0) {
+        console.log('🔍 完全匹配无结果，尝试模糊搜索');
+        console.log('模糊搜索关键词:', object);
+        
+        const { data: fuzzyData, error: fuzzyError } = await supabase
+            .from(ITEMS_TABLE)
+            .select('*')
+            .eq('user_id', userId)
+            .ilike('item_name', `%${object}%`)
+            .order('operation_time', { ascending: false })
+            .limit(1);
+        
+        if (fuzzyError || !fuzzyData || fuzzyData.length === 0) {
+            console.log('❌ 模糊搜索也无结果');
+            console.log('错误信息:', fuzzyError?.message || '无匹配记录');
+            return {
+                success: false,
+                message: `没有找到包含"${object}"的物品记录，请确认物品名称是否正确或者物品是否记录了。`
+            };
+        }
+        
+        data = fuzzyData[0];  // 取第一条模糊匹配结果
+        console.log('✅ 模糊搜索成功');
+        console.log('匹配到的完整物品名称:', data.item_name);
+    } else {
+        data = data[0] || data;  // 处理单条记录
+        console.log('✅ 完全匹配成功');
     }
 
-    console.log('✅ SQL SELECT成功');
     console.log('查询结果:', data);
 
     // 格式化记录时间
@@ -212,14 +232,30 @@ async function handleGetAction(object, userId) {
         格式化时间: formattedDate
     });
 
+    // 返回数据库中存储的完整物品名称（而不是用户输入的关键词）
+    const actualItemName = data.item_name;
+    const searchKeyword = object;
+    
+    // 如果是模糊匹配，在消息中说明找到的完整名称
+    let message;
+    if (actualItemName.toLowerCase() === searchKeyword.toLowerCase()) {
+        // 完全匹配
+        message = `${actualItemName}的存放位置为${data.location}<br>（记录于：${formattedDate}）`;
+    } else {
+        // 模糊匹配，显示完整名称
+        message = `找到了"${actualItemName}"，存放位置为${data.location}<br>（记录于：${formattedDate}）`;
+    }
+
     return {
         success: true,
-        message: `${object}的存放位置为${data.location}<br>（记录于：${formattedDate}）`,
+        message: message,
         data: {
-            item: object,
+            item: actualItemName,  // 返回数据库中的完整物品名称
+            searchKeyword: searchKeyword,  // 用户输入的搜索关键词
             location: data.location,
             recordTime: formattedDate,
-            recordId: data.id
+            recordId: data.id,
+            isExactMatch: actualItemName.toLowerCase() === searchKeyword.toLowerCase()
         }
     };
 }
