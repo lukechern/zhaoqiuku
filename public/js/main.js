@@ -213,6 +213,43 @@ window.checkAppInitStatus = function() {
     };
 };
 
+// 手动测试图标切换的调试函数
+window.testIconSwitch = function() {
+    const loadingIcon = document.getElementById('loadingIcon');
+    const microphoneIcon = document.getElementById('microphoneIcon');
+    const button = document.getElementById('microphoneButton');
+    
+    if (!loadingIcon || !microphoneIcon || !button) {
+        console.log('图标元素未找到');
+        return;
+    }
+    
+    console.log('当前状态:', {
+        loadingIconClasses: Array.from(loadingIcon.classList),
+        microphoneIconClasses: Array.from(microphoneIcon.classList),
+        buttonClasses: Array.from(button.classList)
+    });
+    
+    // 切换到加载状态
+    if (microphoneIcon.classList.contains('show')) {
+        console.log('切换到加载状态');
+        microphoneIcon.classList.remove('show');
+        microphoneIcon.classList.add('hidden-initial');
+        loadingIcon.classList.remove('hidden');
+        button.classList.remove('ready');
+        button.classList.add('initializing');
+    } else {
+        console.log('切换到麦克风状态');
+        loadingIcon.classList.add('hidden');
+        setTimeout(() => {
+            microphoneIcon.classList.remove('hidden-initial');
+            microphoneIcon.classList.add('show');
+            button.classList.remove('initializing');
+            button.classList.add('ready');
+        }, 300);
+    }
+};
+
 // window.forceStartRecording = function() {
 //     console.log('强制开始录音测试...');
 //     if (window.app && window.app.uiController) {

@@ -122,6 +122,11 @@
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     animation: rotate-loading 1.5s linear infinite;
     transition: opacity 0.3s ease;
+    /* 确保图标在按钮中心 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* transform 由动画接管 */
 }
 
 /* 隐藏加载图标 */
@@ -133,10 +138,10 @@
 /* 旋转动画 */
 @keyframes rotate-loading {
     from {
-        transform: rotate(0deg);
+        transform: translate(-50%, -50%) rotate(0deg);
     }
     to {
-        transform: rotate(360deg);
+        transform: translate(-50%, -50%) rotate(360deg);
     }
 }
 
@@ -202,6 +207,11 @@
         width: 40px;
         height: 40px;
     }
+    
+    .loading-icon {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -211,6 +221,11 @@
     }
     
     .microphone-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .loading-icon {
         width: 36px;
         height: 36px;
     }
