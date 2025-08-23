@@ -30,7 +30,7 @@ class DebugFloatingBall @JvmOverloads constructor(
     companion object {
         private const val BALL_SIZE = 240
         private const val ICON_SIZE = 120 // 图标尺寸为球的50%，留出边距
-        private const val MENU_ITEM_SIZE = 192
+        private const val MENU_ITEM_SIZE = 154 // 缩小20%，从192改为154
         private const val MARGIN = 16
         private const val ANIMATION_DURATION = 300L
         private const val AUTO_HIDE_DELAY = 15000L // 增加到15秒
@@ -63,8 +63,8 @@ class DebugFloatingBall @JvmOverloads constructor(
         mainBall = AppCompatImageView(context).apply {
             layoutParams = LayoutParams(BALL_SIZE, BALL_SIZE).apply {
                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-                // 设置边距，将主球定位在容器的右下角
-                setMargins(200, 200, 0, 0)
+                // 调整边距，将主球定位在容器的合适位置，给菜单球留出足够空间
+                setMargins(300, 300, 0, 0) // 增加边距以容纳更大的菜单布局
             }
             setImageResource(R.drawable.ic_debug_wrench)
             setBackgroundResource(R.drawable.debug_ball_background)
@@ -96,7 +96,7 @@ class DebugFloatingBall @JvmOverloads constructor(
             // 设置菜单球的初始位置，位于主球中心
             layoutParams = LayoutParams(MENU_ITEM_SIZE, MENU_ITEM_SIZE).apply {
                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-                setMargins(200 + (BALL_SIZE - MENU_ITEM_SIZE) / 2, 200 + (BALL_SIZE - MENU_ITEM_SIZE) / 2, 0, 0)
+                setMargins(300 + (BALL_SIZE - MENU_ITEM_SIZE) / 2, 300 + (BALL_SIZE - MENU_ITEM_SIZE) / 2, 0, 0)
             }
             setImageResource(iconRes)
             setBackgroundResource(R.drawable.debug_menu_ball_background)
@@ -205,7 +205,7 @@ class DebugFloatingBall @JvmOverloads constructor(
 
         // 创建动画 - 设计圆形布局，围绕主球显示
         val animatorSet = AnimatorSet()
-        val radius = 150f // 围绕半径
+        val radius = 250f // 增加半径，确保菜单球不与主球重叠（主球120dp + 菜单球77dp + 间距20dp = 217dp）
         
         // 计算三个菜单球的位置（120度间隔）
         // 刷新球：左上方 (-120度)
@@ -253,7 +253,7 @@ class DebugFloatingBall @JvmOverloads constructor(
 
         // 创建动画 - 与展开动画保持一致
         val animatorSet = AnimatorSet()
-        val radius = 150f
+        val radius = 250f // 与展开动画保持一致
         
         // 计算三个菜单球的返回位置
         val refreshX = -radius * 0.866f
@@ -314,9 +314,9 @@ class DebugFloatingBall @JvmOverloads constructor(
             flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            // 增大窗口尺寸，确保菜单球有足够空间显示
-            width = BALL_SIZE + 400 // 给菜单球预留空间
-            height = BALL_SIZE + 400
+            // 增大窗口尺寸，确保菜单球有足够空间显示，避免边界裁剪
+            width = BALL_SIZE + 600 // 增加空间以容纳更大的菜单布局
+            height = BALL_SIZE + 600
             gravity = Gravity.TOP or Gravity.START
 
             // 初始位置在右下角，考虑新的窗口尺寸
