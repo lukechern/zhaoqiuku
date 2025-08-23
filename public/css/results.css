@@ -44,6 +44,15 @@
     margin-right: 40px;
 }
 
+/* 错误状态下的用户气泡 - 红色问号 */
+.user-say.error-user {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
 .user-say::before {
     content: "";
     position: absolute;

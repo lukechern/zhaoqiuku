@@ -105,11 +105,24 @@ function showError(error, elements) {
     }
 
     if (elements.resultsContainer) {
+        // 使用与action: unknown相同的对话气泡UI格式
+        const esc = (s) => (window.escapeHtml ? window.escapeHtml(s) : s);
+        const errorDisplayMessage = '抱歉，没听清你说了什么，请稍后重试。';
+        const userErrorDisplay = '❓❓❓❓❓❓'; // 红色问号
+        
         elements.resultsContainer.innerHTML = `
-            <div style="color: var(--error); text-align: center;">
-                抱歉，没听清你说了什么，请稍后重试。
+            <div class="user-ai-dialog">
+                <span class="user-say playable error-user" data-transcript="${esc(userErrorDisplay)}">${userErrorDisplay}</span>
+                <span class="ai-reply playable" data-message="${esc(errorDisplayMessage)}" data-action="error">${window.formatAiMessage ? window.formatAiMessage(errorDisplayMessage) : esc(errorDisplayMessage)}</span>
             </div>
         `;
+        
+        // 绑定点击事件，与普通对话保持一致的交互
+        try {
+            bindFallbackPlayback_7ree(elements.resultsContainer);
+        } catch (e) {
+            console.warn('绑定错误显示回退播放事件失败:', e);
+        }
     }
 }
 
@@ -234,6 +247,50 @@ function bindFallbackPlayback_7ree(container) {
                         await audio.play();
                     } catch (error) {
                         console.warn('播放Unknow.mp3失败:', error);
+                    }
+                }
+                return;
+            }
+            
+            // 检测错误情况，直接播放本地unclear.mp3
+            if (action === 'error') {
+                console.log('错误情况，播放本地unclear.mp3文件');
+                
+                if (uiController) {
+                    if (uiController.currentPlayingElement_7ree) {
+                        if (uiController.currentPlayingElement_7ree === aiEl) {
+                            uiController.stopCurrentPlaying_7ree();
+                            return;
+                        }
+                        uiController.stopCurrentPlaying_7ree();
+                    }
+                    aiEl.classList.add('playing');
+                    uiController.currentPlayingElement_7ree = aiEl;
+                    
+                    try {
+                        const audio = new Audio('/mp3/unclear.mp3');
+                        audio.volume = 0.7;
+                        uiController.currentPlayingAudio_7ree = audio;
+                        
+                        await audio.play();
+                        audio.onended = () => {
+                            aiEl.classList.remove('playing');
+                            if (uiController.currentPlayingElement_7ree === aiEl) uiController.currentPlayingElement_7ree = null;
+                            if (uiController.currentPlayingAudio_7ree === audio) uiController.currentPlayingAudio_7ree = null;
+                        };
+                    } catch (error) {
+                        console.warn('播放unclear.mp3失败:', error);
+                        aiEl.classList.remove('playing');
+                        if (uiController.currentPlayingElement_7ree === aiEl) uiController.currentPlayingElement_7ree = null;
+                    }
+                } else {
+                    // 简单回退：直接播放
+                    try {
+                        const audio = new Audio('/mp3/unclear.mp3');
+                        audio.volume = 0.7;
+                        await audio.play();
+                    } catch (error) {
+                        console.warn('播放unclear.mp3失败:', error);
                     }
                 }
                 return;

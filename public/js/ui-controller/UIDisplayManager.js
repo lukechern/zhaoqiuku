@@ -158,11 +158,26 @@ export class UIDisplayManager {
         }
         
         if (this.uiController.elements.resultsContainer) {
+            // 使用与action: unknown相同的对话气泡UI格式
+            const esc = (s) => (this.uiController.escapeHtml ? this.uiController.escapeHtml(s) : s);
+            const errorDisplayMessage = '抱歉，没听清你说了什么，请稍后重试。';
+            const userErrorDisplay = '❓❓❓❓❓❓'; // 红色问号
+            
             this.uiController.elements.resultsContainer.innerHTML = `
-                <div style="color: var(--error); text-align: center;">
-                    抱歉，没听清你说了什么，请稍后重试。
+                <div class="user-ai-dialog">
+                    <span class="user-say playable error-user" data-transcript="${esc(userErrorDisplay)}">${userErrorDisplay}</span>
+                    <span class="ai-reply playable" data-message="${esc(errorDisplayMessage)}" data-action="error">${window.formatAiMessage ? window.formatAiMessage(errorDisplayMessage) : esc(errorDisplayMessage)}</span>
                 </div>
             `;
+            
+            // 绑定点击事件，与普通对话保持一致的交互
+            try {
+                if (window.bindFallbackPlayback_7ree) {
+                    window.bindFallbackPlayback_7ree(this.uiController.elements.resultsContainer);
+                }
+            } catch (e) {
+                console.warn('绑定错误显示回退播放事件失败:', e);
+            }
         }
     }
 

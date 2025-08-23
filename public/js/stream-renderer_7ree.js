@@ -84,6 +84,12 @@ export class StreamRenderer_7ree {
                 return;
             }
             
+            // 检测错误情况，不调用TTS API
+            if (data && data.action === 'error') {
+                console.log('错误情况，跳过TTS API调用');
+                return;
+            }
+            
             if (window.ttsService && window.ttsService.isAvailable()) {
                 console.log('异步启动TTS请求:', text);
                 // 不等待TTS完成，让它在后台处理
@@ -321,6 +327,45 @@ export class StreamRenderer_7ree {
                 });
             } catch (error) {
                 console.warn('创建Unknow.mp3播放器失败:', error);
+                element.classList.remove('playing');
+                if (uiController.currentPlayingElement_7ree === element) {
+                    uiController.currentPlayingElement_7ree = null;
+                }
+            }
+            return;
+        }
+        
+        // 检测错误情况，直接播放本地unclear.mp3
+        if (action === 'error') {
+            console.log('错误情况，播放本地unclear.mp3文件');
+            
+            try {
+                const audio = new Audio('/mp3/unclear.mp3');
+                audio.volume = 0.7;
+                uiController.currentPlayingAudio_7ree = audio;
+                
+                audio.play().then(() => {
+                    audio.onended = () => {
+                        element.classList.remove('playing');
+                        if (uiController.currentPlayingElement_7ree === element) {
+                            uiController.currentPlayingElement_7ree = null;
+                        }
+                        if (uiController.currentPlayingAudio_7ree === audio) {
+                            uiController.currentPlayingAudio_7ree = null;
+                        }
+                    };
+                }).catch(error => {
+                    console.warn('播放unclear.mp3失败:', error);
+                    element.classList.remove('playing');
+                    if (uiController.currentPlayingElement_7ree === element) {
+                        uiController.currentPlayingElement_7ree = null;
+                    }
+                    if (uiController.currentPlayingAudio_7ree === audio) {
+                        uiController.currentPlayingAudio_7ree = null;
+                    }
+                });
+            } catch (error) {
+                console.warn('创建错误音频播放器失败:', error);
                 element.classList.remove('playing');
                 if (uiController.currentPlayingElement_7ree === element) {
                     uiController.currentPlayingElement_7ree = null;
