@@ -62,9 +62,7 @@ class DebugFloatingBall @JvmOverloads constructor(
         // 初始化主球
         mainBall = AppCompatImageView(context).apply {
             layoutParams = LayoutParams(BALL_SIZE, BALL_SIZE).apply {
-                gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-                // 调整边距，将主球定位在容器的合适位置，给菜单球留出足够空间
-                setMargins(300, 300, 0, 0) // 增加边距以容纳更大的菜单布局
+                gravity = Gravity.CENTER // 改为居中显示，给菜单球更均衡的空间
             }
             setImageResource(R.drawable.ic_debug_wrench)
             setBackgroundResource(R.drawable.debug_ball_background)
@@ -95,8 +93,7 @@ class DebugFloatingBall @JvmOverloads constructor(
         return AppCompatImageView(context).apply {
             // 设置菜单球的初始位置，位于主球中心
             layoutParams = LayoutParams(MENU_ITEM_SIZE, MENU_ITEM_SIZE).apply {
-                gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
-                setMargins(300 + (BALL_SIZE - MENU_ITEM_SIZE) / 2, 300 + (BALL_SIZE - MENU_ITEM_SIZE) / 2, 0, 0)
+                gravity = Gravity.CENTER // 与主球保持一致，居中显示
             }
             setImageResource(iconRes)
             setBackgroundResource(R.drawable.debug_menu_ball_background)
@@ -205,20 +202,23 @@ class DebugFloatingBall @JvmOverloads constructor(
 
         // 创建动画 - 设计圆形布局，围绕主球显示
         val animatorSet = AnimatorSet()
-        val radius = 250f // 增加半径，确保菜单球不与主球重叠（主球120dp + 菜单球77dp + 间距20dp = 217dp）
+        val radius = 250f // 增加半径，确保菜单球不与主球重叠（主琇12dp + 菜单球77dp + 间距20dp = 217dp）
         
-        // 计算三个菜单球的位置（120度间隔）
-        // 刷新球：左上方 (-120度)
-        val refreshX = -radius * 0.866f // cos(120°)
-        val refreshY = -radius * 0.5f   // sin(120°)
+        // 重新设计三个菜单球的位置，优化角度分布避免下方遮挡
+        // 刷新球：上方 (90°)
+        val refreshAngle = Math.toRadians(90.0)
+        val refreshX = -radius * Math.cos(refreshAngle).toFloat()
+        val refreshY = -radius * Math.sin(refreshAngle).toFloat()
         
-        // 垃圾桶球：左方 (180度)
-        val trashX = -radius
-        val trashY = 0f
+        // 垃圾桶球：左上方 (150°)
+        val trashAngle = Math.toRadians(150.0)
+        val trashX = -radius * Math.cos(trashAngle).toFloat()
+        val trashY = -radius * Math.sin(trashAngle).toFloat()
         
-        // 设置球：左下方 (-240度)
-        val settingsX = -radius * 0.866f // cos(-120°)
-        val settingsY = radius * 0.5f    // sin(-120°)
+        // 设置球：左下方 (210°)，但不太下
+        val settingsAngle = Math.toRadians(210.0)
+        val settingsX = -radius * Math.cos(settingsAngle).toFloat()
+        val settingsY = -radius * Math.sin(settingsAngle).toFloat()
 
         // 刷新球动画
         val refreshAnimX = ObjectAnimator.ofFloat(refreshBall, "translationX", 0f, refreshX)
@@ -255,13 +255,18 @@ class DebugFloatingBall @JvmOverloads constructor(
         val animatorSet = AnimatorSet()
         val radius = 250f // 与展开动画保持一致
         
-        // 计算三个菜单球的返回位置
-        val refreshX = -radius * 0.866f
-        val refreshY = -radius * 0.5f
-        val trashX = -radius
-        val trashY = 0f
-        val settingsX = -radius * 0.866f
-        val settingsY = radius * 0.5f
+        // 计算三个菜单球的返回位置，与展开动画保持一致
+        val refreshAngle = Math.toRadians(90.0)
+        val refreshX = -radius * Math.cos(refreshAngle).toFloat()
+        val refreshY = -radius * Math.sin(refreshAngle).toFloat()
+        
+        val trashAngle = Math.toRadians(150.0)
+        val trashX = -radius * Math.cos(trashAngle).toFloat()
+        val trashY = -radius * Math.sin(trashAngle).toFloat()
+        
+        val settingsAngle = Math.toRadians(210.0)
+        val settingsX = -radius * Math.cos(settingsAngle).toFloat()
+        val settingsY = -radius * Math.sin(settingsAngle).toFloat()
 
         // 刷新球动画
         val refreshAnimX = ObjectAnimator.ofFloat(refreshBall, "translationX", refreshX, 0f)
