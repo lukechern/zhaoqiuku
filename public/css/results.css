@@ -248,3 +248,24 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* 可点击元素样式 */
+.playable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.playable:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.playable:active {
+    transform: translateY(0);
+}
+
+/* 错误状态下的用户气泡悬停效果 */
+.user-say.error-user.playable:hover {
+    background: #fecaca;
+    border-color: #f87171;
+}

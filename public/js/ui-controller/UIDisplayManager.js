@@ -171,13 +171,17 @@ export class UIDisplayManager {
             `;
             
             // 绑定点击事件，与普通对话保持一致的交互
-            try {
-                if (window.bindFallbackPlayback_7ree) {
-                    window.bindFallbackPlayback_7ree(this.uiController.elements.resultsContainer);
+            // 使用setTimeout确保DOM完全渲染后再绑定事件
+            setTimeout(() => {
+                try {
+                    if (window.bindFallbackPlayback_7ree) {
+                        window.bindFallbackPlayback_7ree(this.uiController.elements.resultsContainer);
+                        console.log('UIDisplayManager 错误显示事件绑定完成');
+                    }
+                } catch (e) {
+                    console.warn('绑定错误显示回退播放事件失败:', e);
                 }
-            } catch (e) {
-                console.warn('绑定错误显示回退播放事件失败:', e);
-            }
+            }, 10);
         }
     }
 

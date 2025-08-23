@@ -118,11 +118,15 @@ function showError(error, elements) {
         `;
         
         // 绑定点击事件，与普通对话保持一致的交互
-        try {
-            bindFallbackPlayback_7ree(elements.resultsContainer);
-        } catch (e) {
-            console.warn('绑定错误显示回退播放事件失败:', e);
-        }
+        // 使用setTimeout确保DOM完全渲染后再绑定事件
+        setTimeout(() => {
+            try {
+                bindFallbackPlayback_7ree(elements.resultsContainer);
+                console.log('错误显示事件绑定完成');
+            } catch (e) {
+                console.warn('绑定错误显示回退播放事件失败:', e);
+            }
+        }, 10);
     }
 }
 
@@ -152,20 +156,39 @@ function showMessage(message, type = 'info', elements) {
 
 // 回退渲染下为用户/AI气泡绑定点击播放事件
 function bindFallbackPlayback_7ree(container) {
-    if (!container) return;
+    if (!container) {
+        console.warn('bindFallbackPlayback_7ree: container为空');
+        return;
+    }
 
     const uiController = window.app && window.app.uiController ? window.app.uiController : null;
 
+    // 使用更具体的选择器来确保找到正确的元素
     const userEl = container.querySelector('.user-ai-dialog .user-say.playable');
     const aiEl = container.querySelector('.user-ai-dialog .ai-reply.playable');
+    
+    console.log('bindFallbackPlayback_7ree 元素查找结果:', {
+        container: !!container,
+        userEl: !!userEl,
+        aiEl: !!aiEl,
+        userElClasses: userEl ? Array.from(userEl.classList) : null,
+        aiElClasses: aiEl ? Array.from(aiEl.classList) : null
+    });
 
     // 绑定用户录音播放
     if (userEl) {
+        console.log('绑定用户气泡点击事件');
         userEl.addEventListener('click', (event) => {
+            console.log('用户气泡被点击');
             event.stopPropagation();
 
             const audioUrl = window.app && window.app.audioRecorder ? window.app.audioRecorder.audioUrl : null;
-            if (!audioUrl) return;
+            console.log('音频URL:', audioUrl);
+            
+            if (!audioUrl) {
+                console.warn('没有可用的音频URL');
+                return;
+            }
 
             // 若存在UIController则统一管理播放状态
             if (uiController) {
@@ -202,11 +225,15 @@ function bindFallbackPlayback_7ree(container) {
 
     // 绑定AI TTS播放
     if (aiEl) {
+        console.log('绑定AI气泡点击事件');
         aiEl.addEventListener('click', async (event) => {
+            console.log('AI气泡被点击');
             event.stopPropagation();
             
             const message = aiEl.getAttribute('data-message') || '';
             const action = aiEl.getAttribute('data-action');
+            
+            console.log('AI气泡点击参数:', { message, action });
             
             // 检测意图不明确的情况，直接播放本地Unknow.mp3
             if (action === 'unknown') {
@@ -347,3 +374,4 @@ window.formatSimpleResult = formatSimpleResult;
 window.showLoading = showLoading;
 window.showError = showError;
 window.showMessage = showMessage;
+window.bindFallbackPlayback_7ree = bindFallbackPlayback_7ree;
