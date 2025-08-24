@@ -17,13 +17,14 @@ function showRecordingState(elements) {
             window.micHideTimerId_7ree = null;
         }
         const btn_7ree = elements.microphoneButton;
+        const hideDelayMs_7ree = (typeof window.delayStartModeEnabled_7ree !== 'undefined' && window.delayStartModeEnabled_7ree) ? 0 : 400;
         window.micHideTimerId_7ree = setTimeout(() => {
             // 仅当仍处于录音状态时再隐藏，避免竞态_7ree
             if (window.app && window.app.uiController && window.app.uiController.isRecording) {
                 btn_7ree.style.display = 'none';
             }
             window.micHideTimerId_7ree = null;
-        }, 320);
+        }, hideDelayMs_7ree);
     }
     // 水波动效上移到计时器位置
     if (elements.soundWaves) {

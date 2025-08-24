@@ -58,7 +58,7 @@ function handleTouchStart(uiController, e) {
             }
         }
 
-        // 开始录音（统一延时320ms）_7ree
+        // 开始录音（统一延时400ms）
         if (uiController.handlePressStart) {
             if (typeof window.pressStartDelayMs_7ree === 'undefined') {
                 window.pressStartDelayMs_7ree = 400;
@@ -144,7 +144,7 @@ function handleMouseDown(uiController, e) {
         }
     }
 
-    // 开始录音（统一延时320ms）_7ree
+    // 开始录音（统一延时400ms）_7ree
     if (uiController.handlePressStart) {
         if (typeof window.pressStartDelayMs_7ree === 'undefined') {
             window.pressStartDelayMs_7ree = 400;
