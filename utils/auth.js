@@ -166,7 +166,7 @@ export function withAuth(handler, options = {}) {
                 return res.status(401).json({
                     error: '未授权访问',
                     code: 'UNAUTHORIZED',
-                    message: '请先登录'
+                    message: '欢迎您'
                 });
             }
 

@@ -83,7 +83,7 @@
     padding: 20px;
     overflow-y: auto;
     flex: 1;
-    padding-bottom: 20px;
+    padding-bottom: 0;
 }
 
 .help-section {
@@ -166,6 +166,44 @@
     margin: 0;
 }
 
+.help-modal-footer {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+    background: var(--surface-light);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    min-height: 60px;
+    box-sizing: border-box;
+}
+
+.help-footer-btn {
+    padding: 10px 20px;
+    border: none;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.help-footer-btn:hover {
+    background: var(--primary-color-hover, #5a6fd8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.help-footer-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 /* 深色模式适配 */
 @media (prefers-color-scheme: dark) {
     .help-modal-overlay {
@@ -180,6 +218,11 @@
     .help-modal-header {
         background: rgba(26, 26, 26, 0.95);
         border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .help-modal-footer {
+        background: rgba(26, 26, 26, 0.95);
+        border-top-color: rgba(255, 255, 255, 0.1);
     }
     
     .help-modal-close:hover {
@@ -204,7 +247,11 @@
     
     .help-modal-content {
         padding: 16px;
-        padding-bottom: 16px;
+        padding-bottom: 0;
+    }
+    
+    .help-modal-footer {
+        padding: 16px;
     }
     
     .help-section {

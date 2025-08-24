@@ -153,6 +153,9 @@ class HelpSystem {
                     </ul>
                 </div>
             </div>
+            <div class="help-modal-footer">
+                <button class="help-footer-btn" id="helpCloseBtn">谢谢，我知道了</button>
+            </div>
         `;
 
         this.overlay.appendChild(this.modal);
@@ -169,6 +172,11 @@ class HelpSystem {
 
         // 关闭按钮
         this.modal?.querySelector('.help-modal-close')?.addEventListener('click', () => {
+            this.hideModal();
+        });
+
+        // Footer关闭按钮
+        this.modal?.querySelector('#helpCloseBtn')?.addEventListener('click', () => {
             this.hideModal();
         });
 
