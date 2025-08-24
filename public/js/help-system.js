@@ -119,12 +119,19 @@ class HelpSystem {
         this.modalLoadingPromise_7ree = (async () => {
             let helpBodyContent = '';
             try {
-                const response = await fetch('components/help-body_7ree.html');
-                if (response.ok) {
-                    helpBodyContent = await response.text();
+                // 优先使用并发预取的内容_7ree
+                if (window.preloadedHelpBodyHtml_7ree) {
+                    helpBodyContent = window.preloadedHelpBodyHtml_7ree;
                 } else {
-                    console.warn('无法加载帮助内容组件，使用默认内容');
-                    helpBodyContent = this.getDefaultHelpContent();
+                    const response = await fetch('components/help-body_7ree.html');
+                    if (response.ok) {
+                        helpBodyContent = await response.text();
+                        // 缓存到全局，供后续直接使用_7ree
+                        window.preloadedHelpBodyHtml_7ree = helpBodyContent;
+                    } else {
+                        console.warn('无法加载帮助内容组件，使用默认内容');
+                        helpBodyContent = this.getDefaultHelpContent();
+                    }
                 }
             } catch (error) {
                 console.warn('加载帮助内容失败：', error);
@@ -203,12 +210,19 @@ class HelpSystem {
         // 加载帮助内容
         let helpBodyContent = '';
         try {
-            const response = await fetch('components/help-body_7ree.html');
-            if (response.ok) {
-                helpBodyContent = await response.text();
+            // 优先使用并发预取的内容_7ree
+            if (window.preloadedHelpBodyHtml_7ree) {
+                helpBodyContent = window.preloadedHelpBodyHtml_7ree;
             } else {
-                console.warn('无法加载帮助内容组件，使用默认内容');
-                helpBodyContent = this.getDefaultHelpContent();
+                const response = await fetch('components/help-body_7ree.html');
+                if (response.ok) {
+                    helpBodyContent = await response.text();
+                    // 缓存到全局，供后续直接使用_7ree
+                    window.preloadedHelpBodyHtml_7ree = helpBodyContent;
+                } else {
+                    console.warn('无法加载帮助内容组件，使用默认内容');
+                    helpBodyContent = this.getDefaultHelpContent();
+                }
             }
         } catch (error) {
             console.warn('加载帮助内容失败：', error);
@@ -505,7 +519,7 @@ class HelpSystem {
                     <img src="img/history.svg" alt="" class="help-section-icon">
                     历史记录
                 </h4>
-                <p class="help-section-content">查看和管理之前的语音记录</p>
+                <p class="help-section内容">查看和管理之前的语音记录</p>
             </div>
             <div class="help-section">
                 <h4 class="help-section-title">

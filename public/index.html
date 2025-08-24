@@ -58,15 +58,19 @@
         (function () {
             const preloadComponents = async () => {
                 try {
-                    const [headerResponse, navResponse, mainResponse] = await Promise.all([
+                    const [headerResponse, navResponse, mainResponse, helpResponse_7ree] = await Promise.all([
                         fetch('components/header-top.html'),
                         fetch('components/bottom-nav.html'),
-                        fetch('components/main.html')
+                        fetch('components/main.html'),
+                        // 新增：并发预取帮助内容片段_7ree
+                        fetch('components/help-body_7ree.html')
                     ]);
                     
                     window.preloadedHeaderHtml = await headerResponse.text();
                     window.preloadedNavHtml = await navResponse.text();
                     window.preloadedMainHtml = await mainResponse.text();
+                    // 新增：缓存预取到的帮助内容，供帮助系统直接使用_7ree
+                    window.preloadedHelpBodyHtml_7ree = await helpResponse_7ree.text();
                 } catch (error) {
                     console.error('Failed to preload components:', error);
                 }
