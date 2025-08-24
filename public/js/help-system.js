@@ -519,7 +519,7 @@ class HelpSystem {
                     <img src="img/history.svg" alt="" class="help-section-icon">
                     历史记录
                 </h4>
-                <p class="help-section内容">查看和管理之前的语音记录</p>
+                <p class="help-section-content">查看和管理之前的语音记录</p>
             </div>
             <div class="help-section">
                 <h4 class="help-section-title">
