@@ -172,15 +172,9 @@
     transform: translateY(0) scale(0.98);
 }
 
-/* 按钮点击反馈动画 - 确保在所有状态下都能正常播放 */
+/* 按钮点击反馈动画 */
 .microphone-button.click-feedback {
     animation: button-click-feedback 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* 确保点击反馈动画不会被录音状态中断 */
-.microphone-button.click-feedback.recording {
-    animation: button-click-feedback 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-               pulse-recording 1.5s ease-in-out infinite 0.3s;
 }
 
 @keyframes button-click-feedback {
@@ -206,7 +200,6 @@
 
 .microphone-button.recording {
     animation: pulse-recording 1.5s ease-in-out infinite;
-    transition: all 0.3s ease;
     box-shadow:
         0 15px 45px rgba(59, 130, 246, 0.6),
         0 0 0 15px rgba(59, 130, 246, 0.2),
@@ -220,12 +213,26 @@
     border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-/* 录音时隐藏金属质感效果 */
-.microphone-button.recording::before,
-.microphone-button.recording::after {
-    display: none;
+.microphone-button.recording::before {
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.45) 0%, transparent 70%),
+        radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.35) 0%, transparent 70%),
+        radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.25) 0%, transparent 50%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 1px,
+            rgba(0, 0, 0, 0.1) 1px,
+            rgba(0, 0, 0, 0.1) 3px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.08) 2px,
+            rgba(255, 255, 255, 0.08) 4px
+        );
 }
-
 
 .microphone-icon {
     width: 48px;
@@ -374,21 +381,16 @@
     }
 }
 
-/* 加载状态的跳动点动画 */
+/* 加载状态的跳动点动画和水波效果组合 */
 .loading-dots {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 120px;
-    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* 原为 #FBFCFE，修改为透明，只显示跳动点 */
     border-radius: 50%;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 2;
+    position: relative;
 }
 
 /* 水波效果容器，位于跳动点外面，在麦克风按钮区域 */
@@ -406,11 +408,6 @@
     transition: opacity 0.3s ease;
     pointer-events: none;
     z-index: 1; /* 确保水波在跳动点下方 */
-}
-
-/* 初始化时显示加载点 */
-.microphone-button.initializing ~ .loading-dots {
-    opacity: 1;
 }
 
 .sound-waves_7ree.active {
@@ -477,13 +474,8 @@
     }
 }
 
-/* 激活录音时的水波效果 */
-.microphone-button.recording ~ .sound-waves_7ree {
-    opacity: 1;
-}
-
 /* 录音时的音波颜色变化 */
-.microphone-button.recording ~ .sound-waves_7ree .wave_7ree {
+.sound-waves_7ree.recording .wave_7ree {
     border-color: #3b82f6;
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
@@ -568,6 +560,20 @@
 .microphone-button.loading {
     cursor: not-allowed;
     box-shadow: none;
+    background: transparent !important; /* AI思考时，隐藏按钮背景与质感效果 */
+    border-color: transparent !important; /* 隐藏边框，避免出现环形边框 */
+    overflow: visible !important; /* 允许水波效果超出按钮可视范围 */
+}
+
+/* 隐藏 ready/recording 等状态下的金属质感伪元素，避免遮挡水波效果 */
+.microphone-button.loading::before,
+.microphone-button.loading::after {
+    display: none !important;
+}
+
+/* 加载状态下禁用 hover 形变，避免视觉干扰 */
+.microphone-button.loading:hover {
+    transform: none !important;
 }
 
 /* 移动端适配 */
