@@ -3,6 +3,11 @@
     /* margin-bottom: 2rem; */
 }
 
+.header .app-title{
+    margin:0 auto;
+    font-size: 0.9rem;
+}
+
 /* header-top组件样式 */
 .header-top {
     height: 50px;
@@ -21,6 +26,8 @@
     right: 0;
     padding: 0 16px; /* 添加左右内边距 */
 }
+
+
 
 /* header-top占位元素样式 */
 .header-top-placeholder {
