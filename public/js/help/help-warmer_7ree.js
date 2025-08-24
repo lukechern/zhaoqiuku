@@ -3,11 +3,7 @@
 (function attachWarmTipsUpdater_7ree(){
     if (!window.HelpSystem || !window.HelpSystem.prototype) return;
 
-    // 透传型 no-op 保留，便于兼容旧调用链
-    window.HelpSystem.prototype.updateWarmTipsContent = function(helpBodyContent){
-        return helpBodyContent;
-    };
-
+    // updateWarmTipsContent 已移除（历史兼容不再需要）_7ree
     window.HelpSystem.prototype.updateWarmTipsInModal = function(){
         try {
             const warmTipsText = this.modal?.querySelector('#warmTipsText');

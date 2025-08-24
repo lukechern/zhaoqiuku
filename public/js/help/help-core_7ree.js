@@ -123,7 +123,7 @@ class HelpSystem {
             }
 
             // 不再进行字符串级 warmTips 替换，改由 DOM 中的 #warmTipsText 动态填充_7ree
-            // this.updateWarmTipsContent 已废弃为 no-op
+            // 已彻底移除 updateWarmTipsContent（历史兼容已不再需要）_7ree
 
             // 剥离 warmTipsSection，先渲染其余部分，warmTips 后台再插入_7ree
             try {
@@ -339,38 +339,9 @@ class HelpSystem {
         }
     }
 
-    // 更新温馨提示内容（已废弃：不再对整体HTML做字符串替换，仅保留兼容返回）
-    updateWarmTipsContent(helpBodyContent) {
-        return helpBodyContent;
-    }
-
-    // 在模态框中更新温馨提示内容（补全邮箱显示）_7ree
-    updateWarmTipsInModal() {
-        try {
-            const warmTipsText = this.modal?.querySelector('#warmTipsText');
-            if (!warmTipsText) return;
-
-            if (window.disableWarmTipsEmail_7ree === true) {
-                // 使用静态文案，不读取邮箱信息_7ree
-                warmTipsText.innerHTML = `欢迎使用 <strong>找秋裤</strong>。请注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
-                return;
-            }
-
-            const isAuthenticated = !!window.authManager?.isAuthenticated;
-            const userEmail = window.authManager?.user?.email;
-            let warmTipsHtml_7ree = '';
-
-            if (isAuthenticated && userEmail) {
-                warmTipsHtml_7ree = `欢迎您，<strong>${userEmail}</strong>。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
-            } else {
-                const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="登录">登录</a>';
-                warmTipsHtml_7ree = `欢迎您，请${loginLink}后使用。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
-            }
-
-            warmTipsText.innerHTML = warmTipsHtml_7ree;
-        } catch (error) {
-            console.warn('在模态框中更新温馨提示内容失败:', error);
-        }
+    // 在模态框中更新温馨提示内容（由 warmer 模块托管）_7ree
+     updateWarmTipsInModal() {
+        // 具体实现由 js/help/help-warmer_7ree.js 动态挂载到原型_7ree
     }
 
     // 获取默认帮助内容（fallback）
