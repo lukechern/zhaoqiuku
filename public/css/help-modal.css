@@ -261,23 +261,15 @@
 
 /* 温馨提示样式 */
 .help-warm-tips {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border: 1px solid #ffe066;
-    border-radius: 12px;
+    background: linear-gradient(135deg, #faf7ed 0%, #fff8e3 100%);
+    border: 1px solid #fff8e3;
+    border-radius: 6px;
     padding: 16px;
     margin-bottom: 24px;
     position: relative;
     overflow: hidden;
 }
 
-.help-warm-tips::before {
-    content: "💡";
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 1.5rem;
-    opacity: 0.7;
-}
 
 .help-warm-tips-content {
     position: relative;

@@ -59,6 +59,7 @@
     flex: 0 0 auto;
     min-width: 50px;
     justify-content: flex-end;
+    gap: 8px; /* 支持多个元素间距 */
 }
 
 /* 欢迎信息样式 */
@@ -80,6 +81,12 @@
 
 /* 登出按钮样式 */
 .user-logout {
+    display: flex;
+    align-items: center;
+}
+
+/* 认证链接容器样式 */
+.auth-links {
     display: flex;
     align-items: center;
 }
