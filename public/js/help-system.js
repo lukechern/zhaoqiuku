@@ -257,17 +257,20 @@ class HelpSystem {
 
             const isAuthenticated = window.authManager?.isAuthenticated;
             const userEmail = window.authManager?.user?.email;
+            var wormTipsHtml;
 
             if (isAuthenticated && userEmail) {
                 // 用户已登录，显示用户邮箱
-                warmTipsText.innerHTML = `欢迎您 <strong>${userEmail}</strong> 使用 <strong>找秋裤</strong>，这是一款自然语言记录和查找日常物品存放位置的小工具，
-                请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
+                wormTipsHtml = `欢迎您,<strong>${userEmail}</strong>。<strong>找秋裤</strong>`;
             } else {
                 // 用户未登录，显示登录提示
                 const loginLink = '<a href="#" onclick="window.showLoginRequired?.(); return false;" style="color: #007bff; text-decoration: underline;">请登录</a>';
-                warmTipsText.innerHTML = `欢迎您，${loginLink}后使用 <strong>找秋裤</strong>，这是一款自然语言记录和查找日常物品存放位置的小工具，
-                请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
+                wormTipsHtml = `欢迎您，${loginLink}后使用。<strong>找秋裤</strong>`;
             }
+                wormTipsHtml += `，这是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
+
+                warmTipsText.innerHTML += wormTipsHtml;
+
         } catch (error) {
             console.warn('在模态框中更新温馨提示内容失败:', error);
         }
