@@ -410,22 +410,8 @@ function initHelpSystem() {
         return;
     }
     
-    // 策略二：快速轮询（减少重试次数和间隔）
-    let retries = 0;
-    const maxRetries = 15; // 从30减少到15
-    const retryInterval = 100; // 从200ms减少到100ms
-    
-    const fastRetryTimer = setInterval(() => {
-        if (initHelp() || retries >= maxRetries) {
-            clearInterval(fastRetryTimer);
-            if (retries >= maxRetries) {
-                console.warn('⚠️ 帮助系统初始化超时，将在DOM准备好后重试');
-                // 备用策略：使用MutationObserver监听 DOM 变化
-                setupDOMObserver();
-            }
-        }
-        retries++;
-    }, retryInterval);
+    // 简化：移除快速轮询，仅使用 MutationObserver 监听 DOM 变化
+    setupDOMObserver();
 }
 
 // 新增：DOM监听器作为备用策略
