@@ -61,7 +61,7 @@ function handleTouchStart(uiController, e) {
         // 开始录音（统一延时320ms）_7ree
         if (uiController.handlePressStart) {
             if (typeof window.pressStartDelayMs_7ree === 'undefined') {
-                window.pressStartDelayMs_7ree = 320;
+                window.pressStartDelayMs_7ree = 400;
             }
             if (typeof window.delayStartModeEnabled_7ree === 'undefined') {
                 window.delayStartModeEnabled_7ree = true;
@@ -80,7 +80,7 @@ function handleTouchStart(uiController, e) {
                         uiController.handlePressStart();
                     }
                     window.pressStartTimerId_7ree = null;
-                }, window.pressStartDelayMs_7ree || 320);
+                }, window.pressStartDelayMs_7ree || 400);
             } else {
                 uiController.handlePressStart();
             }
@@ -147,7 +147,7 @@ function handleMouseDown(uiController, e) {
     // 开始录音（统一延时320ms）_7ree
     if (uiController.handlePressStart) {
         if (typeof window.pressStartDelayMs_7ree === 'undefined') {
-            window.pressStartDelayMs_7ree = 320;
+            window.pressStartDelayMs_7ree = 400;
         }
         if (typeof window.delayStartModeEnabled_7ree === 'undefined') {
             window.delayStartModeEnabled_7ree = true;
@@ -166,7 +166,7 @@ function handleMouseDown(uiController, e) {
                     uiController.handlePressStart();
                 }
                 window.pressStartTimerId_7ree = null;
-            }, window.pressStartDelayMs_7ree || 320);
+            }, window.pressStartDelayMs_7ree || 400);
         } else {
             uiController.handlePressStart();
         }

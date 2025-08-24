@@ -7,7 +7,7 @@ export class UITouchHandler {
         this.useClickToRecord_7ree = true;
         // 新增：默认延时配置_7ree
         if (typeof window.pressStartDelayMs_7ree === 'undefined') {
-            window.pressStartDelayMs_7ree = 320;
+            window.pressStartDelayMs_7ree = 400;
         }
         if (typeof window.delayStartModeEnabled_7ree === 'undefined') {
             window.delayStartModeEnabled_7ree = true;
@@ -60,7 +60,7 @@ export class UITouchHandler {
                             this.uiController.handlePressStart();
                         }
                         window.pressStartTimerId_7ree = null;
-                    }, window.pressStartDelayMs_7ree || 320);
+                    }, window.pressStartDelayMs_7ree || 400);
                 } else {
                     this.uiController.handlePressStart();
                 }

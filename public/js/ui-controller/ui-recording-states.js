@@ -254,7 +254,7 @@ function rebindMicrophoneButtonEvents(button) {
                         ui.handlePressStart();
                     }
                     window.pressStartTimerId_7ree = null;
-                }, window.pressStartDelayMs_7ree || 320);
+                }, window.pressStartDelayMs_7ree || 400);
             } else {
                 ui.handlePressStart();
             }
