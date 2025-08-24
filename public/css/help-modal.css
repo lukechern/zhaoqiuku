@@ -28,11 +28,13 @@
     max-width: 320px;
     width: 90%;
     max-height: 70vh;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     transform: scale(0.9) translateY(20px);
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
 }
 
 .help-modal-overlay.show .help-modal {
@@ -40,10 +42,15 @@
 }
 
 .help-modal-header {
-    padding: 20px 20px 0;
+    padding: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+    background: var(--surface-light);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
 }
 
 .help-modal-title {
@@ -74,6 +81,9 @@
 
 .help-modal-content {
     padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    padding-bottom: 20px;
 }
 
 .help-section {
@@ -167,6 +177,11 @@
         border-color: rgba(255, 255, 255, 0.1);
     }
     
+    .help-modal-header {
+        background: rgba(26, 26, 26, 0.95);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    
     .help-modal-close:hover {
         background: rgba(255, 255, 255, 0.1);
     }
@@ -184,11 +199,12 @@
     }
     
     .help-modal-header {
-        padding: 16px 16px 0;
+        padding: 16px;
     }
     
     .help-modal-content {
         padding: 16px;
+        padding-bottom: 16px;
     }
     
     .help-section {
