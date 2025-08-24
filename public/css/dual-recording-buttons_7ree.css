@@ -25,14 +25,19 @@
     width: 56px;
     height: 56px;
     border-radius: 50%; /* 改为正圆形 */
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     outline: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    box-shadow:
+        0 6px 18px rgba(0,0,0,0.18),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2);
     transition: transform .08s ease, box-shadow .2s ease, background-color .2s ease;
     user-select: none;
+    position: relative;
+    overflow: hidden;
 }
 
 .dual-recording-buttons_7ree .record-btn_7ree img {
@@ -66,15 +71,24 @@
 @keyframes record-btn-click-feedback {
     0% {
         transform: scale(1);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        box-shadow:
+            0 6px 18px rgba(0,0,0,0.18),
+            inset 0 2px 4px rgba(255, 255, 255, 0.4),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.2);
     }
     50% {
         transform: scale(0.92);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        box-shadow:
+            0 2px 8px rgba(0,0,0,0.25),
+            inset 0 1px 2px rgba(255, 255, 255, 0.3),
+            inset 0 -1px 2px rgba(0, 0, 0, 0.3);
     }
     100% {
         transform: scale(1.05);
-        box-shadow: 0 8px 22px rgba(0,0,0,0.22);
+        box-shadow:
+            0 8px 22px rgba(0,0,0,0.22),
+            inset 0 3px 6px rgba(255, 255, 255, 0.5),
+            inset 0 -3px 6px rgba(0, 0, 0, 0.3);
     }
 }
 
@@ -86,17 +100,26 @@
 @keyframes cancel-btn-click-feedback {
     0% {
         transform: scale(1);
-        box-shadow: 0 6px 18px rgba(255, 59, 48, 0.3);
+        box-shadow:
+            0 6px 18px rgba(255, 59, 48, 0.3),
+            inset 0 2px 4px rgba(255, 255, 255, 0.4),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.2);
         background: #ff3b30;
     }
     50% {
         transform: scale(0.92);
-        box-shadow: 0 2px 8px rgba(255, 59, 48, 0.4);
+        box-shadow:
+            0 2px 8px rgba(255, 59, 48, 0.4),
+            inset 0 1px 2px rgba(255, 255, 255, 0.3),
+            inset 0 -1px 2px rgba(0, 0, 0, 0.3);
         background: #e6342a;
     }
     100% {
         transform: scale(1.05);
-        box-shadow: 0 8px 22px rgba(255, 59, 48, 0.4);
+        box-shadow:
+            0 8px 22px rgba(255, 59, 48, 0.4),
+            inset 0 3px 6px rgba(255, 255, 255, 0.5),
+            inset 0 -3px 6px rgba(0, 0, 0, 0.3);
         background: #ff453c;
     }
 }
@@ -109,17 +132,26 @@
 @keyframes confirm-btn-click-feedback {
     0% {
         transform: scale(1);
-        box-shadow: 0 6px 18px rgba(52, 199, 89, 0.3);
+        box-shadow:
+            0 6px 18px rgba(52, 199, 89, 0.3),
+            inset 0 2px 4px rgba(255, 255, 255, 0.4),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.2);
         background: #34c759;
     }
     50% {
         transform: scale(0.92);
-        box-shadow: 0 2px 8px rgba(52, 199, 89, 0.4);
+        box-shadow:
+            0 2px 8px rgba(52, 199, 89, 0.4),
+            inset 0 1px 2px rgba(255, 255, 255, 0.3),
+            inset 0 -1px 2px rgba(0, 0, 0, 0.3);
         background: #2fb94f;
     }
     100% {
         transform: scale(1.05);
-        box-shadow: 0 8px 22px rgba(52, 199, 89, 0.4);
+        box-shadow:
+            0 8px 22px rgba(52, 199, 89, 0.4),
+            inset 0 3px 6px rgba(255, 255, 255, 0.5),
+            inset 0 -3px 6px rgba(0, 0, 0, 0.3);
         background: #3dd65c;
     }
 }
@@ -127,16 +159,125 @@
 /* 左侧：取消（红底） */
 .dual-recording-buttons_7ree .cancel_7ree {
     background: #ff3b30;
+    position: relative;
+    overflow: hidden;
+}
+
+.dual-recording-buttons_7ree .cancel_7ree::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.2) 0%, transparent 50%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px
+        );
+    background-size: 100% 100%, 100% 100%, 8px 8px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.dual-recording-buttons_7ree .cancel_7ree img {
+    position: relative;
+    z-index: 2;
 }
 
 /* 右侧：确认（绿底） */
 .dual-recording-buttons_7ree .confirm_7ree {
     background: #34c759;
+    position: relative;
+    overflow: hidden;
+}
+
+.dual-recording-buttons_7ree .confirm_7ree::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.2) 0%, transparent 50%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px
+        );
+    background-size: 100% 100%, 100% 100%, 8px 8px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.dual-recording-buttons_7ree .confirm_7ree img {
+    position: relative;
+    z-index: 2;
 }
 
 /* 暗色模式兼容 */
 @media (prefers-color-scheme: dark) {
     .dual-recording-buttons_7ree .record-btn_7ree {
-        box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+        box-shadow:
+            0 6px 18px rgba(0,0,0,0.35),
+            inset 0 2px 4px rgba(255, 255, 255, 0.2),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.3);
     }
+}
+
+/* 怀旧金属质感增强 */
+.dual-recording-buttons_7ree .record-btn_7ree {
+    /* 添加微妙的金属光泽动画 */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dual-recording-buttons_7ree .record-btn_7ree:hover::before {
+    opacity: 0.8;
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.4) 0%, transparent 60%),
+        radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.3) 0%, transparent 60%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 3px,
+            rgba(0, 0, 0, 0.04) 3px,
+            rgba(0, 0, 0, 0.04) 6px
+        );
+}
+
+/* 增强的金属边缘效果 */
+.dual-recording-buttons_7ree .record-btn_7ree::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: conic-gradient(
+        from 0deg,
+        rgba(255, 255, 255, 0.1) 0deg,
+        rgba(255, 255, 255, 0.05) 90deg,
+        rgba(0, 0, 0, 0.1) 180deg,
+        rgba(0, 0, 0, 0.05) 270deg,
+        rgba(255, 255, 255, 0.1) 360deg
+    );
+    border-radius: 50%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 确保图标在最上层 */
+.dual-recording-buttons_7ree .record-btn_7ree img {
+    filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
