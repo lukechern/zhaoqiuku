@@ -271,6 +271,45 @@ export function testAllButtonAnimations() {
         testRecordingButtonAnimations();
     }, 1000);
 }
+
+/**
+ * 测试麦克风按钮事件重新绑定功能
+ */
+export function testMicrophoneEventRebinding() {
+    console.log('=== 麦克风按钮事件重新绑定测试 ===');
+    
+    const button = document.getElementById('microphoneButton');
+    if (!button) {
+        console.warn('麦克风按钮元素未找到');
+        return;
+    }
+    
+    console.log('模拟录音结束后的状态恢复...');
+    
+    // 模拟 showProcessingState
+    if (window.showProcessingState && window.app && window.app.uiController) {
+        window.showProcessingState(window.app.uiController.elements);
+        
+        setTimeout(() => {
+            console.log('模拟 hideProcessingState和事件重新绑定...');
+            // 模拟 hideProcessingState
+            window.hideProcessingState(window.app.uiController.elements, false);
+            
+            setTimeout(() => {
+                console.log('测试重新绑定后的动画效果...');
+                const newButton = document.getElementById('microphoneButton');
+                if (newButton && window.ButtonAnimations) {
+                    window.ButtonAnimations.triggerMicrophoneFeedback(newButton);
+                    console.log('动画效果测试完成！');
+                } else {
+                    console.warn('按钮或动画工具未找到');
+                }
+            }, 100);
+        }, 2000);
+    } else {
+        console.warn('所需的全局函数或应用实例未找到');
+    }
+}
 export function testMicrophoneButton() {
     console.log('=== 麦克风按钮测试 ===');
     
@@ -402,6 +441,7 @@ export function initializeDebugTools() {
     window.testRecordingButtonAnimations = testRecordingButtonAnimations;
     window.testAllButtonAnimations = testAllButtonAnimations;
     window.testRecordingButtonDelayedAnimations = testRecordingButtonDelayedAnimations;
+    window.testMicrophoneEventRebinding = testMicrophoneEventRebinding;
     
     console.log('调试工具已初始化并暴露到全局作用域');
 }

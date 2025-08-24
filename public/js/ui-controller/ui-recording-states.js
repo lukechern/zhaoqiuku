@@ -175,12 +175,74 @@ function hideProcessingState(elements, isRecording) {
                 <img src="img/microphone.svg" alt="麦克风图标" class="microphone-icon">
             `;
         }
+        
+        // 重要：在恢复按钮内容后重新绑定事件监听器
+        setTimeout(() => {
+            rebindMicrophoneButtonEvents(elements.microphoneButton);
+        }, 50); // 稍微延迟确保DOM更新完成
     }
 
     // 只有在非录音状态下，且结果容器为空时，才显示placeholder
     // 避免在录音过程中被错误地还原为placeholder
     if (!isRecording && elements.resultsContainer && elements.resultsContainer.innerHTML.trim() === '') {
         elements.resultsContainer.innerHTML = '<div class="placeholder">存放物品还是查找物品？<br>轻触麦克风问问AI助手…</div>';
+    }
+}
+
+// 新增：重新绑定麦克风按钮事件的函数
+function rebindMicrophoneButtonEvents(button) {
+    if (!button) {
+        console.warn('麦克风按钮元素不存在，无法重新绑定事件');
+        return;
+    }
+    
+    console.log('重新绑定麦克风按钮事件');
+    
+    // 移除旧的事件监听器（通过克隆方式）
+    const newButton = button.cloneNode(true);
+    button.parentNode.replaceChild(newButton, button);
+    
+    // 重新绑定点击事件，包含动画效果
+    newButton.addEventListener('click', (e) => {
+        console.log('麦克风按钮被点击（重新绑定后）');
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // 添加点击反馈动画
+        if (window.ButtonAnimations) {
+            window.ButtonAnimations.triggerMicrophoneFeedback(newButton);
+        } else if (window.app && window.app.uiController && window.app.uiController.touchHandler) {
+            window.app.uiController.touchHandler.triggerClickFeedback(newButton);
+        }
+        
+        // 获取UIController实例并触发录音
+        if (window.app && window.app.uiController) {
+            if (window.app.uiController.isRecording) {
+                // 正在录音，点击麦克风不结束，需使用左右按钮明确操作
+                return;
+            }
+            window.app.uiController.handlePressStart();
+        }
+    });
+    
+    // 重新绑定基本保护事件
+    newButton.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); return false; });
+    newButton.addEventListener('selectstart', (e) => { e.preventDefault(); e.stopPropagation(); return false; });
+    newButton.addEventListener('dragstart', (e) => { e.preventDefault(); e.stopPropagation(); return false; });
+    
+    // WebView保护
+    if (window.webViewCompat_7ree) {
+        window.webViewCompat_7ree.setupElementProtection(newButton, {
+            preventContextMenu: true,
+            preventSelection: true,
+            preventDrag: true,
+            longPressDelay: 300
+        });
+    }
+    
+    // 更新elements中的引用
+    if (window.app && window.app.uiController && window.app.uiController.elements) {
+        window.app.uiController.elements.microphoneButton = newButton;
     }
 }
 
@@ -191,3 +253,4 @@ window.showCancelState = showCancelState;
 window.hideCancelState = hideCancelState;
 window.showProcessingState = showProcessingState;
 window.hideProcessingState = hideProcessingState;
+window.rebindMicrophoneButtonEvents = rebindMicrophoneButtonEvents;

@@ -42,6 +42,12 @@
 - **防重复点击**：动画期间禁用按钮，防止用户误操作
 - **状态恢复**：操作完成后自动恢复按钮状态
 
+### 事件重新绑定机制 🔄
+- **问题描述**：录音结束后`hideProcessingState`使用`innerHTML`替换按钮内容，导致事件监听器丢失
+- **解决方案**：在恢复按钮内容后立即调用`rebindMicrophoneButtonEvents`重新绑定事件
+- **绑定内容**：点击事件（含动画触发）、保护事件、WebView兼容性
+- **时间控制**：50ms延时确保DOM更新完成后再绑定
+
 ### 文件结构
 ```
 public/
@@ -90,6 +96,9 @@ testAllButtonAnimations();
 
 // 测试延时动画效果（新增）
 testRecordingButtonDelayedAnimations();
+
+// 测试事件重新绑定功能（新增）
+testMicrophoneEventRebinding();
 ```
 
 ### 测试页面
