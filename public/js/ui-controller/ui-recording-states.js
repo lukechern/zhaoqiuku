@@ -17,7 +17,7 @@ function showRecordingState(elements) {
             window.micHideTimerId_7ree = null;
         }
         const btn_7ree = elements.microphoneButton;
-        const hideDelayMs_7ree = (typeof window.delayStartModeEnabled_7ree !== 'undefined' && window.delayStartModeEnabled_7ree) ? 0 : 400;
+        const hideDelayMs_7ree = (typeof window.delayStartModeEnabled_7ree !== 'undefined' && window.delayStartModeEnabled_7ree) ? 0 : 310;
         window.micHideTimerId_7ree = setTimeout(() => {
             // 仅当仍处于录音状态时再隐藏，避免竞态_7ree
             if (window.app && window.app.uiController && window.app.uiController.isRecording) {
