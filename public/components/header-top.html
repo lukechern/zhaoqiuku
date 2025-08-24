@@ -1,24 +1,27 @@
 <div class="header-top">
-    <!-- 最左边：登录/登出按钮区域 -->
-    <div class="auth-section" id="authSection">
-        <!-- 未登录时显示登录链接 -->
+    <!-- 左侧区域：登出按钮/登录链接 -->
+    <div class="header-left" id="headerLeft">
+        <!-- 认证链接容器 -->
         <div class="auth-links" id="authLinks">
+            <a href="auth.html" class="auth-link">登录</a>
         </div>
-        <!-- 已登录时显示登出按钮 -->
-        <div class="logout-section hidden" id="logoutSection">
+        <!-- 已登录状态：登出按钮 -->
+        <div class="user-logout hidden" id="userLogout">
             <button class="logout-btn" id="logoutBtn" aria-label="登出">
                 <img src="img/logout.svg" alt="登出图标" class="logout-icon">
             </button>
         </div>
     </div>
-
-    <!-- 中间：欢迎信息区域 -->
-    <div class="welcome-section" id="welcomeSection">
-        <span class="welcome-text" id="welcomeText">请先登录</span>
+    
+    <!-- 中间区域：欢迎信息 -->
+    <div class="header-center" id="headerCenter">
+        <div class="welcome-message" id="welcomeMessage">
+            <span class="welcome-text" id="welcomeText">请先登录</span>
+        </div>
     </div>
-
-    <!-- 最右边：功能按钮区域 -->
-    <div class="function-section" id="functionSection">
+    
+    <!-- 右侧区域：功能按钮 -->
+    <div class="header-right" id="headerRight">
         <!-- 功能图标将在这里动态添加 -->
     </div>
 </div>

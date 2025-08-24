@@ -35,12 +35,13 @@
     }
 
     // 获取或创建右侧功能图标容器
-    let rightContainer = header.querySelector('.header-actions-right');
+    let rightContainer = header.querySelector('.header-right');
     if (!rightContainer) {
-      rightContainer = document.createElement('div');
-      rightContainer.className = 'header-actions-right';
-      rightContainer.id = 'headerActionsRight';
-      header.appendChild(rightContainer);
+      rightContainer = header.querySelector('#headerRight');
+    }
+    if (!rightContainer) {
+      console.warn('未找到右侧容器，创建一个');
+      return;
     }
 
     // 在右侧容器中插入搜索按钮

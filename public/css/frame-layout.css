@@ -27,7 +27,7 @@
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* 改为两端对齐 */
+    justify-content: space-between; /* 三栏布局 */
     padding: 0 20px;
     background: transparent;
     border: none;
@@ -36,23 +36,52 @@
     margin-bottom: 0;
 }
 
-.header-top-fixed_7ree .user-actions {
+/* 三栏布局样式 */
+.header-top-fixed_7ree .header-left {
     display: flex;
     align-items: center;
+    flex: 0 0 auto;
+    min-width: 50px;
 }
 
-/* 左侧用户信息区域 */
-.header-top-fixed_7ree .user-actions-left {
+.header-top-fixed_7ree .header-center {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    padding: 0 16px;
 }
 
-/* 右侧功能图标区域 */
-.header-top-fixed_7ree .header-actions-right {
+.header-top-fixed_7ree .header-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    flex: 0 0 auto;
+    min-width: 50px;
+    justify-content: flex-end;
+}
+
+/* 欢迎信息样式 */
+.header-top-fixed_7ree .welcome-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-top-fixed_7ree .welcome-text {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* 登出按钮样式 */
+.header-top-fixed_7ree .user-logout {
+    display: flex;
+    align-items: center;
 }
 
 .header-top-fixed_7ree .auth-links .auth-link,

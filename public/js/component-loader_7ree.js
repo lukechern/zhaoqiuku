@@ -64,16 +64,22 @@ function getFallbackHtml_7ree(type) {
     if (type === 'header') {
         return (
             '<div class="header-top">' +
-            '  <div class="user-actions-left" id="userActions">' +
-            '    <div class="auth-links" id="authLinks"></div>' +
-            '    <div class="user-info" id="userInfo">' +
-            '      <span class="user-email" id="userEmail"></span>' +
+            '  <div class="header-left" id="headerLeft">' +
+            '    <div class="auth-links" id="authLinks">' +
+            '      <a href="auth.html" class="auth-link">登录</a>' +
+            '    </div>' +
+            '    <div class="user-logout hidden" id="userLogout">' +
             '      <button class="logout-btn" id="logoutBtn" aria-label="登出">' +
             '        <img src="img/logout.svg" alt="登出图标" class="logout-icon">' +
             '      </button>' +
             '    </div>' +
             '  </div>' +
-            '  <div class="header-actions-right" id="headerActionsRight">' +
+            '  <div class="header-center" id="headerCenter">' +
+            '    <div class="welcome-message" id="welcomeMessage">' +
+            '      <span class="welcome-text" id="welcomeText">请先登录</span>' +
+            '    </div>' +
+            '  </div>' +
+            '  <div class="header-right" id="headerRight">' +
             '  </div>' +
             '</div>'
         );

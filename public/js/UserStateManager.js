@@ -16,10 +16,10 @@ export class UserStateManager {
         const initUserStateElements = () => {
             // 获取用户状态元素
             this.authLinks = document.getElementById('authLinks');
-            this.userInfo = document.getElementById('userInfo');
-            this.userEmail = document.getElementById('userEmail');
+            this.userLogout = document.getElementById('userLogout');
+            this.welcomeText = document.getElementById('welcomeText');
 
-            if (!this.authLinks || !this.userInfo || !this.userEmail) {
+            if (!this.authLinks || !this.userLogout || !this.welcomeText) {
                 console.log('用户状态元素未找到，延迟重试...');
                 setTimeout(initUserStateElements, 100);
                 return;
@@ -147,13 +147,13 @@ export class UserStateManager {
 
         // 重新获取DOM元素，防止元素引用失效
         this.authLinks = document.getElementById('authLinks');
-        this.userInfo = document.getElementById('userInfo');
-        this.userEmail = document.getElementById('userEmail');
+        this.userLogout = document.getElementById('userLogout');
+        this.welcomeText = document.getElementById('welcomeText');
 
         // 确保登出按钮事件始终绑定
         this.setupLogoutHandler();
 
-        if (!this.authLinks || !this.userInfo || !this.userEmail) {
+        if (!this.authLinks || !this.userLogout || !this.welcomeText) {
             // 延迟重试（但不强制更新，使用冷却机制）
             setTimeout(() => {
                 this.updateUserDisplay();
@@ -162,27 +162,33 @@ export class UserStateManager {
         }
 
         if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
-            // 显示用户信息，隐藏登录链接
-            // 不要清空认证链接容器，以避免移除已绑定的事件监听器
+            // 已登录状态：显示登出按钮和欢迎信息，隐藏登录链接
             this.authLinks.style.display = 'none';
             this.authLinks.classList.add('hidden');
-            this.userInfo.classList.remove('hidden');
-            this.userInfo.style.display = 'flex';
-            this.userEmail.textContent = window.authManager.user.email;
+            this.userLogout.classList.remove('hidden');
+            this.userLogout.style.display = 'flex';
+            
+            // 获取用户名（邮箱@前面部分）
+            const email = window.authManager.user.email || '';
+            const username = email.split('@')[0] || '用户';
+            this.welcomeText.textContent = `欢迎您，${username}`;
 
             if (isDebug) {
-                console.log('显示用户信息:', window.authManager.user.email);
+                console.log('显示用户信息:', email);
             }
         } else {
-            // 显示登录链接，隐藏用户信息
+            // 未登录状态：显示登录链接和提示信息，隐藏登出按钮
             // 动态创建登录/注册链接，但要确保不移除已绑定的事件监听器
             if (this.authLinks.children.length === 0) {
-                this.authLinks.innerHTML = '<a href="auth.html" class="auth-link">登录/注册</a>';
+                this.authLinks.innerHTML = '<a href="auth.html" class="auth-link">登录</a>';
             }
             this.authLinks.style.display = 'flex';
             this.authLinks.classList.remove('hidden');
-            this.userInfo.classList.add('hidden');
-            this.userInfo.style.display = 'none';
+            this.userLogout.classList.add('hidden');
+            this.userLogout.style.display = 'none';
+            
+            // 显示提示信息
+            this.welcomeText.textContent = '请先登录';
 
             if (isDebug) {
                 console.log('显示登录链接');
