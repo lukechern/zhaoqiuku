@@ -58,9 +58,32 @@ function handleTouchStart(uiController, e) {
             }
         }
 
-        // 开始录音
+        // 开始录音（统一延时320ms）_7ree
         if (uiController.handlePressStart) {
-            uiController.handlePressStart();
+            if (typeof window.pressStartDelayMs_7ree === 'undefined') {
+                window.pressStartDelayMs_7ree = 320;
+            }
+            if (typeof window.delayStartModeEnabled_7ree === 'undefined') {
+                window.delayStartModeEnabled_7ree = true;
+            }
+            if (typeof window.pressStartTimerId_7ree === 'undefined') {
+                window.pressStartTimerId_7ree = null;
+            }
+
+            if (window.delayStartModeEnabled_7ree) {
+                if (window.pressStartTimerId_7ree) {
+                    clearTimeout(window.pressStartTimerId_7ree);
+                    window.pressStartTimerId_7ree = null;
+                }
+                window.pressStartTimerId_7ree = setTimeout(() => {
+                    if (!uiController.isRecording) {
+                        uiController.handlePressStart();
+                    }
+                    window.pressStartTimerId_7ree = null;
+                }, window.pressStartDelayMs_7ree || 320);
+            } else {
+                uiController.handlePressStart();
+            }
         }
     }
 }
@@ -121,8 +144,32 @@ function handleMouseDown(uiController, e) {
         }
     }
 
+    // 开始录音（统一延时320ms）_7ree
     if (uiController.handlePressStart) {
-        uiController.handlePressStart();
+        if (typeof window.pressStartDelayMs_7ree === 'undefined') {
+            window.pressStartDelayMs_7ree = 320;
+        }
+        if (typeof window.delayStartModeEnabled_7ree === 'undefined') {
+            window.delayStartModeEnabled_7ree = true;
+        }
+        if (typeof window.pressStartTimerId_7ree === 'undefined') {
+            window.pressStartTimerId_7ree = null;
+        }
+
+        if (window.delayStartModeEnabled_7ree) {
+            if (window.pressStartTimerId_7ree) {
+                clearTimeout(window.pressStartTimerId_7ree);
+                window.pressStartTimerId_7ree = null;
+            }
+            window.pressStartTimerId_7ree = setTimeout(() => {
+                if (!uiController.isRecording) {
+                    uiController.handlePressStart();
+                }
+                window.pressStartTimerId_7ree = null;
+            }, window.pressStartDelayMs_7ree || 320);
+        } else {
+            uiController.handlePressStart();
+        }
     }
 }
 

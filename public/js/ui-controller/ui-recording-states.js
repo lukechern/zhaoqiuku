@@ -236,13 +236,28 @@ function rebindMicrophoneButtonEvents(button) {
             window.app.uiController.touchHandler.triggerClickFeedback(newButton);
         }
         
-        // 获取UIController实例并触发录音
+        // 获取UIController实例并触发录音（统一延时启动）
         if (window.app && window.app.uiController) {
-            if (window.app.uiController.isRecording) {
+            const ui = window.app.uiController;
+            if (ui.isRecording) {
                 // 正在录音，点击麦克风不结束，需使用左右按钮明确操作
                 return;
             }
-            window.app.uiController.handlePressStart();
+            // 采用延时触发开始录音，避免与麦克风重叠显示_7ree
+            if (window.delayStartModeEnabled_7ree) {
+                if (window.pressStartTimerId_7ree) {
+                    clearTimeout(window.pressStartTimerId_7ree);
+                    window.pressStartTimerId_7ree = null;
+                }
+                window.pressStartTimerId_7ree = setTimeout(() => {
+                    if (!ui.isRecording) {
+                        ui.handlePressStart();
+                    }
+                    window.pressStartTimerId_7ree = null;
+                }, window.pressStartDelayMs_7ree || 320);
+            } else {
+                ui.handlePressStart();
+            }
         }
     });
     

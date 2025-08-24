@@ -5,6 +5,16 @@ export class UITouchHandler {
         this.uiController = uiController;
         // 新增：使用点击开始录音模式
         this.useClickToRecord_7ree = true;
+        // 新增：默认延时配置_7ree
+        if (typeof window.pressStartDelayMs_7ree === 'undefined') {
+            window.pressStartDelayMs_7ree = 320;
+        }
+        if (typeof window.delayStartModeEnabled_7ree === 'undefined') {
+            window.delayStartModeEnabled_7ree = true;
+        }
+        if (typeof window.pressStartTimerId_7ree === 'undefined') {
+            window.pressStartTimerId_7ree = null;
+        }
     }
 
     // 设置触摸事件
@@ -33,11 +43,27 @@ export class UITouchHandler {
                     this.triggerClickFeedback(button);
                 }
                 
+                // 若正在录音，点击麦克风不结束，需使用左右按钮明确操作
                 if (this.uiController.isRecording) {
-                    // 正在录音，点击麦克风不结束，需使用左右按钮明确操作
                     return;
                 }
-                this.uiController.handlePressStart();
+
+                // 采用延时触发开始录音，避免与麦克风重叠显示_7ree
+                if (window.delayStartModeEnabled_7ree) {
+                    if (window.pressStartTimerId_7ree) {
+                        clearTimeout(window.pressStartTimerId_7ree);
+                        window.pressStartTimerId_7ree = null;
+                    }
+                    window.pressStartTimerId_7ree = setTimeout(() => {
+                        // 再次校验录音状态，防止竞态_7ree
+                        if (!this.uiController.isRecording) {
+                            this.uiController.handlePressStart();
+                        }
+                        window.pressStartTimerId_7ree = null;
+                    }, window.pressStartDelayMs_7ree || 320);
+                } else {
+                    this.uiController.handlePressStart();
+                }
             });
 
             // 基础保护：阻止长按、选择、拖拽、上下文菜单
