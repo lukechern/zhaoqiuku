@@ -1,6 +1,6 @@
 // 帮助系统模块
-// 新增：控制是否在温馨提示中使用邮箱_7ree
-const disableWarmTipsEmail_7ree = true;
+// 新增：控制是否在温馨提示中使用邮箱_7ree（默认启用动态显示）
+const disableWarmTipsEmail_7ree = false;
 try { window.disableWarmTipsEmail_7ree = disableWarmTipsEmail_7ree; } catch (e) { /* ignore in non-browser */ }
 
 class HelpSystem {
@@ -12,12 +12,14 @@ class HelpSystem {
         this.modalLoaded_7ree = false; // 新增：内容是否已经加载完成
         // 新增：缓存被剥离的温馨提示片段HTML_7ree
         this.warmSectionHTML_7ree = null;
+        // 新增：避免重复绑定全局事件_7ree
+        this.globalEventsBound_7ree = false;
         this.init();
     }
 
     async init() {
         this.createHelpIcon();
-        // 延迟创建模态框：首屏不再预取 help-body_7ree.html，待首次打开时再加载，避免首屏阶段额外请求与潜在阻塞_7ree
+        // 延迟创建模态框：首次点击时再加载
         this.bindEvents();
     }
 
@@ -138,8 +140,8 @@ class HelpSystem {
                 helpBodyContent = this.getDefaultHelpContent();
             }
 
-            // 动态更新温馨提示内容（如禁用邮箱展示则直接跳过内部替换）_7ree
-            helpBodyContent = this.updateWarmTipsContent(helpBodyContent);
+            // 不再进行字符串级 warmTips 替换，改由 DOM 中的 #warmTipsText 动态填充_7ree
+            // this.updateWarmTipsContent 已废弃为 no-op
 
             // 剥离 warmTipsSection，先渲染其余部分，warmTips 后台再插入_7ree
             try {
@@ -195,112 +197,43 @@ class HelpSystem {
         }
     }
 
+    // 精简：不再有同步抓取逻辑，统一走骨架+异步加载_7ree
     async createModal() {
-        // 检查是否已存在模态框
-        if (document.querySelector('.help-modal-overlay')) return;
-
-        // 创建模态框遮罩层
-        this.overlay = document.createElement('div');
-        this.overlay.className = 'help-modal-overlay';
-
-        // 创建模态框内容
-        this.modal = document.createElement('div');
-        this.modal.className = 'help-modal';
-
-        // 加载帮助内容
-        let helpBodyContent = '';
-        try {
-            // 优先使用并发预取的内容_7ree
-            if (window.preloadedHelpBodyHtml_7ree) {
-                helpBodyContent = window.preloadedHelpBodyHtml_7ree;
-            } else {
-                const response = await fetch('components/help-body_7ree.html');
-                if (response.ok) {
-                    helpBodyContent = await response.text();
-                    // 缓存到全局，供后续直接使用_7ree
-                    window.preloadedHelpBodyHtml_7ree = helpBodyContent;
-                } else {
-                    console.warn('无法加载帮助内容组件，使用默认内容');
-                    helpBodyContent = this.getDefaultHelpContent();
-                }
-            }
-        } catch (error) {
-            console.warn('加载帮助内容失败：', error);
-            helpBodyContent = this.getDefaultHelpContent();
+        if (!this.overlay) {
+            this.createModalSkeleton_7ree();
+            this.bindEvents();
         }
-
-        // 动态更新温馨提示内容（如禁用邮箱展示则直接跳过内部替换）_7ree
-        helpBodyContent = this.updateWarmTipsContent(helpBodyContent);
-        
-        // 剥离 warmTipsSection，先渲染其余部分，warmTips 后台再插入_7ree
-        try {
-            const wrapper_7ree = document.createElement('div');
-            wrapper_7ree.innerHTML = helpBodyContent;
-            const warmSection_7ree = wrapper_7ree.querySelector('#warmTipsSection');
-            this.warmSectionHTML_7ree = null;
-            if (warmSection_7ree) {
-                this.warmSectionHTML_7ree = warmSection_7ree.outerHTML;
-                warmSection_7ree.remove();
-            }
-            helpBodyContent = wrapper_7ree.innerHTML;
-        } catch (e) {
-            console.warn('剥离 warmTipsSection 失败，将继续渲染全部内容：', e);
-        }
-        
-        this.modal.innerHTML = `
-            <div class="help-modal-header">
-                <h3 class="help-modal-title">使用帮助</h3>
-                <button class="help-modal-close" aria-label="关闭帮助">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <div class="help-modal-content">
-                ${helpBodyContent}
-            </div>
-            <div class="help-modal-footer">
-                <button class="help-footer-btn" id="helpCloseBtn">谢谢，我知道了</button>
-            </div>
-        `;
-
-        this.overlay.appendChild(this.modal);
-        document.body.appendChild(this.overlay);
-
-        // 在后台插入 warmTipsSection（如果有）_7ree
-        if (this.warmSectionHTML_7ree) {
-            this.scheduleWarmTipsInsert_7ree();
-        }
+        await this.loadHelpContentAsync_7ree();
     }
 
     bindEvents() {
-        // 点击遮罩层关闭
+        // 点击遮罩层关闭（仅在 overlay 存在时绑定）
         this.overlay?.addEventListener('click', (e) => {
             if (e.target === this.overlay) {
                 this.hideModal();
             }
         });
 
-        // 关闭按钮
+        // 关闭按钮（随着内容替换需要重复绑定）
         this.modal?.querySelector('.help-modal-close')?.addEventListener('click', () => {
             this.hideModal();
         });
 
-        // Footer关闭按钮
+        // Footer关闭按钮（随着内容替换需要重复绑定）
         this.modal?.querySelector('#helpCloseBtn')?.addEventListener('click', () => {
             this.hideModal();
         });
 
-        // ESC键关闭
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.isOpen) {
-                this.hideModal();
-            }
-        });
-
-        // 监听用户登录状态变化
-        this.bindAuthEvents();
+        // 全局事件与认证事件只绑定一次_7ree
+        if (!this.globalEventsBound_7ree) {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.isOpen) {
+                    this.hideModal();
+                }
+            });
+            this.bindAuthEvents();
+            this.globalEventsBound_7ree = true;
+        }
     }
 
     // 绑定认证相关事件
@@ -403,7 +336,7 @@ class HelpSystem {
         }
     }
 
-    // 新增：真正插入 warmTipsSection 并填充静态提示文案_7ree
+    // 新增：真正插入 warmTipsSection 并填充动态/静态提示文案_7ree
     insertWarmTipsSection_7ree() {
         try {
             if (!this.modal || !this.warmSectionHTML_7ree) return;
@@ -417,47 +350,19 @@ class HelpSystem {
 
             contentEl_7ree.insertBefore(section_7ree, contentEl_7ree.firstChild);
 
-            // 根据开关决定是否读取邮箱，这里默认禁用邮箱，使用静态文案_7ree
+            // 插入后立即填充文案
             this.updateWarmTipsInModal();
         } catch (e) {
             console.warn('插入 warmTipsSection 失败：', e);
         }
     }
 
-    // 更新温馨提示内容
+    // 更新温馨提示内容（已废弃：不再对整体HTML做字符串替换，仅保留兼容返回）
     updateWarmTipsContent(helpBodyContent) {
-        try {
-            if (window.disableWarmTipsEmail_7ree === true) {
-                // 禁用动态邮箱替换，直接返回原始内容_7ree
-                return helpBodyContent;
-            }
-            // 检查用户登录状态
-            const isAuthenticated = window.authManager?.isAuthenticated;
-            const userEmail = window.authManager?.user?.email;
-
-            if (isAuthenticated && userEmail) {
-                // 用户已登录，显示用户邮箱
-                const updatedContent = helpBodyContent.replace(
-                    /欢迎您使用 <strong>找秋裤<\/strong>/,
-                    `欢迎您 <strong>${userEmail}</strong> 使用 <strong>找秋裤</strong>`
-                );
-                return updatedContent;
-            } else {
-                // 用户未登录，显示登录提示
-                const loginLink = '<a href="#" onclick="window.showLoginRequired?.(); return false;" style="color: #007bff; text-decoration: underline;">请登录</a>';
-                const updatedContent = helpBodyContent.replace(
-                    /欢迎您使用 <strong>找秋裤<\/strong>/,
-                    `欢迎您，${loginLink}后使用 <strong>找秋裤</strong>`
-                );
-                return updatedContent;
-            }
-        } catch (error) {
-            console.warn('更新温馨提示内容失败:', error);
-            return helpBodyContent; // 返回原始内容作为fallback
-        }
+        return helpBodyContent;
     }
 
-    // 在模态框中更新温馨提示内容
+    // 在模态框中更新温馨提示内容（补全邮箱显示）_7ree
     updateWarmTipsInModal() {
         try {
             const warmTipsText = this.modal?.querySelector('#warmTipsText');
@@ -469,22 +374,18 @@ class HelpSystem {
                 return;
             }
 
-            const isAuthenticated = window.authManager?.isAuthenticated;
+            const isAuthenticated = !!window.authManager?.isAuthenticated;
             const userEmail = window.authManager?.user?.email;
-            var wormTipsHtml;
+            let warmTipsHtml_7ree = '';
 
             if (isAuthenticated && userEmail) {
-                // 用户已登录，显示用户邮箱
-                wormTipsHtml = `欢迎您，<strong>${userEmail}</strong>。<strong>找秋裤</strong>`;
+                warmTipsHtml_7ree = `欢迎您，<strong>${userEmail}</strong>。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
             } else {
-                // 用户未登录，显示登录提示
                 const loginLink = '<a href="#" onclick="window.showLoginRequired?.(); return false;" style="color: #007bff; text-decoration: underline;">请登录</a>';
-                wormTipsHtml = `欢迎您，${loginLink}后使用。<strong>找秋裤</strong>`;
+                warmTipsHtml_7ree = `欢迎您，${loginLink}后使用。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
             }
-                wormTipsHtml += `是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
 
-                warmTipsText.innerHTML = wormTipsHtml;
-
+            warmTipsText.innerHTML = warmTipsHtml_7ree;
         } catch (error) {
             console.warn('在模态框中更新温馨提示内容失败:', error);
         }
@@ -532,52 +433,8 @@ class HelpSystem {
     }
 }
 
-// 添加帮助按钮样式到页面
-function addHelpButtonStyles() {
-    const existingStyle = document.querySelector('#help-button-styles');
-    if (existingStyle) return;
-
-    const style = document.createElement('style');
-    style.id = 'help-button-styles';
-    style.textContent = `
-        .help-toggle-btn {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background 0.2s ease, opacity 0.2s ease;
-        }
-
-        .help-toggle-btn:hover {
-            background: rgba(0, 0, 0, 0.06);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .help-toggle-btn:hover {
-                background: rgba(255, 255, 255, 0.08);
-            }
-        }
-
-        .help-icon {
-            width: 18px;
-            height: 18px;
-            filter: brightness(0) saturate(100%) invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
-            transition: filter 0.2s ease;
-        }
-
-        .help-toggle-btn:hover .help-icon {
-            filter: brightness(0) saturate(100%) invert(80%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
-        }
-    `;
-    document.head.appendChild(style);
-}
-
 // 初始化帮助系统
+// 添加帮助按钮样式到页面（已迁移至外部CSS: css/help-modal.css）。原函数 addHelpButtonStyles 已移除，避免重复注入与样式闪烁。
 function initHelpSystem() {
     // 只在index页面初始化帮助系统
     const isIndexPage = window.location.pathname.includes('index.html') || 
@@ -586,7 +443,8 @@ function initHelpSystem() {
     
     if (!isIndexPage) return;
 
-    addHelpButtonStyles();
+    // 删除：样式注入调用，改为外部CSS提供样式
+    // addHelpButtonStyles();
     
     // 优化初始化策略：减少等待时间，提高WebView性能
     const initHelp = () => {
