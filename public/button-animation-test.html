@@ -65,6 +65,11 @@
                     <img src="img/check.svg" alt="确认">
                 </button>
             </div>
+            <div style="margin-top: 1rem;">
+                <button onclick="testDelayedAnimation()" style="padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-light); color: var(--text-primary); cursor: pointer;">
+                    测试延时动画效果
+                </button>
+            </div>
         </div>
         
         <div class="test-section">
@@ -74,7 +79,9 @@
                 <li>麦克风按钮：缩放 + 阴影变化</li>
                 <li>取消按钮：红色主题动画</li>
                 <li>确认按钮：绿色主题动画</li>
+                <li>延时测试：模拟实际使用中的延时效果</li>
             </ul>
+            <p>所有动画时长均为0.3秒，并在动画期间禁用按钮防止重复点击。</p>
         </div>
     </div>
 
@@ -117,6 +124,53 @@
             
             console.log('按钮动画测试页面已初始化');
         });
+        
+        // 测试延时动画效果
+        function testDelayedAnimation() {
+            const cancelButton = document.getElementById('testCancelBtn');
+            const confirmButton = document.getElementById('testConfirmBtn');
+            
+            if (!cancelButton || !confirmButton) {
+                console.warn('按钮元素未找到');
+                return;
+            }
+            
+            console.log('测试延时动画效果...');
+            
+            // 模拟点击取消按钮的延时效果
+            cancelButton.disabled = true;
+            confirmButton.disabled = true;
+            
+            if (window.ButtonAnimations) {
+                window.ButtonAnimations.triggerCancelFeedback(cancelButton);
+            }
+            
+            // 0.3秒后恢复按钮状态
+            setTimeout(() => {
+                cancelButton.disabled = false;
+                confirmButton.disabled = false;
+                console.log('取消按钮延时动画测试完成');
+                
+                // 稍后测试确认按钮
+                setTimeout(() => {
+                    cancelButton.disabled = true;
+                    confirmButton.disabled = true;
+                    
+                    if (window.ButtonAnimations) {
+                        window.ButtonAnimations.triggerConfirmFeedback(confirmButton);
+                    }
+                    
+                    setTimeout(() => {
+                        cancelButton.disabled = false;
+                        confirmButton.disabled = false;
+                        console.log('确认按钮延时动画测试完成');
+                    }, 300);
+                }, 1000);
+            }, 300);
+        }
+        
+        // 将测试函数暴露到全局
+        window.testDelayedAnimation = testDelayedAnimation;
     </script>
 </body>
 </html>

@@ -27,6 +27,12 @@ export class DualButtonHandler_7ree {
             e.stopPropagation();
             console.log('取消按钮被点击');
             
+            if (!this.uiController.isRecording) return;
+            
+            // 防止重复点击：禁用按钮
+            this.elements.cancelBtn.disabled = true;
+            this.elements.confirmBtn.disabled = true;
+            
             // 添加点击反馈动画
             if (window.ButtonAnimations) {
                 window.ButtonAnimations.triggerCancelFeedback(this.elements.cancelBtn);
@@ -34,9 +40,14 @@ export class DualButtonHandler_7ree {
                 this.triggerClickFeedback(this.elements.cancelBtn, 'cancel');
             }
             
-            if (!this.uiController.isRecording) return;
-            this.hideDualButtons_7ree();
-            this.uiController.handleCancel();
+            // 等待动画完成后再执行操作（0.3秒）
+            setTimeout(() => {
+                this.hideDualButtons_7ree();
+                this.uiController.handleCancel();
+                // 恢复按钮状态（虽然已经隐藏，但为了保证下次显示时的正常状态）
+                this.elements.cancelBtn.disabled = false;
+                this.elements.confirmBtn.disabled = false;
+            }, 300);
         });
 
         // 确认：结束录音并发送
@@ -45,6 +56,12 @@ export class DualButtonHandler_7ree {
             e.stopPropagation();
             console.log('确认按钮被点击');
             
+            if (!this.uiController.isRecording) return;
+            
+            // 防止重复点击：禁用按钮
+            this.elements.cancelBtn.disabled = true;
+            this.elements.confirmBtn.disabled = true;
+            
             // 添加点击反馈动画
             if (window.ButtonAnimations) {
                 window.ButtonAnimations.triggerConfirmFeedback(this.elements.confirmBtn);
@@ -52,9 +69,14 @@ export class DualButtonHandler_7ree {
                 this.triggerClickFeedback(this.elements.confirmBtn, 'confirm');
             }
             
-            if (!this.uiController.isRecording) return;
-            this.hideDualButtons_7ree();
-            this.uiController.handlePressEnd();
+            // 等待动画完成后再执行操作（0.3秒）
+            setTimeout(() => {
+                this.hideDualButtons_7ree();
+                this.uiController.handlePressEnd();
+                // 恢复按钮状态（虽然已经隐藏，但为了保证下次显示时的正常状态）
+                this.elements.cancelBtn.disabled = false;
+                this.elements.confirmBtn.disabled = false;
+            }, 300);
         });
     }
 

@@ -202,6 +202,62 @@ export function testRecordingButtonAnimations() {
 }
 
 /**
+ * 测试录音按钮延时动画效果（模拟完整的点击流程）
+ */
+export function testRecordingButtonDelayedAnimations() {
+    console.log('=== 录音按钮延时动画测试 ===');
+    
+    const cancelBtn = document.getElementById('cancelRecordBtn_7ree');
+    const confirmBtn = document.getElementById('confirmRecordBtn_7ree');
+    const container = document.getElementById('dualRecordingButtons_7ree');
+    
+    if (!cancelBtn || !confirmBtn || !container) {
+        console.warn('按钮元素未找到');
+        return;
+    }
+    
+    // 显示按钮容器
+    container.classList.add('show');
+    
+    console.log('测试取消按钮延时动画...');
+    
+    // 模拟点击取消按钮
+    cancelBtn.disabled = true;
+    confirmBtn.disabled = true;
+    
+    if (window.ButtonAnimations) {
+        window.ButtonAnimations.triggerCancelFeedback(cancelBtn);
+    }
+    
+    setTimeout(() => {
+        container.classList.remove('show');
+        cancelBtn.disabled = false;
+        confirmBtn.disabled = false;
+        console.log('取消按钮动画测试完成');
+        
+        // 稍后测试确认按钮
+        setTimeout(() => {
+            console.log('测试确认按钮延时动画...');
+            container.classList.add('show');
+            
+            cancelBtn.disabled = true;
+            confirmBtn.disabled = true;
+            
+            if (window.ButtonAnimations) {
+                window.ButtonAnimations.triggerConfirmFeedback(confirmBtn);
+            }
+            
+            setTimeout(() => {
+                container.classList.remove('show');
+                cancelBtn.disabled = false;
+                confirmBtn.disabled = false;
+                console.log('确认按钮动画测试完成');
+            }, 300);
+        }, 1000);
+    }, 300);
+}
+
+/**
  * 测试所有按钮动画效果
  */
 export function testAllButtonAnimations() {
@@ -345,6 +401,7 @@ export function initializeDebugTools() {
     // 新增：按钮动画测试函数
     window.testRecordingButtonAnimations = testRecordingButtonAnimations;
     window.testAllButtonAnimations = testAllButtonAnimations;
+    window.testRecordingButtonDelayedAnimations = testRecordingButtonDelayedAnimations;
     
     console.log('调试工具已初始化并暴露到全局作用域');
 }

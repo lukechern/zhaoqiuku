@@ -46,6 +46,18 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
+/* 禁用状态样式 */
+.dual-recording-buttons_7ree .record-btn_7ree:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+}
+
+.dual-recording-buttons_7ree .record-btn_7ree:disabled img {
+    opacity: 0.7;
+}
+
 /* 按钮点击反馈动画 */
 .dual-recording-buttons_7ree .record-btn_7ree.click-feedback {
     animation: record-btn-click-feedback 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
