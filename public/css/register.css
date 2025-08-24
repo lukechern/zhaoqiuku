@@ -16,9 +16,11 @@
 
 .register-content h1{
     font-size: 1.25rem;
-    color:rgb(1, 104, 1);
+    color: rgb(1, 104, 1);
     text-align: center;
-    margin-top: 26px;
+    margin-top: 56px;
+    font-style: italic;
+    font-weight: 400;
 }
 
 .register-form {
