@@ -258,3 +258,56 @@
         margin-bottom: 20px;
     }
 }
+
+/* 温馨提示样式 */
+.help-warm-tips {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 1px solid #ffe066;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.help-warm-tips::before {
+    content: "💡";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+.help-warm-tips-content {
+    position: relative;
+}
+
+.help-warm-tips-text {
+    color: #856404 !important;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 500;
+}
+
+.help-warm-tips-text strong {
+    color: #533f02;
+    font-weight: 600;
+}
+
+/* 深色模式下的温馨提示 */
+@media (prefers-color-scheme: dark) {
+    .help-warm-tips {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
+        border-color: rgba(255, 193, 7, 0.4);
+    }
+
+    .help-warm-tips-text {
+        color: #ffc107 !important;
+    }
+
+    .help-warm-tips-text strong {
+        color: #ffd54f;
+    }
+}

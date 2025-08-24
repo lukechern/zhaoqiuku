@@ -72,11 +72,11 @@ class HelpSystem {
         // 创建模态框遮罩层
         this.overlay = document.createElement('div');
         this.overlay.className = 'help-modal-overlay';
-        
+
         // 创建模态框内容
         this.modal = document.createElement('div');
         this.modal.className = 'help-modal';
-        
+
         // 加载帮助内容
         let helpBodyContent = '';
         try {
@@ -91,10 +91,13 @@ class HelpSystem {
             console.warn('加载帮助内容失败：', error);
             helpBodyContent = this.getDefaultHelpContent();
         }
+
+        // 动态更新温馨提示内容
+        helpBodyContent = this.updateWarmTipsContent(helpBodyContent);
         
         this.modal.innerHTML = `
             <div class="help-modal-header">
-                <h3 class="help-modal-title">找秋裤使用帮助</h3>
+                <h3 class="help-modal-title">使用帮助</h3>
                 <button class="help-modal-close" aria-label="关闭帮助">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -138,17 +141,54 @@ class HelpSystem {
                 this.hideModal();
             }
         });
+
+        // 监听用户登录状态变化
+        this.bindAuthEvents();
+    }
+
+    // 绑定认证相关事件
+    bindAuthEvents() {
+        // 监听认证状态变化事件
+        document.addEventListener('authStateChanged', (event) => {
+            console.log('检测到认证状态变化，更新温馨提示内容');
+            // 如果模态框已打开，实时更新内容
+            if (this.isOpen && this.modal) {
+                this.updateWarmTipsInModal();
+            }
+        });
+
+        // 监听用户登录事件
+        document.addEventListener('userLoggedIn', (event) => {
+            console.log('用户登录，更新温馨提示内容');
+            if (this.isOpen && this.modal) {
+                this.updateWarmTipsInModal();
+            }
+        });
+
+        // 监听用户登出事件
+        document.addEventListener('userLoggedOut', (event) => {
+            console.log('用户登出，更新温馨提示内容');
+            if (this.isOpen && this.modal) {
+                this.updateWarmTipsInModal();
+            }
+        });
     }
 
     showModal() {
         if (!this.overlay) return;
-        
+
+        // 每次打开时更新温馨提示内容
+        const warmTipsText = this.modal?.querySelector('#warmTipsText');
+        if (warmTipsText) {
+            this.updateWarmTipsInModal();
+        }
+
         this.isOpen = true;
         this.overlay.classList.add('show');
-        
+
         // 阻止背景滚动
         document.body.style.overflow = 'hidden';
-        
+
         // 聚焦到模态框
         setTimeout(() => {
             this.modal?.focus();
@@ -172,11 +212,64 @@ class HelpSystem {
             this.overlay = null;
             this.modal = null;
         }
-        
+
         // 移除帮助按钮
         const helpBtn = document.querySelector('.help-toggle-btn');
         if (helpBtn) {
             helpBtn.remove();
+        }
+    }
+
+    // 更新温馨提示内容
+    updateWarmTipsContent(helpBodyContent) {
+        try {
+            // 检查用户登录状态
+            const isAuthenticated = window.authManager?.isAuthenticated;
+            const userEmail = window.authManager?.user?.email;
+
+            if (isAuthenticated && userEmail) {
+                // 用户已登录，显示用户邮箱
+                const updatedContent = helpBodyContent.replace(
+                    /欢迎您使用 <strong>找秋裤<\/strong>/,
+                    `欢迎您 <strong>${userEmail}</strong> 使用 <strong>找秋裤</strong>`
+                );
+                return updatedContent;
+            } else {
+                // 用户未登录，显示登录提示
+                const loginLink = '<a href="#" onclick="window.showLoginRequired?.(); return false;" style="color: #007bff; text-decoration: underline;">请登录</a>';
+                const updatedContent = helpBodyContent.replace(
+                    /欢迎您使用 <strong>找秋裤<\/strong>/,
+                    `欢迎您，${loginLink}后使用 <strong>找秋裤</strong>`
+                );
+                return updatedContent;
+            }
+        } catch (error) {
+            console.warn('更新温馨提示内容失败:', error);
+            return helpBodyContent; // 返回原始内容作为fallback
+        }
+    }
+
+    // 在模态框中更新温馨提示内容
+    updateWarmTipsInModal() {
+        try {
+            const warmTipsText = this.modal?.querySelector('#warmTipsText');
+            if (!warmTipsText) return;
+
+            const isAuthenticated = window.authManager?.isAuthenticated;
+            const userEmail = window.authManager?.user?.email;
+
+            if (isAuthenticated && userEmail) {
+                // 用户已登录，显示用户邮箱
+                warmTipsText.innerHTML = `欢迎您 <strong>${userEmail}</strong> 使用 <strong>找秋裤</strong>，这是一款自然语言记录和查找日常物品存放位置的小工具，
+                请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
+            } else {
+                // 用户未登录，显示登录提示
+                const loginLink = '<a href="#" onclick="window.showLoginRequired?.(); return false;" style="color: #007bff; text-decoration: underline;">请登录</a>';
+                warmTipsText.innerHTML = `欢迎您，${loginLink}后使用 <strong>找秋裤</strong>，这是一款自然语言记录和查找日常物品存放位置的小工具，
+                请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
+            }
+        } catch (error) {
+            console.warn('在模态框中更新温馨提示内容失败:', error);
         }
     }
 
