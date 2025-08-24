@@ -1,4 +1,8 @@
 // 帮助系统模块
+// 新增：控制是否在温馨提示中使用邮箱_7ree
+const disableWarmTipsEmail_7ree = true;
+try { window.disableWarmTipsEmail_7ree = disableWarmTipsEmail_7ree; } catch (e) { /* ignore in non-browser */ }
+
 class HelpSystem {
     constructor() {
         this.modal = null;
@@ -6,6 +10,8 @@ class HelpSystem {
         this.isOpen = false;
         this.modalLoadingPromise_7ree = null; // 新增：异步加载中的Promise引用
         this.modalLoaded_7ree = false; // 新增：内容是否已经加载完成
+        // 新增：缓存被剥离的温馨提示片段HTML_7ree
+        this.warmSectionHTML_7ree = null;
         this.init();
     }
 
@@ -125,10 +131,25 @@ class HelpSystem {
                 helpBodyContent = this.getDefaultHelpContent();
             }
 
-            // 动态更新温馨提示内容
+            // 动态更新温馨提示内容（如禁用邮箱展示则直接跳过内部替换）_7ree
             helpBodyContent = this.updateWarmTipsContent(helpBodyContent);
 
-            // 替换为真实内容
+            // 剥离 warmTipsSection，先渲染其余部分，warmTips 后台再插入_7ree
+            try {
+                const wrapper_7ree = document.createElement('div');
+                wrapper_7ree.innerHTML = helpBodyContent;
+                const warmSection_7ree = wrapper_7ree.querySelector('#warmTipsSection');
+                this.warmSectionHTML_7ree = null;
+                if (warmSection_7ree) {
+                    this.warmSectionHTML_7ree = warmSection_7ree.outerHTML;
+                    warmSection_7ree.remove();
+                }
+                helpBodyContent = wrapper_7ree.innerHTML;
+            } catch (e) {
+                console.warn('剥离 warmTipsSection 失败，将继续渲染全部内容：', e);
+            }
+
+            // 替换为真实内容（此时不包含 warmTipsSection）_7ree
             if (this.modal) {
                 this.modal.innerHTML = `
                     <div class="help-modal-header">
@@ -150,6 +171,11 @@ class HelpSystem {
 
                 // 内容替换后，需重新绑定内部关闭按钮事件
                 this.bindEvents();
+
+                // 在后台插入 warmTipsSection（如果有）_7ree
+                if (this.warmSectionHTML_7ree) {
+                    this.scheduleWarmTipsInsert_7ree();
+                }
             }
 
             this.modalLoaded_7ree = true;
@@ -189,8 +215,23 @@ class HelpSystem {
             helpBodyContent = this.getDefaultHelpContent();
         }
 
-        // 动态更新温馨提示内容
+        // 动态更新温馨提示内容（如禁用邮箱展示则直接跳过内部替换）_7ree
         helpBodyContent = this.updateWarmTipsContent(helpBodyContent);
+        
+        // 剥离 warmTipsSection，先渲染其余部分，warmTips 后台再插入_7ree
+        try {
+            const wrapper_7ree = document.createElement('div');
+            wrapper_7ree.innerHTML = helpBodyContent;
+            const warmSection_7ree = wrapper_7ree.querySelector('#warmTipsSection');
+            this.warmSectionHTML_7ree = null;
+            if (warmSection_7ree) {
+                this.warmSectionHTML_7ree = warmSection_7ree.outerHTML;
+                warmSection_7ree.remove();
+            }
+            helpBodyContent = wrapper_7ree.innerHTML;
+        } catch (e) {
+            console.warn('剥离 warmTipsSection 失败，将继续渲染全部内容：', e);
+        }
         
         this.modal.innerHTML = `
             <div class="help-modal-header">
@@ -212,6 +253,11 @@ class HelpSystem {
 
         this.overlay.appendChild(this.modal);
         document.body.appendChild(this.overlay);
+
+        // 在后台插入 warmTipsSection（如果有）_7ree
+        if (this.warmSectionHTML_7ree) {
+            this.scheduleWarmTipsInsert_7ree();
+        }
     }
 
     bindEvents() {
@@ -329,9 +375,48 @@ class HelpSystem {
         }
     }
 
+    // 新增：后台调度插入 warmTipsSection（避免阻塞首次渲染）_7ree
+    scheduleWarmTipsInsert_7ree() {
+        const run_7ree = () => this.insertWarmTipsSection_7ree();
+        try {
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(run_7ree, { timeout: 1000 });
+            } else {
+                setTimeout(run_7ree, 0);
+            }
+        } catch (e) {
+            setTimeout(run_7ree, 0);
+        }
+    }
+
+    // 新增：真正插入 warmTipsSection 并填充静态提示文案_7ree
+    insertWarmTipsSection_7ree() {
+        try {
+            if (!this.modal || !this.warmSectionHTML_7ree) return;
+            const contentEl_7ree = this.modal.querySelector('.help-modal-content');
+            if (!contentEl_7ree) return;
+
+            const tmp_7ree = document.createElement('div');
+            tmp_7ree.innerHTML = this.warmSectionHTML_7ree;
+            const section_7ree = tmp_7ree.firstElementChild;
+            if (!section_7ree) return;
+
+            contentEl_7ree.insertBefore(section_7ree, contentEl_7ree.firstChild);
+
+            // 根据开关决定是否读取邮箱，这里默认禁用邮箱，使用静态文案_7ree
+            this.updateWarmTipsInModal();
+        } catch (e) {
+            console.warn('插入 warmTipsSection 失败：', e);
+        }
+    }
+
     // 更新温馨提示内容
     updateWarmTipsContent(helpBodyContent) {
         try {
+            if (window.disableWarmTipsEmail_7ree === true) {
+                // 禁用动态邮箱替换，直接返回原始内容_7ree
+                return helpBodyContent;
+            }
             // 检查用户登录状态
             const isAuthenticated = window.authManager?.isAuthenticated;
             const userEmail = window.authManager?.user?.email;
@@ -363,6 +448,12 @@ class HelpSystem {
         try {
             const warmTipsText = this.modal?.querySelector('#warmTipsText');
             if (!warmTipsText) return;
+
+            if (window.disableWarmTipsEmail_7ree === true) {
+                // 使用静态文案，不读取邮箱信息_7ree
+                warmTipsText.innerHTML = `欢迎使用 <strong>找秋裤</strong>。请注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
+                return;
+            }
 
             const isAuthenticated = window.authManager?.isAuthenticated;
             const userEmail = window.authManager?.user?.email;
