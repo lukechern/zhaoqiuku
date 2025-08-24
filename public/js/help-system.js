@@ -4,6 +4,8 @@ class HelpSystem {
         this.modal = null;
         this.overlay = null;
         this.isOpen = false;
+        this.modalLoadingPromise_7ree = null; // 新增：异步加载中的Promise引用
+        this.modalLoaded_7ree = false; // 新增：内容是否已经加载完成
         this.init();
     }
 
@@ -63,6 +65,101 @@ class HelpSystem {
 
         // 绑定点击事件（首次点击时再创建模态框并加载外部片段）_7ree
         helpBtn.addEventListener('click', () => this.showModal());
+    }
+
+    // 新增：先创建模态框骨架，立即给用户反馈_7ree
+    createModalSkeleton_7ree() {
+        if (this.overlay) return; // 已创建则跳过
+
+        // 创建模态框遮罩层
+        this.overlay = document.createElement('div');
+        this.overlay.className = 'help-modal-overlay';
+
+        // 创建模态框容器
+        this.modal = document.createElement('div');
+        this.modal.className = 'help-modal';
+
+        // 骨架内容：标题 + 关闭按钮 + 加载提示
+        this.modal.innerHTML = `
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">使用帮助</h3>
+                <button class="help-modal-close" aria-label="关闭帮助">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="help-modal-content">
+                <div class="help-loading_7ree" style="display:flex;align-items:center;gap:8px;">
+                    <img src="img/loading-spinner.svg" alt="加载中" style="width:24px;height:24px;">
+                    <span>正在加载帮助内容…</span>
+                </div>
+            </div>
+            <div class="help-modal-footer">
+                <button class="help-footer-btn" id="helpCloseBtn">关闭</button>
+            </div>
+        `;
+
+        this.overlay.appendChild(this.modal);
+        document.body.appendChild(this.overlay);
+    }
+
+    // 新增：异步加载真实帮助内容并替换骨架_7ree
+    async loadHelpContentAsync_7ree() {
+        if (this.modalLoaded_7ree) return; // 已加载过则不必重复
+        if (this.modalLoadingPromise_7ree) return this.modalLoadingPromise_7ree; // 防抖
+
+        this.modalLoadingPromise_7ree = (async () => {
+            let helpBodyContent = '';
+            try {
+                const response = await fetch('components/help-body_7ree.html');
+                if (response.ok) {
+                    helpBodyContent = await response.text();
+                } else {
+                    console.warn('无法加载帮助内容组件，使用默认内容');
+                    helpBodyContent = this.getDefaultHelpContent();
+                }
+            } catch (error) {
+                console.warn('加载帮助内容失败：', error);
+                helpBodyContent = this.getDefaultHelpContent();
+            }
+
+            // 动态更新温馨提示内容
+            helpBodyContent = this.updateWarmTipsContent(helpBodyContent);
+
+            // 替换为真实内容
+            if (this.modal) {
+                this.modal.innerHTML = `
+                    <div class="help-modal-header">
+                        <h3 class="help-modal-title">使用帮助</h3>
+                        <button class="help-modal-close" aria-label="关闭帮助">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="help-modal-content">
+                        ${helpBodyContent}
+                    </div>
+                    <div class="help-modal-footer">
+                        <button class="help-footer-btn" id="helpCloseBtn">谢谢，我知道了</button>
+                    </div>
+                `;
+
+                // 内容替换后，需重新绑定内部关闭按钮事件
+                this.bindEvents();
+            }
+
+            this.modalLoaded_7ree = true;
+        })();
+
+        try {
+            await this.modalLoadingPromise_7ree;
+        } finally {
+            this.modalLoadingPromise_7ree = null;
+        }
     }
 
     async createModal() {
@@ -175,22 +272,28 @@ class HelpSystem {
     }
 
     async showModal() {
-        // 首次打开时再创建模态框与加载内容，避免首屏阶段的网络请求_7ree
+        // 首次打开：立即创建骨架并开始异步加载真实内容_7ree
         if (!this.overlay) {
-            await this.createModal();
+            this.createModalSkeleton_7ree();
             this.bindEvents();
+            // 开始异步加载，但不阻塞UI反馈
+            this.loadHelpContentAsync_7ree();
+        } else if (!this.modalLoaded_7ree && !this.modalLoadingPromise_7ree) {
+            // 已经有骨架但内容未加载，补充启动一次
+            this.loadHelpContentAsync_7ree();
         }
 
         if (!this.overlay) return;
 
-        // 每次打开时更新温馨提示内容
+        // 显示模态框：立即给出视觉反馈
+        this.isOpen = true;
+        this.overlay.classList.add('show');
+
+        // 每次打开时更新温馨提示内容（如果已存在对应元素）
         const warmTipsText = this.modal?.querySelector('#warmTipsText');
         if (warmTipsText) {
             this.updateWarmTipsInModal();
         }
-
-        this.isOpen = true;
-        this.overlay.classList.add('show');
 
         // 阻止背景滚动
         document.body.style.overflow = 'hidden';
