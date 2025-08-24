@@ -68,28 +68,28 @@ class StateSyncManager {
             return;
         }
 
-        // 获取DOM元素
+        // 获取DOM元素（适配新的三栏布局）
         const authLinks = document.getElementById('authLinks');
-        const userInfo = document.getElementById('userInfo');
-        const userEmail = document.getElementById('userEmail');
+        const userLogout = document.getElementById('userLogout');
+        const welcomeText = document.getElementById('welcomeText');
 
-        if (!authLinks || !userInfo || !userEmail) {
+        if (!authLinks || !userLogout || !welcomeText) {
             return;
         }
 
         // 检查状态是否一致
         const isAuthenticated = window.authManager.isAuthenticated;
         const authLinksVisible = authLinks.style.display !== 'none' && !authLinks.classList.contains('hidden');
-        const userInfoVisible = !userInfo.classList.contains('hidden') && userInfo.style.display !== 'none';
+        const userLogoutVisible = !userLogout.classList.contains('hidden') && userLogout.style.display !== 'none';
 
         // 检查是否需要同步
         const needsSync = (isAuthenticated && authLinksVisible) ||
-            (!isAuthenticated && userInfoVisible) ||
-            (isAuthenticated && !userInfoVisible) ||
+            (!isAuthenticated && userLogoutVisible) ||
+            (isAuthenticated && !userLogoutVisible) ||
             (!isAuthenticated && !authLinksVisible);
 
         if (needsSync) {
-            this.syncUserDisplay(isAuthenticated, authLinks, userInfo, userEmail);
+            this.syncUserDisplay(isAuthenticated, authLinks, userLogout, welcomeText);
             this.isSynced = true;
         } else {
             this.isSynced = true;
@@ -109,23 +109,34 @@ class StateSyncManager {
         }
     }
 
-    syncUserDisplay(isAuthenticated, authLinks, userInfo, userEmail) {
+    syncUserDisplay(isAuthenticated, authLinks, userLogout, welcomeText) {
         try {
             if (isAuthenticated && window.authManager.user) {
-                // 显示用户信息，隐藏登录链接
+                // 已登录状态：显示登出按钮和欢迎信息，隐藏登录链接
                 authLinks.style.display = 'none';
                 authLinks.classList.add('hidden');
-                userInfo.classList.remove('hidden');
-                userInfo.style.display = 'flex';
-                userEmail.textContent = window.authManager.user.email;
+                userLogout.classList.remove('hidden');
+                userLogout.style.display = 'flex';
+                
+                // 获取用户名（邮箱@前面部分）
+                const email = window.authManager.user.email || '';
+                const username = email.split('@')[0] || '用户';
+                welcomeText.textContent = `欢迎您，${username}`;
 
-                console.log('已同步为登录状态:', window.authManager.user.email);
+                console.log('已同步为登录状态:', email);
             } else {
-                // 显示登录链接，隐藏用户信息
+                // 未登录状态：显示登录链接，隐藏登出按钮
+                // 动态创建登录链接
+                if (authLinks.children.length === 0) {
+                    authLinks.innerHTML = '<a href="auth.html" class="auth-link">登录</a>';
+                }
                 authLinks.style.display = 'flex';
                 authLinks.classList.remove('hidden');
-                userInfo.classList.add('hidden');
-                userInfo.style.display = 'none';
+                userLogout.classList.add('hidden');
+                userLogout.style.display = 'none';
+                
+                // 显示提示信息（初始状态不显示任何内容）
+                welcomeText.textContent = '';
 
                 console.log('已同步为未登录状态');
             }
@@ -161,22 +172,22 @@ class StateSyncManager {
         }
         
         const authLinks = document.getElementById('authLinks');
-        const userInfo = document.getElementById('userInfo');
-        const userEmail = document.getElementById('userEmail');
+        const userLogout = document.getElementById('userLogout');
+        const welcomeText = document.getElementById('welcomeText');
 
-        if (!authLinks || !userInfo || !userEmail) {
+        if (!authLinks || !userLogout || !welcomeText) {
             return true; // DOM元素不存在，需要同步
         }
 
         // 检查状态是否一致
         const isAuthenticated = window.authManager.isAuthenticated;
         const authLinksVisible = authLinks.style.display !== 'none' && !authLinks.classList.contains('hidden');
-        const userInfoVisible = !userInfo.classList.contains('hidden') && userInfo.style.display !== 'none';
+        const userLogoutVisible = !userLogout.classList.contains('hidden') && userLogout.style.display !== 'none';
 
         // 检查是否需要同步
         return (isAuthenticated && authLinksVisible) ||
-            (!isAuthenticated && userInfoVisible) ||
-            (isAuthenticated && !userInfoVisible) ||
+            (!isAuthenticated && userLogoutVisible) ||
+            (isAuthenticated && !userLogoutVisible) ||
             (!isAuthenticated && !authLinksVisible);
     }
 }

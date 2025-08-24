@@ -65,8 +65,7 @@ function getFallbackHtml_7ree(type) {
         return (
             '<div class="header-top">' +
             '  <div class="header-left" id="headerLeft">' +
-            '    <div class="auth-links" id="authLinks">' +
-            '      <a href="auth.html" class="auth-link">登录</a>' +
+            '    <div class="auth-links hidden" id="authLinks">' +
             '    </div>' +
             '    <div class="user-logout hidden" id="userLogout">' +
             '      <button class="logout-btn" id="logoutBtn" aria-label="登出">' +
@@ -76,7 +75,7 @@ function getFallbackHtml_7ree(type) {
             '  </div>' +
             '  <div class="header-center" id="headerCenter">' +
             '    <div class="welcome-message" id="welcomeMessage">' +
-            '      <span class="welcome-text" id="welcomeText">请先登录</span>' +
+            '      <span class="welcome-text" id="welcomeText"></span>' +
             '    </div>' +
             '  </div>' +
             '  <div class="header-right" id="headerRight">' +

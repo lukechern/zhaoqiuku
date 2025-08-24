@@ -74,15 +74,17 @@ export class UserStateManager {
 
             if (window.authManager) {
                 // console.log('认证管理器已就绪，初始化用户状态显示');
-                this.updateUserDisplay(true); // 初始化时强制更新
-                this.isInitialized = true;
-
-                // 设置定期检查，确保状态同步
-                this.startPeriodicStateCheck();
+                // 等待一小段时间确保认证状态完全加载
+                setTimeout(() => {
+                    this.updateUserDisplay(true); // 初始化时强制更新
+                    this.isInitialized = true;
+                    // 设置定期检查，确保状态同步
+                    this.startPeriodicStateCheck();
+                }, 200); // 延迟200ms确保状态完全加载
             } else if (attempts < maxAttempts) {
                 setTimeout(checkAuthManager, 50);
             } else {
-                // 即使没有认证管理器，也要显示默认状态
+                // 即使没有认证管理器，也要显示默认状态（空白状态）
                 this.updateUserDisplay(true); // 初始化时强制更新
                 this.isInitialized = true;
             }
@@ -99,14 +101,14 @@ export class UserStateManager {
         const checkInterval = setInterval(() => {
             checkCount++;
 
-            if (window.authManager && this.authLinks && this.userInfo) {
+            if (window.authManager && this.authLinks && this.userLogout) {
                 const isAuthenticated = window.authManager.isAuthenticated;
                 const authLinksVisible = this.authLinks.style.display !== 'none';
-                const userInfoHidden = this.userInfo.classList.contains('hidden');
+                const userLogoutHidden = this.userLogout.classList.contains('hidden');
 
                 // 检查状态是否不一致
                 const stateInconsistent = (isAuthenticated && authLinksVisible) ||
-                    (!isAuthenticated && !userInfoHidden);
+                    (!isAuthenticated && !userLogoutHidden);
 
                 if (stateInconsistent) {
                     this.updateUserDisplay(); // 不强制更新，使用冷却机制
@@ -177,7 +179,7 @@ export class UserStateManager {
                 console.log('显示用户信息:', email);
             }
         } else {
-            // 未登录状态：显示登录链接和提示信息，隐藏登出按钮
+            // 未登录状态：显示登录链接，隐藏登出按钮，不显示任何提示信息
             // 动态创建登录/注册链接，但要确保不移除已绑定的事件监听器
             if (this.authLinks.children.length === 0) {
                 this.authLinks.innerHTML = '<a href="auth.html" class="auth-link">登录</a>';
@@ -187,8 +189,8 @@ export class UserStateManager {
             this.userLogout.classList.add('hidden');
             this.userLogout.style.display = 'none';
             
-            // 显示提示信息
-            this.welcomeText.textContent = '请先登录';
+            // 不显示任何提示信息，保持空白
+            this.welcomeText.textContent = '';
 
             if (isDebug) {
                 console.log('显示登录链接');
