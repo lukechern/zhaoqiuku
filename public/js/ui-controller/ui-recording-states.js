@@ -3,11 +3,27 @@
  * 处理录音状态的显示和切换
  */
 
+// 新增：用于延迟隐藏麦克风按钮的定时器ID_7ree（放在全局以便跨流程清理）
+if (typeof window.micHideTimerId_7ree === 'undefined') {
+    window.micHideTimerId_7ree = null;
+}
+
 // 显示录音状态
 function showRecordingState(elements) {
-    // 隐藏麦克风按钮
+    // 延迟隐藏麦克风按钮，保证0.3s点击反馈动画可见_7ree
     if (elements.microphoneButton) {
-        elements.microphoneButton.style.display = 'none';
+        if (window.micHideTimerId_7ree) {
+            clearTimeout(window.micHideTimerId_7ree);
+            window.micHideTimerId_7ree = null;
+        }
+        const btn_7ree = elements.microphoneButton;
+        window.micHideTimerId_7ree = setTimeout(() => {
+            // 仅当仍处于录音状态时再隐藏，避免竞态_7ree
+            if (window.app && window.app.uiController && window.app.uiController.isRecording) {
+                btn_7ree.style.display = 'none';
+            }
+            window.micHideTimerId_7ree = null;
+        }, 320);
     }
     // 水波动效上移到计时器位置
     if (elements.soundWaves) {
@@ -61,6 +77,11 @@ function showRecordingState(elements) {
 
 // 隐藏录音状态
 function hideRecordingState(elements, isRecording) {
+    // 清理可能未触发的延迟隐藏定时器_7ree
+    if (window.micHideTimerId_7ree) {
+        clearTimeout(window.micHideTimerId_7ree);
+        window.micHideTimerId_7ree = null;
+    }
     // 恢复麦克风按钮显示
     if (elements.microphoneButton) {
         elements.microphoneButton.style.display = '';
