@@ -24,7 +24,7 @@ class HelpSystem {
     }
 
     createHelpIcon() {
-        // 获取左侧功能按钮容器
+        // 获取右侧功能按钮容器
         const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
         if (!header) {
             console.warn('⚠️ 未找到header容器');
@@ -363,8 +363,8 @@ class HelpSystem {
             if (isAuthenticated && userEmail) {
                 warmTipsHtml_7ree = `欢迎您，<strong>${userEmail}</strong>。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
             } else {
-                const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="请登录">请登录</a>';
-                warmTipsHtml_7ree = `欢迎您，${loginLink}后使用。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
+                const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="登录">登录</a>';
+                warmTipsHtml_7ree = `欢迎您，请${loginLink}后使用。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
             }
 
             warmTipsText.innerHTML = warmTipsHtml_7ree;

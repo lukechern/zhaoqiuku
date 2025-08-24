@@ -204,36 +204,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 深色模式适配 */
-@media (prefers-color-scheme: dark) {
-    .help-modal-overlay {
-        background: rgba(0, 0, 0, 0.8);
-    }
-    
-    .help-modal {
-        background: rgba(26, 26, 26, 0.95);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .help-modal-header {
-        background: rgba(26, 26, 26, 0.95);
-        border-bottom-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .help-modal-footer {
-        background: rgba(26, 26, 26, 0.95);
-        border-top-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .help-modal-close:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-    
-    .help-example {
-        background: rgba(255, 255, 255, 0.05);
-    }
-}
-
 /* 移动端适配 */
 @media (max-width: 480px) {
     .help-modal {
@@ -287,21 +257,6 @@
     font-weight: 600;
 }
 
-/* 深色模式下的温馨提示 */
-@media (prefers-color-scheme: dark) {
-    .help-warm-tips {
-        background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
-        border-color: rgba(255, 193, 7, 0.4);
-    }
-
-    .help-warm-tips-text {
-        color: #ffc107 !important;
-    }
-
-    .help-warm-tips-text strong {
-        color: #ffd54f;
-    }
-}
 
 /* 帮助按钮样式_7ree（由 js/help-system.js 迁移） */
 .help-toggle-btn {
@@ -321,11 +276,6 @@
     background: rgba(0, 0, 0, 0.06);
 }
 
-@media (prefers-color-scheme: dark) {
-    .help-toggle-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-    }
-}
 
 .help-icon {
     width: 18px;
@@ -341,32 +291,21 @@
 /* 登录按钮样式_7ree（用于温馨提示中的“请登录”） */
 .help-login-btn_7ree {
     display: inline-block;
-    padding: 6px 12px;
-    border-radius: 999px; /* 胶囊圆角 */
+    padding: 2px 4px;
+    margin-right: 4px;
+    border-radius: 4px;
     background: #ffffff;
     color: #007bff;
     text-decoration: none;
     font-size: 0.85rem;
     line-height: 1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
     border: 1px solid rgba(0, 0, 0, 0.06);
     transition: all 0.2s ease;
 }
+
 .help-login-btn_7ree:hover {
     background: #f4f8ff;
     color: #0056b3;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-@media (prefers-color-scheme: dark) {
-    .help-login-btn_7ree {
-        background: rgba(255,255,255,0.08);
-        color: #7ab8ff;
-        border-color: rgba(255,255,255,0.12);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    }
-    .help-login-btn_7ree:hover {
-        background: rgba(255,255,255,0.15);
-        color: #a7d0ff;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.6);
-    }
 }
