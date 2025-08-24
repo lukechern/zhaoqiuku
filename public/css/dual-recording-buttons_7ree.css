@@ -172,7 +172,7 @@
     right: 0;
     bottom: 0;
     background-image:
-        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.7) 0%, transparent 60%),
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.35) 0%, transparent 60%),
         radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.3) 0%, transparent 60%),
         radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.35) 0%, transparent 40%),
         repeating-linear-gradient(
@@ -215,7 +215,7 @@
     right: 0;
     bottom: 0;
     background-image:
-        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.7) 0%, transparent 60%),
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.35) 0%, transparent 60%),
         radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.3) 0%, transparent 60%),
         radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.35) 0%, transparent 40%),
         repeating-linear-gradient(
@@ -262,7 +262,7 @@
 .dual-recording-buttons_7ree .record-btn_7ree:hover::before {
     opacity: 1;
     background-image:
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 70%),
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 70%),
         radial-gradient(circle at 80% 80%, rgba(0, 0, 0, 0.35) 0%, transparent 70%),
         radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.45) 0%, transparent 50%),
         repeating-linear-gradient(
