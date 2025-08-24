@@ -34,23 +34,23 @@
       return;
     }
 
-    // 获取或创建右侧功能图标容器
-    let rightContainer = header.querySelector('.header-right');
-    if (!rightContainer) {
-      rightContainer = header.querySelector('#headerRight');
+    // 获取左侧功能按钮容器
+    let functionContainer = header.querySelector('.function-buttons');
+    if (!functionContainer) {
+      functionContainer = header.querySelector('#functionButtons');
     }
-    if (!rightContainer) {
-      console.warn('未找到右侧容器，创建一个');
+    if (!functionContainer) {
+      console.warn('未找到功能按钮容器，创建一个');
       return;
     }
 
-    // 在右侧容器中插入搜索按钮
+    // 在功能按钮容器中插入搜索按钮
     const btn = document.createElement('button');
     btn.className = 'search-toggle-btn_7ree';
     btn.setAttribute('aria-label', '搜索');
     btn.innerHTML = `<img class="search-icon_7ree" src="${ICONS.search}" alt="搜索">`;
 
-    rightContainer.appendChild(btn);
+    functionContainer.appendChild(btn);
     btn.addEventListener('click', () => enterSearchMode_7ree());
   }
 

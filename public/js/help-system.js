@@ -14,21 +14,21 @@ class HelpSystem {
     }
 
     createHelpIcon() {
-        // 获取或创建右侧功能图标容器
+        // 获取左侧功能按钮容器
         const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
         if (!header) return;
 
-        let rightContainer = header.querySelector('.header-right');
-        if (!rightContainer) {
-            rightContainer = header.querySelector('#headerRight');
+        let functionContainer = header.querySelector('.function-buttons');
+        if (!functionContainer) {
+            functionContainer = header.querySelector('#functionButtons');
         }
-        if (!rightContainer) {
-            console.warn('未找到右侧容器，创建一个');
+        if (!functionContainer) {
+            console.warn('未找到功能按钮容器，创建一个');
             return;
         }
 
         // 检查是否已存在帮助按钮
-        if (rightContainer.querySelector('.help-toggle-btn')) return;
+        if (functionContainer.querySelector('.help-toggle-btn')) return;
 
         // 创建帮助按钮
         const helpBtn = document.createElement('button');
@@ -36,7 +36,7 @@ class HelpSystem {
         helpBtn.setAttribute('aria-label', '帮助信息');
         helpBtn.innerHTML = '<img src="img/help.svg" alt="帮助" class="help-icon">';
         
-        rightContainer.appendChild(helpBtn);
+        functionContainer.appendChild(helpBtn);
 
         // 绑定点击事件
         helpBtn.addEventListener('click', () => this.showModal());

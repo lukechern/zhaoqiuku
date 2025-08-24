@@ -34,6 +34,14 @@
     align-items: center;
     flex: 0 0 auto;
     min-width: 50px;
+    gap: 8px; /* 增加间距支持多个元素 */
+}
+
+/* 功能按钮容器样式 */
+.function-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .header-center {

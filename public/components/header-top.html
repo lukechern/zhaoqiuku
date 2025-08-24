@@ -1,14 +1,12 @@
 <div class="header-top">
-    <!-- 左侧区域：登出按钮/登录链接 -->
+    <!-- 左侧区域：功能按钮和登录链接 -->
     <div class="header-left" id="headerLeft">
+        <!-- 功能图标区域 -->
+        <div class="function-buttons" id="functionButtons">
+            <!-- 功能图标将在这里动态添加 -->
+        </div>
         <!-- 认证链接容器 -->
         <div class="auth-links hidden" id="authLinks">
-        </div>
-        <!-- 已登录状态：登出按钮 -->
-        <div class="user-logout hidden" id="userLogout">
-            <button class="logout-btn" id="logoutBtn" aria-label="登出">
-                <img src="img/logout.svg" alt="登出图标" class="logout-icon">
-            </button>
         </div>
     </div>
     
@@ -19,8 +17,13 @@
         </div>
     </div>
     
-    <!-- 右侧区域：功能按钮 -->
+    <!-- 右侧区域：登出按钮 -->
     <div class="header-right" id="headerRight">
-        <!-- 功能图标将在这里动态添加 -->
+        <!-- 已登录状态：登出按钮 -->
+        <div class="user-logout hidden" id="userLogout">
+            <button class="logout-btn" id="logoutBtn" aria-label="登出">
+                <img src="img/logout.svg" alt="登出图标" class="logout-icon">
+            </button>
+        </div>
     </div>
 </div>

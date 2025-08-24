@@ -112,7 +112,7 @@ class StateSyncManager {
     syncUserDisplay(isAuthenticated, authLinks, userLogout, welcomeText) {
         try {
             if (isAuthenticated && window.authManager.user) {
-                // 已登录状态：显示登出按钮和欢迎信息，隐藏登录链接
+                // 已登录状态：隐藏登录链接，显示登出按钮和欢迎信息
                 authLinks.style.display = 'none';
                 authLinks.classList.add('hidden');
                 userLogout.classList.remove('hidden');

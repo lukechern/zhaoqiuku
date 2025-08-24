@@ -65,12 +65,9 @@ function getFallbackHtml_7ree(type) {
         return (
             '<div class="header-top">' +
             '  <div class="header-left" id="headerLeft">' +
-            '    <div class="auth-links hidden" id="authLinks">' +
+            '    <div class="function-buttons" id="functionButtons">' +
             '    </div>' +
-            '    <div class="user-logout hidden" id="userLogout">' +
-            '      <button class="logout-btn" id="logoutBtn" aria-label="登出">' +
-            '        <img src="img/logout.svg" alt="登出图标" class="logout-icon">' +
-            '      </button>' +
+            '    <div class="auth-links hidden" id="authLinks">' +
             '    </div>' +
             '  </div>' +
             '  <div class="header-center" id="headerCenter">' +
@@ -79,6 +76,11 @@ function getFallbackHtml_7ree(type) {
             '    </div>' +
             '  </div>' +
             '  <div class="header-right" id="headerRight">' +
+            '    <div class="user-logout hidden" id="userLogout">' +
+            '      <button class="logout-btn" id="logoutBtn" aria-label="登出">' +
+            '        <img src="img/logout.svg" alt="登出图标" class="logout-icon">' +
+            '      </button>' +
+            '    </div>' +
             '  </div>' +
             '</div>'
         );

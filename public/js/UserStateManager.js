@@ -164,7 +164,7 @@ export class UserStateManager {
         }
 
         if (window.authManager && window.authManager.isAuthenticated && window.authManager.user) {
-            // 已登录状态：显示登出按钮和欢迎信息，隐藏登录链接
+            // 已登录状态：隐藏登录链接，显示登出按钮和欢迎信息
             this.authLinks.style.display = 'none';
             this.authLinks.classList.add('hidden');
             this.userLogout.classList.remove('hidden');
@@ -180,7 +180,7 @@ export class UserStateManager {
             }
         } else {
             // 未登录状态：显示登录链接，隐藏登出按钮，不显示任何提示信息
-            // 动态创建登录/注册链接，但要确保不移除已绑定的事件监听器
+            // 动态创建登录链接
             if (this.authLinks.children.length === 0) {
                 this.authLinks.innerHTML = '<a href="auth.html" class="auth-link">登录</a>';
             }
