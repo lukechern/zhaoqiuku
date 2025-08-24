@@ -88,27 +88,9 @@ class HelpSystem {
         this.modal.className = 'help-modal';
 
         // 骨架内容：标题 + 关闭按钮 + 加载提示
-        this.modal.innerHTML = `
-            <div class="help-modal-header">
-                <h3 class="help-modal-title">使用帮助</h3>
-                <button class="help-modal-close" aria-label="关闭帮助">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-            <div class="help-modal-content">
-                <div class="help-loading_7ree" style="display:flex;align-items:center;gap:8px;">
-                    <img src="img/loading-spinner.svg" alt="加载中" style="width:24px;height:24px;">
-                    <span>正在加载帮助内容…</span>
-                </div>
-            </div>
-            <div class="help-modal-footer">
-                <button class="help-footer-btn" id="helpCloseBtn">关闭</button>
-            </div>
-        `;
-
+        // 已按需求移除骨架图加载方式_7ree，改为空容器，真实内容由异步加载填充
+        this.modal.innerHTML = '';
+        
         this.overlay.appendChild(this.modal);
         document.body.appendChild(this.overlay);
     }
@@ -381,7 +363,7 @@ class HelpSystem {
             if (isAuthenticated && userEmail) {
                 warmTipsHtml_7ree = `欢迎您，<strong>${userEmail}</strong>。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
             } else {
-                const loginLink = '<a href="#" onclick="window.showLoginRequired?.(); return false;" style="color: #007bff; text-decoration: underline;">请登录</a>';
+                const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="请登录">请登录</a>';
                 warmTipsHtml_7ree = `欢迎您，${loginLink}后使用。<strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具，请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
             }
 
@@ -393,43 +375,8 @@ class HelpSystem {
 
     // 获取默认帮助内容（fallback）
     getDefaultHelpContent() {
-        return `
-            <div class="help-section">
-                <h4 class="help-section-title">
-                    <img src="img/microphone.svg" alt="" class="help-section-icon">
-                    语音功能
-                </h4>
-                <p class="help-section-content">通过语音指令记录和查找物品存放位置</p>
-                <ul class="help-feature-list">
-                    <li class="help-feature-item">
-                        <span class="help-feature-icon">🗣️</span>
-                        <span>按住麦克风按钮录音，松开即可发送</span>
-                    </li>
-                    <li class="help-feature-item">
-                        <span class="help-feature-icon">📍</span>
-                        <span>说"把XX放在XX位置"来记录物品</span>
-                    </li>
-                    <li class="help-feature-item">
-                        <span class="help-feature-icon">🔍</span>
-                        <span>说"XX在哪里"来查找物品位置</span>
-                    </li>
-                </ul>
-            </div>
-            <div class="help-section">
-                <h4 class="help-section-title">
-                    <img src="img/history.svg" alt="" class="help-section-icon">
-                    历史记录
-                </h4>
-                <p class="help-section-content">查看和管理之前的语音记录</p>
-            </div>
-            <div class="help-section">
-                <h4 class="help-section-title">
-                    <img src="img/sound.svg" alt="" class="help-section-icon">
-                    语音反馈
-                </h4>
-                <p class="help-section-content">AI助手会用语音回复您的问题</p>
-            </div>
-        `;
+        // 已按需求清空默认帮助内容_7ree（现在帮助内容直接读取外部片段）
+        return '';
     }
 }
 

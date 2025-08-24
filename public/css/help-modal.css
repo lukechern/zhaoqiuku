@@ -270,7 +270,6 @@
     overflow: hidden;
 }
 
-
 .help-warm-tips-content {
     position: relative;
 }
@@ -337,4 +336,37 @@
 
 .help-toggle-btn:hover .help-icon {
     filter: brightness(0) saturate(100%) invert(80%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+}
+
+/* 登录按钮样式_7ree（用于温馨提示中的“请登录”） */
+.help-login-btn_7ree {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px; /* 胶囊圆角 */
+    background: #ffffff;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+}
+.help-login-btn_7ree:hover {
+    background: #f4f8ff;
+    color: #0056b3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+@media (prefers-color-scheme: dark) {
+    .help-login-btn_7ree {
+        background: rgba(255,255,255,0.08);
+        color: #7ab8ff;
+        border-color: rgba(255,255,255,0.12);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+    .help-login-btn_7ree:hover {
+        background: rgba(255,255,255,0.15);
+        color: #a7d0ff;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+    }
 }
