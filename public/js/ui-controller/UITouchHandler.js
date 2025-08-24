@@ -25,6 +25,14 @@ export class UITouchHandler {
                 console.log('麦克风按钮被点击！');
                 e.preventDefault();
                 e.stopPropagation();
+                
+                // 添加点击反馈动画
+                if (window.ButtonAnimations) {
+                    window.ButtonAnimations.triggerMicrophoneFeedback(button);
+                } else {
+                    this.triggerClickFeedback(button);
+                }
+                
                 if (this.uiController.isRecording) {
                     // 正在录音，点击麦克风不结束，需使用左右按钮明确操作
                     return;
@@ -163,6 +171,24 @@ export class UITouchHandler {
         }
 
         console.log('麦克风按钮事件绑定完成');
+    }
+
+    // 触发点击反馈动画
+    triggerClickFeedback(button) {
+        if (!button) return;
+        
+        // 移除之前的动画类（如果有）
+        button.classList.remove('click-feedback');
+        
+        // 强制重新渲染，然后添加动画类
+        requestAnimationFrame(() => {
+            button.classList.add('click-feedback');
+            
+            // 0.3秒后移除动画类
+            setTimeout(() => {
+                button.classList.remove('click-feedback');
+            }, 300);
+        });
     }
 
     // 处理触摸开始

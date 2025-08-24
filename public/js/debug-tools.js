@@ -173,6 +173,48 @@ export function checkGlobalFunctions() {
     
     return results;
 }
+
+/**
+ * 测试录音按钮动画效果
+ */
+export function testRecordingButtonAnimations() {
+    console.log('=== 录音按钮动画测试 ===');
+    
+    const cancelBtn = document.getElementById('cancelRecordBtn_7ree');
+    const confirmBtn = document.getElementById('confirmRecordBtn_7ree');
+    
+    console.log('取消按钮元素:', cancelBtn);
+    console.log('确认按钮元素:', confirmBtn);
+    
+    if (cancelBtn && window.ButtonAnimations) {
+        console.log('触发取消按钮动画测试...');
+        window.ButtonAnimations.triggerCancelFeedback(cancelBtn);
+        
+        setTimeout(() => {
+            if (confirmBtn) {
+                console.log('触发确认按钮动画测试...');
+                window.ButtonAnimations.triggerConfirmFeedback(confirmBtn);
+            }
+        }, 500);
+    } else {
+        console.warn('按钮元素或动画工具未找到');
+    }
+}
+
+/**
+ * 测试所有按钮动画效果
+ */
+export function testAllButtonAnimations() {
+    console.log('=== 所有按钮动画测试 ===');
+    
+    // 测试麦克风按钮
+    testMicrophoneButton();
+    
+    // 稍后测试录音按钮
+    setTimeout(() => {
+        testRecordingButtonAnimations();
+    }, 1000);
+}
 export function testMicrophoneButton() {
     console.log('=== 麦克风按钮测试 ===');
     
@@ -191,6 +233,12 @@ export function testMicrophoneButton() {
             opacity: getComputedStyle(button).opacity,
             classList: Array.from(button.classList)
         });
+        
+        // 测试点击动画
+        if (window.ButtonAnimations) {
+            console.log('触发麦克风按钮动画测试...');
+            window.ButtonAnimations.triggerMicrophoneFeedback(button);
+        }
         
         console.log('按钮位置:', button.getBoundingClientRect());
     }
@@ -293,6 +341,10 @@ export function initializeDebugTools() {
     window.testStreamErrorDisplay = testStreamErrorDisplay;
     window.compareErrorDisplayMethods = compareErrorDisplayMethods;
     window.checkGlobalFunctions = checkGlobalFunctions;
+    
+    // 新增：按钮动画测试函数
+    window.testRecordingButtonAnimations = testRecordingButtonAnimations;
+    window.testAllButtonAnimations = testAllButtonAnimations;
     
     console.log('调试工具已初始化并暴露到全局作用域');
 }

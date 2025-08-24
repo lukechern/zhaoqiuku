@@ -46,6 +46,72 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
+/* 按钮点击反馈动画 */
+.dual-recording-buttons_7ree .record-btn_7ree.click-feedback {
+    animation: record-btn-click-feedback 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes record-btn-click-feedback {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+    50% {
+        transform: scale(0.92);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    100% {
+        transform: scale(1.05);
+        box-shadow: 0 8px 22px rgba(0,0,0,0.22);
+    }
+}
+
+/* 取消按钮特殊动画效果 */
+.dual-recording-buttons_7ree .cancel_7ree.click-feedback {
+    animation: cancel-btn-click-feedback 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes cancel-btn-click-feedback {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 6px 18px rgba(255, 59, 48, 0.3);
+        background: #ff3b30;
+    }
+    50% {
+        transform: scale(0.92);
+        box-shadow: 0 2px 8px rgba(255, 59, 48, 0.4);
+        background: #e6342a;
+    }
+    100% {
+        transform: scale(1.05);
+        box-shadow: 0 8px 22px rgba(255, 59, 48, 0.4);
+        background: #ff453c;
+    }
+}
+
+/* 确认按钮特殊动画效果 */
+.dual-recording-buttons_7ree .confirm_7ree.click-feedback {
+    animation: confirm-btn-click-feedback 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes confirm-btn-click-feedback {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 6px 18px rgba(52, 199, 89, 0.3);
+        background: #34c759;
+    }
+    50% {
+        transform: scale(0.92);
+        box-shadow: 0 2px 8px rgba(52, 199, 89, 0.4);
+        background: #2fb94f;
+    }
+    100% {
+        transform: scale(1.05);
+        box-shadow: 0 8px 22px rgba(52, 199, 89, 0.4);
+        background: #3dd65c;
+    }
+}
+
 /* 左侧：取消（红底） */
 .dual-recording-buttons_7ree .cancel_7ree {
     background: #ff3b30;

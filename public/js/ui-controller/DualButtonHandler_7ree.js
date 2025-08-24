@@ -26,6 +26,14 @@ export class DualButtonHandler_7ree {
             e.preventDefault();
             e.stopPropagation();
             console.log('取消按钮被点击');
+            
+            // 添加点击反馈动画
+            if (window.ButtonAnimations) {
+                window.ButtonAnimations.triggerCancelFeedback(this.elements.cancelBtn);
+            } else {
+                this.triggerClickFeedback(this.elements.cancelBtn, 'cancel');
+            }
+            
             if (!this.uiController.isRecording) return;
             this.hideDualButtons_7ree();
             this.uiController.handleCancel();
@@ -36,9 +44,35 @@ export class DualButtonHandler_7ree {
             e.preventDefault();
             e.stopPropagation();
             console.log('确认按钮被点击');
+            
+            // 添加点击反馈动画
+            if (window.ButtonAnimations) {
+                window.ButtonAnimations.triggerConfirmFeedback(this.elements.confirmBtn);
+            } else {
+                this.triggerClickFeedback(this.elements.confirmBtn, 'confirm');
+            }
+            
             if (!this.uiController.isRecording) return;
             this.hideDualButtons_7ree();
             this.uiController.handlePressEnd();
+        });
+    }
+
+    // 触发点击反馈动画
+    triggerClickFeedback(button, type) {
+        if (!button) return;
+        
+        // 移除之前的动画类（如果有）
+        button.classList.remove('click-feedback');
+        
+        // 强制重新渲染，然后添加动画类
+        requestAnimationFrame(() => {
+            button.classList.add('click-feedback');
+            
+            // 0.3秒后移除动画类
+            setTimeout(() => {
+                button.classList.remove('click-feedback');
+            }, 300);
         });
     }
 
