@@ -5,7 +5,7 @@
     "enableJavaScript": true,
     "enableDomStorage": true,
     "mediaPlaybackRequiresUserGesture": false,
-    "disableCache": true,
-    "forceRefresh": true,
+    "disableCache": false,
+    "forceRefresh": false,
     "appName": "找秋裤"
 }

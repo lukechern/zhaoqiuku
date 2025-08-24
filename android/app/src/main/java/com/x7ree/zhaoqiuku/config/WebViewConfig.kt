@@ -12,7 +12,9 @@ data class WebViewConfig(
     val enableJavaScript: Boolean = true,
     val enableDomStorage: Boolean = true,
     val mediaPlaybackRequiresUserGesture: Boolean = true,
-    val appName: String = "找秋裤"  // 添加应用名称配置，默认值为"找秋裤"
+    val appName: String = "找秋裤",  // 添加应用名称配置，默认值为"找秋裤"
+    val disableCache_7ree: Boolean = false, // 新增：是否禁用缓存（默认关闭）
+    val forceRefresh_7ree: Boolean = false  // 新增：是否强制刷新（默认关闭）
 ) {
     companion object {
         private const val TAG = "WebViewConfig"
@@ -30,7 +32,9 @@ data class WebViewConfig(
                     enableJavaScript = jsonObject.optBoolean("enableJavaScript", true),
                     enableDomStorage = jsonObject.optBoolean("enableDomStorage", true),
                     mediaPlaybackRequiresUserGesture = jsonObject.optBoolean("mediaPlaybackRequiresUserGesture", true),
-                    appName = jsonObject.optString("appName", "找秋裤")  // 从配置文件读取应用名称
+                    appName = jsonObject.optString("appName", "找秋裤"),  // 从配置文件读取应用名称
+                    disableCache_7ree = jsonObject.optBoolean("disableCache", false),
+                    forceRefresh_7ree = jsonObject.optBoolean("forceRefresh", false)
                 )
             } catch (e: IOException) {
                 Log.e(TAG, "无法读取配置文件: ${e.message}")

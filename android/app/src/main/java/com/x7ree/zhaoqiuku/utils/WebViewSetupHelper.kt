@@ -34,17 +34,19 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
             // 安全设置
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             
-            // 缓存设置 - 禁用缓存以获取最新内容
-            cacheMode = WebSettings.LOAD_NO_CACHE
+            // 缓存设置 - 根据配置控制
+            cacheMode = if (config.disableCache_7ree) WebSettings.LOAD_NO_CACHE else WebSettings.LOAD_DEFAULT
             
             // 用户代理 - 使用配置文件
             userAgentString = "$userAgentString ${config.userAgent}"
         }
         
-        // 清除所有缓存
-        webView.clearCache(true)
-        webView.clearHistory()
-        webView.clearFormData()
+        // 清除缓存仅在需要禁用缓存或强制刷新时执行
+        if (config.disableCache_7ree || config.forceRefresh_7ree) {
+            webView.clearCache(true)
+            webView.clearHistory()
+            webView.clearFormData()
+        }
         
         // 清除存储
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -178,15 +180,19 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
             "https://zhaoqiuku.com/"
         }
         
-        // 添加时间戳防止缓存
-        val urlWithTimestamp = if (url.contains("?")) {
-            "$url&_t=${System.currentTimeMillis()}"
+        // 根据配置决定是否添加时间戳防止缓存
+        val finalUrl = if (config.forceRefresh_7ree) {
+            if (url.contains("?")) {
+                "$url&_t=${System.currentTimeMillis()}"
+            } else {
+                "$url?_t=${System.currentTimeMillis()}"
+            }
         } else {
-            "$url?_t=${System.currentTimeMillis()}"
+            url
         }
         
-        Log.d("WebViewSetupHelper", "加载网页: $urlWithTimestamp")
-        webView.loadUrl(urlWithTimestamp)
+        Log.d("WebViewSetupHelper", "加载网页: $finalUrl")
+        webView.loadUrl(finalUrl)
     }
     
     fun forceRefresh(webView: WebView) {

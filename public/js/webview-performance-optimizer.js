@@ -52,8 +52,8 @@ class WebViewPerformanceOptimizer {
             'img/help.svg',
             'img/logout.svg',
             'img/search.svg',
-            'img/history.svg',
-            'components/help-body_7ree.html'
+            'img/history.svg'
+            // 注意：help-body_7ree.html 改为闲时预取，避免与首屏关键请求竞争_7ree
         ];
 
         criticalAssets.forEach(asset => {
@@ -64,9 +64,6 @@ class WebViewPerformanceOptimizer {
                 link.href = asset;
                 link.as = 'image';
                 document.head.appendChild(link);
-            } else if (asset.endsWith('.html')) {
-                // 预获取HTML组件
-                fetch(asset).catch(e => console.log('预加载失败:', asset));
             }
         });
 
@@ -95,7 +92,8 @@ class WebViewPerformanceOptimizer {
     // 加载非关键资源
     loadNonCriticalResources() {
         // 这里可以预加载一些非关键的资源
-        // 目前暂时为空，可以根据需要添加
+        // 将 help-body_7ree.html 放入闲时预取，避免阻塞首屏关键路径_7ree
+        fetch('components/help-body_7ree.html').catch(e => console.log('闲时预加载失败:', 'components/help-body_7ree.html'));
     }
 
     // 设置快速DOM准备检测

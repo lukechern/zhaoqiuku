@@ -9,7 +9,7 @@ class HelpSystem {
 
     async init() {
         this.createHelpIcon();
-        await this.createModal();
+        // 延迟创建模态框：首屏不再预取 help-body_7ree.html，待首次打开时再加载，避免首屏阶段额外请求与潜在阻塞_7ree
         this.bindEvents();
     }
 
@@ -61,7 +61,7 @@ class HelpSystem {
         functionContainer.appendChild(helpBtn);
         console.log('✅ 帮助按钮创建成功');
 
-        // 绑定点击事件
+        // 绑定点击事件（首次点击时再创建模态框并加载外部片段）_7ree
         helpBtn.addEventListener('click', () => this.showModal());
     }
 
@@ -174,7 +174,13 @@ class HelpSystem {
         });
     }
 
-    showModal() {
+    async showModal() {
+        // 首次打开时再创建模态框与加载内容，避免首屏阶段的网络请求_7ree
+        if (!this.overlay) {
+            await this.createModal();
+            this.bindEvents();
+        }
+
         if (!this.overlay) return;
 
         // 每次打开时更新温馨提示内容

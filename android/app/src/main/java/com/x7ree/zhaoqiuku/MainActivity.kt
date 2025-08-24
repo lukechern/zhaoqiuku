@@ -115,8 +115,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // 每次恢复时清除缓存，确保获取最新内容
-        webView.clearCache(true)
+        // 仅在配置要求强制刷新的情况下清理缓存，避免每次恢复都导致首屏慢
+        if (config.forceRefresh_7ree) {
+            webView.clearCache(true)
+        }
 
         // 检查是否从设置页面返回并获得了悬浮窗权限
         // 或者应用从后台返回前台时恢复悬浮球显示
