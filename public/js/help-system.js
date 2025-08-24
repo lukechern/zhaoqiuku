@@ -16,19 +16,37 @@ class HelpSystem {
     createHelpIcon() {
         // 获取左侧功能按钮容器
         const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
-        if (!header) return;
+        if (!header) {
+            console.warn('⚠️ 未找到header容器');
+            return;
+        }
 
         let functionContainer = header.querySelector('.function-buttons');
         if (!functionContainer) {
             functionContainer = header.querySelector('#functionButtons');
         }
+        
+        // 如果未找到容器，尝试创建一个
         if (!functionContainer) {
-            console.warn('未找到功能按钮容器，创建一个');
-            return;
+            console.log('🔧 未找到功能按钮容器，尝试创建...');
+            const headerLeft = header.querySelector('.header-left') || header.querySelector('#headerLeft');
+            if (headerLeft) {
+                functionContainer = document.createElement('div');
+                functionContainer.className = 'function-buttons';
+                functionContainer.id = 'functionButtons';
+                headerLeft.appendChild(functionContainer);
+                console.log('✅ 功能按钮容器创建成功');
+            } else {
+                console.error('❌ 无法找到合适的父容器来创建功能按钮');
+                return;
+            }
         }
 
         // 检查是否已存在帮助按钮
-        if (functionContainer.querySelector('.help-toggle-btn')) return;
+        if (functionContainer.querySelector('.help-toggle-btn')) {
+            console.log('🔄 帮助按钮已存在，跳过创建');
+            return;
+        }
 
         // 创建帮助按钮
         const helpBtn = document.createElement('button');
@@ -36,7 +54,12 @@ class HelpSystem {
         helpBtn.setAttribute('aria-label', '帮助信息');
         helpBtn.innerHTML = '<img src="img/help.svg" alt="帮助" class="help-icon">';
         
+        // 优化：直接显示按钮，避免额外的可见性延迟
+        helpBtn.style.opacity = '1';
+        helpBtn.style.visibility = 'visible';
+        
         functionContainer.appendChild(helpBtn);
+        console.log('✅ 帮助按钮创建成功');
 
         // 绑定点击事件
         helpBtn.addEventListener('click', () => this.showModal());
@@ -255,35 +278,95 @@ function initHelpSystem() {
 
     addHelpButtonStyles();
     
-    // 等待页面组件加载完成后再初始化
+    // 优化初始化策略：减少等待时间，提高WebView性能
     const initHelp = () => {
         const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
         if (header) {
+            // 立即创建帮助系统
             window.helpSystem = new HelpSystem();
+            console.log('✅ 帮助系统初始化成功');
             return true;
         }
         return false;
     };
 
-    // 尝试初始化，如果失败则等待
-    if (!initHelp()) {
-        let retries = 0;
-        const maxRetries = 30;
-        const timer = setInterval(() => {
-            if (initHelp() || retries >= maxRetries) {
-                clearInterval(timer);
-            }
-            retries++;
-        }, 200);
+    // 策略一：立即尝试初始化
+    if (initHelp()) {
+        return;
     }
+    
+    // 策略二：快速轮询（减少重试次数和间隔）
+    let retries = 0;
+    const maxRetries = 15; // 从30减少到15
+    const retryInterval = 100; // 从200ms减少到100ms
+    
+    const fastRetryTimer = setInterval(() => {
+        if (initHelp() || retries >= maxRetries) {
+            clearInterval(fastRetryTimer);
+            if (retries >= maxRetries) {
+                console.warn('⚠️ 帮助系统初始化超时，将在DOM准备好后重试');
+                // 备用策略：使用MutationObserver监听 DOM 变化
+                setupDOMObserver();
+            }
+        }
+        retries++;
+    }, retryInterval);
+}
+
+// 新增：DOM监听器作为备用策略
+function setupDOMObserver() {
+    if (window.helpSystemDOMObserver) {
+        return; // 已经设置过了
+    }
+    
+    const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            if (mutation.type === 'childList') {
+                // 检查是否有新的header元素添加
+                const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
+                if (header && !window.helpSystem) {
+                    console.log('🔍 DOM监听器检测到header，初始化帮助系统');
+                    window.helpSystem = new HelpSystem();
+                    observer.disconnect();
+                    window.helpSystemDOMObserver = null;
+                    break;
+                }
+            }
+        }
+    });
+    
+    // 监听整个文档的子节点变化
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    window.helpSystemDOMObserver = observer;
+    
+    // 10秒后自动断开监听器防止内存泄漏
+    setTimeout(() => {
+        if (window.helpSystemDOMObserver) {
+            window.helpSystemDOMObserver.disconnect();
+            window.helpSystemDOMObserver = null;
+        }
+    }, 10000);
 }
 
 // 页面加载完成后初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initHelpSystem);
 } else {
+    // DOM已经加载完成，立即初始化
     initHelpSystem();
 }
+
+// WebView优化：提供快速初始化接口
+window.fastInitHelpSystem = () => {
+    console.log('🚀 快速初始化帮助系统被调用');
+    if (!window.helpSystem) {
+        initHelpSystem();
+    }
+};
 
 // 暴露到全局，便于其他脚本调用
 window.HelpSystem = HelpSystem;

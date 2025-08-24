@@ -116,8 +116,10 @@
 
         // 需要加载的JavaScript文件列表
         const scriptsToLoad_7ree = [
+            'js/webview-performance-optimizer.js', // WebView性能优化模块（最高优先级）
             'js/webview-compat_7ree.js', // 优先加载WebView兼容性模块
             'js/confirm-dialog_7ree.js', // 优先加载确认对话框组件
+            'js/help-system.js', // 提早加载帮助系统，改善WebView体验
             'js/navigation.js', // 优先加载导航组件
             'js/debug-config.js',
             'js/api-config.js',
@@ -126,8 +128,6 @@
             // 'js/auth-debug.js',
             // 音量可视化组件（在audio-recorder之前加载）
             'js/volume-visualizer.js',
-            // 帮助系统（在main.js之前加载）
-            'js/help-system.js',
             // 模块脚本将通过main.js加载
             'js/main.js'
         ];
