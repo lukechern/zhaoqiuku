@@ -17,6 +17,8 @@ function initHelpSystem() {
         if (header) {
             // 立即创建帮助系统
             window.helpSystem = new HelpSystem();
+            // 迁移：在初始化成功后创建帮助按钮_7ree
+            try { createHelpIcon_7ree(); } catch (e) { console.warn('创建帮助按钮失败：', e); }
             console.log('✅ 帮助系统初始化成功');
             return true;
         }
@@ -46,6 +48,8 @@ function setupDOMObserver() {
                 if (header && !window.helpSystem) {
                     console.log('🔍 DOM监听器检测到header，初始化帮助系统');
                     window.helpSystem = new HelpSystem();
+                    // 迁移：初始化后创建帮助按钮_7ree
+                    try { createHelpIcon_7ree(); } catch (e) { console.warn('创建帮助按钮失败：', e); }
                     observer.disconnect();
                     window.helpSystemDOMObserver = null;
                     break;
@@ -71,6 +75,68 @@ function setupDOMObserver() {
     }, 10000);
 }
 
+// 新增：创建帮助按钮职责迁移至 init 模块_7ree
+function createHelpIcon_7ree() {
+    // 获取右侧功能按钮容器
+    const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
+    if (!header) {
+        console.warn('⚠️ 未找到header容器');
+        return;
+    }
+
+    let functionContainer = header.querySelector('.function-buttons');
+    if (!functionContainer) {
+        functionContainer = header.querySelector('#functionButtons');
+    }
+    
+    // 如果未找到容器，尝试创建一个
+    if (!functionContainer) {
+        console.log('🔧 未找到功能按钮容器，尝试创建...');
+        const headerLeft = header.querySelector('.header-left') || header.querySelector('#headerLeft');
+        if (headerLeft) {
+            functionContainer = document.createElement('div');
+            functionContainer.className = 'function-buttons';
+            functionContainer.id = 'functionButtons';
+            headerLeft.appendChild(functionContainer);
+            console.log('✅ 功能按钮容器创建成功');
+        } else {
+            console.error('❌ 无法找到合适的父容器来创建功能按钮');
+            return;
+        }
+    }
+
+    // 检查是否已存在帮助按钮
+    if (functionContainer.querySelector('.help-toggle-btn')) {
+        console.log('🔄 帮助按钮已存在，跳过创建');
+        return;
+    }
+
+    // 创建帮助按钮
+    const helpBtn = document.createElement('button');
+    helpBtn.className = 'help-toggle-btn';
+    helpBtn.setAttribute('aria-label', '帮助信息');
+    helpBtn.innerHTML = '<img src="img/help.svg" alt="帮助" class="help-icon">';
+    
+    // 优化：直接显示按钮，避免额外的可见性延迟
+    helpBtn.style.opacity = '1';
+    helpBtn.style.visibility = 'visible';
+    
+    functionContainer.appendChild(helpBtn);
+    console.log('✅ 帮助按钮创建成功');
+
+    // 绑定点击事件（首次点击时再创建模态框并加载外部片段）_7ree
+    helpBtn.addEventListener('click', () => {
+        try {
+            if (!window.helpSystem) {
+                window.helpSystem = new HelpSystem();
+            }
+            window.helpSystem.showModal();
+        } catch (e) {
+            console.error('❌ 打开帮助失败：', e);
+        }
+    });
+}
+
 // 页面加载完成后初始化
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initHelpSystem);
@@ -89,3 +155,4 @@ window.fastInitHelpSystem = () => {
 
 // 暴露到全局，便于其他脚本调用
 window.initHelpSystem = initHelpSystem;
+window.createHelpIcon_7ree = createHelpIcon_7ree;

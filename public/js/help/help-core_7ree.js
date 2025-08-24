@@ -18,61 +18,9 @@ class HelpSystem {
     }
 
     async init() {
-        this.createHelpIcon();
+        // 按职责拆分：帮助按钮由 help-init_7ree.js 的 createHelpIcon_7ree 负责创建
         // 延迟创建模态框：首次点击时再加载
         this.bindEvents();
-    }
-
-    createHelpIcon() {
-        // 获取右侧功能按钮容器
-        const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
-        if (!header) {
-            console.warn('⚠️ 未找到header容器');
-            return;
-        }
-
-        let functionContainer = header.querySelector('.function-buttons');
-        if (!functionContainer) {
-            functionContainer = header.querySelector('#functionButtons');
-        }
-        
-        // 如果未找到容器，尝试创建一个
-        if (!functionContainer) {
-            console.log('🔧 未找到功能按钮容器，尝试创建...');
-            const headerLeft = header.querySelector('.header-left') || header.querySelector('#headerLeft');
-            if (headerLeft) {
-                functionContainer = document.createElement('div');
-                functionContainer.className = 'function-buttons';
-                functionContainer.id = 'functionButtons';
-                headerLeft.appendChild(functionContainer);
-                console.log('✅ 功能按钮容器创建成功');
-            } else {
-                console.error('❌ 无法找到合适的父容器来创建功能按钮');
-                return;
-            }
-        }
-
-        // 检查是否已存在帮助按钮
-        if (functionContainer.querySelector('.help-toggle-btn')) {
-            console.log('🔄 帮助按钮已存在，跳过创建');
-            return;
-        }
-
-        // 创建帮助按钮
-        const helpBtn = document.createElement('button');
-        helpBtn.className = 'help-toggle-btn';
-        helpBtn.setAttribute('aria-label', '帮助信息');
-        helpBtn.innerHTML = '<img src="img/help.svg" alt="帮助" class="help-icon">';
-        
-        // 优化：直接显示按钮，避免额外的可见性延迟
-        helpBtn.style.opacity = '1';
-        helpBtn.style.visibility = 'visible';
-        
-        functionContainer.appendChild(helpBtn);
-        console.log('✅ 帮助按钮创建成功');
-
-        // 绑定点击事件（首次点击时再创建模态框并加载外部片段）_7ree
-        helpBtn.addEventListener('click', () => this.showModal());
     }
 
     // 新增：先创建模态框骨架，立即给用户反馈_7ree
