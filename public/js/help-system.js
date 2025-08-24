@@ -7,9 +7,9 @@ class HelpSystem {
         this.init();
     }
 
-    init() {
+    async init() {
         this.createHelpIcon();
-        this.createModal();
+        await this.createModal();
         this.bindEvents();
     }
 
@@ -42,7 +42,7 @@ class HelpSystem {
         helpBtn.addEventListener('click', () => this.showModal());
     }
 
-    createModal() {
+    async createModal() {
         // 检查是否已存在模态框
         if (document.querySelector('.help-modal-overlay')) return;
 
@@ -53,6 +53,21 @@ class HelpSystem {
         // 创建模态框内容
         this.modal = document.createElement('div');
         this.modal.className = 'help-modal';
+        
+        // 加载帮助内容
+        let helpBodyContent = '';
+        try {
+            const response = await fetch('components/help-body_7ree.html');
+            if (response.ok) {
+                helpBodyContent = await response.text();
+            } else {
+                console.warn('无法加载帮助内容组件，使用默认内容');
+                helpBodyContent = this.getDefaultHelpContent();
+            }
+        } catch (error) {
+            console.warn('加载帮助内容失败：', error);
+            helpBodyContent = this.getDefaultHelpContent();
+        }
         
         this.modal.innerHTML = `
             <div class="help-modal-header">
@@ -65,93 +80,7 @@ class HelpSystem {
                 </button>
             </div>
             <div class="help-modal-content">
-                <div class="help-section">
-                    <h4 class="help-section-title">
-                        <img src="img/microphone.svg" alt="" class="help-section-icon">
-                        语音功能
-                    </h4>
-                    <p class="help-section-content">通过语音指令记录和查找物品存放位置</p>
-                    <ul class="help-feature-list">
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">🗣️</span>
-                            <span>按住麦克风按钮录音，松开即可发送</span>
-                        </li>
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">📍</span>
-                            <span>说"把XX放在XX位置"来记录物品</span>
-                        </li>
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">🔍</span>
-                            <span>说"XX在哪里"来查找物品位置</span>
-                        </li>
-                    </ul>
-                    <div class="help-example">
-                        <div class="help-example-title">示例：</div>
-                        <p class="help-example-text">"把钥匙放在玄关桌子上"</p>
-                        <p class="help-example-text">"钥匙在哪里？"</p>
-                    </div>
-                </div>
-
-                <div class="help-section">
-                    <h4 class="help-section-title">
-                        <img src="img/history.svg" alt="" class="help-section-icon">
-                        历史记录
-                    </h4>
-                    <p class="help-section-content">查看和管理之前的语音记录</p>
-                    <ul class="help-feature-list">
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">📋</span>
-                            <span>点击底部"记录"查看历史对话</span>
-                        </li>
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">🔍</span>
-                            <span>使用搜索功能快速查找记录</span>
-                        </li>
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">🗑️</span>
-                            <span>左滑记录可以删除不需要的内容</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="help-section">
-                    <h4 class="help-section-title">
-                        <img src="img/sound.svg" alt="" class="help-section-icon">
-                        语音反馈
-                    </h4>
-                    <p class="help-section-content">AI助手会用语音回复您的问题</p>
-                    <ul class="help-feature-list">
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">🔊</span>
-                            <span>点击AI回复的气泡可以重新播放语音</span>
-                        </li>
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">⚙️</span>
-                            <span>可在设置中调整语音角色和语速</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="help-section">
-                    <h4 class="help-section-title">
-                        <img src="img/check.svg" alt="" class="help-section-icon">
-                        使用技巧
-                    </h4>
-                    <ul class="help-feature-list">
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">💡</span>
-                            <span>描述物品位置时尽量具体详细</span>
-                        </li>
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">🎯</span>
-                            <span>可以说"刚才的钥匙移动到沙发下面"</span>
-                        </li>
-                        <li class="help-feature-item">
-                            <span class="help-feature-icon">🔄</span>
-                            <span>如果识别有误，可以重新录音</span>
-                        </li>
-                    </ul>
-                </div>
+                ${helpBodyContent}
             </div>
             <div class="help-modal-footer">
                 <button class="help-footer-btn" id="helpCloseBtn">谢谢，我知道了</button>
@@ -226,6 +155,47 @@ class HelpSystem {
         if (helpBtn) {
             helpBtn.remove();
         }
+    }
+
+    // 获取默认帮助内容（fallback）
+    getDefaultHelpContent() {
+        return `
+            <div class="help-section">
+                <h4 class="help-section-title">
+                    <img src="img/microphone.svg" alt="" class="help-section-icon">
+                    语音功能
+                </h4>
+                <p class="help-section-content">通过语音指令记录和查找物品存放位置</p>
+                <ul class="help-feature-list">
+                    <li class="help-feature-item">
+                        <span class="help-feature-icon">🗣️</span>
+                        <span>按住麦克风按钮录音，松开即可发送</span>
+                    </li>
+                    <li class="help-feature-item">
+                        <span class="help-feature-icon">📍</span>
+                        <span>说"把XX放在XX位置"来记录物品</span>
+                    </li>
+                    <li class="help-feature-item">
+                        <span class="help-feature-icon">🔍</span>
+                        <span>说"XX在哪里"来查找物品位置</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h4 class="help-section-title">
+                    <img src="img/history.svg" alt="" class="help-section-icon">
+                    历史记录
+                </h4>
+                <p class="help-section-content">查看和管理之前的语音记录</p>
+            </div>
+            <div class="help-section">
+                <h4 class="help-section-title">
+                    <img src="img/sound.svg" alt="" class="help-section-icon">
+                    语音反馈
+                </h4>
+                <p class="help-section-content">AI助手会用语音回复您的问题</p>
+            </div>
+        `;
     }
 }
 
