@@ -10,7 +10,9 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AnimationUtils
 import android.webkit.*
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +34,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var debugHelper: DebugHelper
     private lateinit var shortcutHelper: ShortcutHelper
     var isFromDebugMode = false
+    
+    // Loading screen views
+    private lateinit var loadingScreen: View
+    private lateinit var appLogo: ImageView
+    var isFirstLoad = true  // 标记是否为首次加载
     
     private fun setupFullScreen() {
         // 隐藏标题栏
@@ -84,6 +91,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         webView = findViewById(R.id.webview)
+        loadingScreen = findViewById(R.id.loading_screen)
+        appLogo = findViewById(R.id.app_logo)
+        
+        // 启动logo旋转动画
+        startLogoAnimation()
 
         // 设置返回键处理
         setupBackPressedHandler()
@@ -112,12 +124,41 @@ class MainActivity : AppCompatActivity() {
     fun forceRefresh() {
         webViewSetupHelper.forceRefresh(webView)
     }
+    
+    private fun startLogoAnimation() {
+        val pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
+        appLogo.startAnimation(pulseAnimation)
+    }
+    
+    private fun stopLogoAnimation() {
+        appLogo.clearAnimation()
+    }
+    
+    fun setFirstLoadComplete() {
+        isFirstLoad = false
+    }
+    
+    fun showLoadingScreen() {
+        runOnUiThread {
+            loadingScreen.visibility = View.VISIBLE
+            startLogoAnimation()
+        }
+    }
+    
+    fun hideLoadingScreen() {
+        runOnUiThread {
+            stopLogoAnimation()
+            loadingScreen.visibility = View.GONE
+        }
+    }
 
     override fun onResume() {
         super.onResume()
         // 仅在配置要求强制刷新的情况下清理缓存，避免每次恢复都导致首屏慢
         if (config.forceRefresh_7ree) {
             webView.clearCache(true)
+            // 如果强制刷新，重置为首次加载状态
+            isFirstLoad = true
         }
 
         // 检查是否从设置页面返回并获得了悬浮窗权限

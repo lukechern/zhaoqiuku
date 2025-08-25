@@ -59,14 +59,33 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
                 return false
             }
             
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                Log.d("WebViewSetupHelper", "页面开始加载: $url")
+                // 只在首次加载时显示loading screen
+                if (activity.isFirstLoad) {
+                    activity.showLoadingScreen()
+                }
+            }
+            
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 Log.d("WebViewSetupHelper", "页面加载完成: $url")
+                // 只在首次加载时隐藏loading screen，并标记首次加载完成
+                if (activity.isFirstLoad) {
+                    activity.hideLoadingScreen()
+                    activity.setFirstLoadComplete()
+                }
             }
             
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                 super.onReceivedError(view, request, error)
                 Log.e("WebViewSetupHelper", "WebView错误: ${error?.description}")
+                // 出错时也隐藏loading screen（如果是首次加载）
+                if (activity.isFirstLoad) {
+                    activity.hideLoadingScreen()
+                    activity.setFirstLoadComplete()
+                }
             }
         }
         
@@ -196,6 +215,9 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
     }
     
     fun forceRefresh(webView: WebView) {
+        // 强制刷新时重置为首次加载状态，显示loading screen
+        activity.isFirstLoad = true
+        activity.showLoadingScreen()
         webView.clearCache(true)
         webView.clearHistory()
         webView.reload()
