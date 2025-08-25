@@ -33,7 +33,7 @@
             android:text="寻物AI助手，正在唤醒中..."
             android:textColor="#333333"
             android:textSize="16sp"
-            android:fontFamily="sans-serif-medium" />
+            android:textStyle="bold" />
 
     </LinearLayout>
 

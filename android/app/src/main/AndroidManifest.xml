@@ -36,6 +36,14 @@
         android:theme="@style/Theme.Zhaoqiuku"
         android:usesCleartextTraffic="true">
         
+        <!-- 禁用Google字体提供者，避免字体加载阻塞 -->
+        <meta-data
+            android:name="fontProviderAuthority"
+            android:value="" />
+        <meta-data
+            android:name="fontProviderPackage"
+            android:value="" />
+        
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -37,6 +37,14 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
             // 缓存设置 - 根据配置控制
             cacheMode = if (config.disableCache_7ree) WebSettings.LOAD_NO_CACHE else WebSettings.LOAD_DEFAULT
             
+            // 禁用网络字体加载，强制使用本地字体
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                // 设置默认字体大小，避免字体相关的网络请求
+                defaultFontSize = 16
+                defaultFixedFontSize = 13
+                minimumFontSize = 8
+            }
+            
             // 用户代理 - 使用配置文件
             userAgentString = "$userAgentString ${config.userAgent}"
         }
@@ -51,12 +59,41 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
         // 清除存储
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             webView.clearMatches()
-        }        
+        }
+        
+        // 启用硬件加速，提升字体渲染性能
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            webView.setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
+        }
 
         // WebViewClient
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 return false
+            }
+            
+            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+                val url = request?.url?.toString()
+                
+                // 拦截所有字体相关请求，避免阻塞
+                if (url != null && (url.contains("fonts.googleapis.com") || 
+                                   url.contains("fonts.gstatic.com") ||
+                                   url.contains("gms/fonts") ||
+                                   url.contains("google.com/fonts") ||
+                                   url.contains("googlefonts") ||
+                                   url.contains(".woff") ||
+                                   url.contains(".woff2") ||
+                                   url.contains(".ttf") ||
+                                   url.contains(".otf") ||
+                                   url.contains("font-face") ||
+                                   url.contains("webfont"))) {
+                    Log.d("WebViewSetupHelper", "拦截字体请求: $url")
+                    // 返回空的CSS响应，避免网络请求阻塞
+                    return WebResourceResponse("text/css", "utf-8", 
+                        java.io.ByteArrayInputStream("/* font blocked */".toByteArray()))
+                }
+                
+                return super.shouldInterceptRequest(view, request)
             }
             
             override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
@@ -71,6 +108,30 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 Log.d("WebViewSetupHelper", "页面加载完成: $url, isFirstLoad: ${activity.isFirstLoad}")
+                
+                // 注入CSS强制使用系统字体，避免Google字体加载
+                val fontOverrideCSS = """
+                    javascript:(function(){
+                        var style = document.createElement('style');
+                        style.innerHTML = '* { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }';
+                        document.head.appendChild(style);
+                        
+                        // 移除所有Google字体相关的link标签
+                        var links = document.querySelectorAll('link[href*="fonts.googleapis.com"], link[href*="fonts.gstatic.com"]');
+                        links.forEach(function(link) { link.remove(); });
+                        
+                        // 移除所有@import字体规则
+                        var styles = document.querySelectorAll('style');
+                        styles.forEach(function(style) {
+                            if (style.innerHTML && (style.innerHTML.includes('fonts.googleapis.com') || style.innerHTML.includes('fonts.gstatic.com'))) {
+                                style.remove();
+                            }
+                        });
+                    })();
+                """.trimIndent()
+                
+                view?.evaluateJavascript(fontOverrideCSS, null)
+                
                 // 只在首次加载时隐藏loading screen，并标记首次加载完成
                 if (activity.isFirstLoad) {
                     activity.hideLoadingScreen()
