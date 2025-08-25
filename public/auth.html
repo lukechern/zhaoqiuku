@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=contain">
     <title>用户认证 - AI语音寻物助手</title>
-    
 
-    
+
+
     <!-- 防缓存设置 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    
+
     <script>
         // 动态添加版本号防止CSS缓存
         const timestamp = Date.now();
@@ -29,7 +29,7 @@
             'css/navigation.css',
             'css/register.css'
         ];
-        
+
         cssFiles.forEach(file => {
             document.write('<link rel="stylesheet" href="' + file + '?v=' + timestamp + '">');
         });
@@ -42,7 +42,7 @@
             <header class="header">
                 <div class="header-top">
                     <div class="app-title">找秋裤 - AI语音寻物助手</div>
-                </div>                
+                </div>
             </header>
 
             <main class="register-content">
@@ -52,103 +52,115 @@
                     <div class="progress-step_7ree" id="progressStep1_7ree">
                         <!-- 节点1 图标替换 (_7ree) -->
                         <div class="progress-node_7ree" id="progressNode1_7ree">
-                            <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg" alt="未完成" />
-                            <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg" alt="已完成" />
+                            <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg"
+                                alt="未完成" />
+                            <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg"
+                                alt="已完成" />
                         </div>
                         <span class="progress-text_7ree">1.邀请码</span>
                     </div>
                     <div class="progress-step_7ree" id="progressStep2_7ree">
                         <!-- 节点2 图标替换 (_7ree) -->
                         <div class="progress-node_7ree" id="progressNode2_7ree">
-                            <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg" alt="未完成" />
-                            <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg" alt="已完成" />
+                            <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg"
+                                alt="未完成" />
+                            <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg"
+                                alt="已完成" />
                         </div>
                         <span class="progress-text_7ree">2.邮箱验证</span>
                     </div>
                     <div class="progress-step_7ree" id="progressStep3_7ree">
                         <!-- 节点3 图标替换 (_7ree) -->
                         <div class="progress-node_7ree" id="progressNode3_7ree">
-                            <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg" alt="未完成" />
-                            <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg" alt="已完成" />
+                            <img class="progress-icon_7ree incomplete_7ree" src="img/progress-incomplete_7ree.svg"
+                                alt="未完成" />
+                            <img class="progress-icon_7ree complete_7ree hidden" src="img/progress-complete_7ree.svg"
+                                alt="已完成" />
                         </div>
                         <span class="progress-text_7ree">3.验证通过</span>
                     </div>
                 </div>
 
-            <div class="register-form hidden" id="authForm">
-                <!-- 步骤0: 输入邀请码（可配置启用） -->
-                <div class="step hidden" id="invitationStep_7ree">
-                    <div class="form-group">
-                        <label for="invitationCode_7ree">邀请码</label>
-                        <input type="text" id="invitationCode_7ree" placeholder="请输入邀请码" maxlength="32" autocomplete="one-time-code">
-                        <div class="error-message" id="invitationError_7ree"></div>
-                        <div class="help-text">
-                            请先输入邀请码，再进行邮箱验证
+                <div class="register-form hidden" id="authForm">
+                    <!-- 步骤0: 输入邀请码（可配置启用） -->
+                    <div class="step hidden" id="invitationStep_7ree">
+                        <div class="form-group">
+                            <label for="invitationCode_7ree">邀请码</label>
+                            <input type="text" id="invitationCode_7ree" placeholder="请输入邀请码" maxlength="32"
+                                autocomplete="one-time-code">
+                            <div class="error-message" id="invitationError_7ree"></div>
+                            <div class="help-text">
+                                请先输入邀请码，再进行邮箱验证
+                            </div>
+                        </div>
+                        <button class="register-btn" id="validateInvitationBtn_7ree">下一步</button>
+                    </div>
+
+                    <!-- 步骤1: 输入邮箱 -->
+                    <div class="step hidden" id="emailStep">
+                        <div class="form-group">
+                            <label for="email">电子邮箱地址</label>
+                            <div class="email-input-container">
+                                <input type="email" id="email" placeholder="请输入您的电子邮箱地址" required>
+                                <button type="button" class="email-clear-btn hidden" id="emailClearBtn" title="清空邮箱">
+                                    <img src="img/clear-icon.svg" alt="清空" width="16" height="16">
+                                </button>
+                            </div>
+                            <div class="error-message" id="emailError"></div>
+                            <div class="help-text">
+                                我们将向您的电子邮箱发送验证码进行身份验证
+                            </div>
+                        </div>
+                        <button class="register-btn" id="sendCodeBtn">获取验证码</button>
+                    </div>
+
+                    <!-- 步骤2: 输入验证码 -->
+                    <div class="step hidden" id="verifyStep">
+                        <div class="form-group">
+                            <label for="verifyCode">验证码</label>
+                            <div class="verify-code-container_7ree">
+                                <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="0">
+                                <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="1">
+                                <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="2">
+                                <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="3">
+                                <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="4">
+                                <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="5">
+                            </div>
+                            <!-- 隐藏的原始输入框，用于保持兼容性 -->
+                            <input type="hidden" id="verifyCode">
+                            <div class="error-message" id="verifyError"></div>
+                            <div class="help-text">
+                                验证码已发送至 <span id="emailDisplay"></span>
+                                <br>
+                                <span id="userTypeHint"></span>
+                            </div>
+                        </div>
+                        <div class="verify-actions">
+                            <button class="register-btn secondary" id="resendBtn" disabled>
+                                <span id="resendText">重新发送</span>
+                                <span id="countdown" class="hidden">(60s)</span>
+                            </button>
+                            <button class="register-btn" id="verifyBtn">验证并登录</button>
                         </div>
                     </div>
-                    <button class="register-btn" id="validateInvitationBtn_7ree">下一步</button>
-                </div>
 
-                <!-- 步骤1: 输入邮箱 -->
-                <div class="step hidden" id="emailStep">
-                    <div class="form-group">
-                        <label for="email">电子邮箱地址</label>
-                        <input type="email" id="email" placeholder="请输入您的电子邮箱地址" required>
-                        <div class="error-message" id="emailError"></div>
-                        <div class="help-text">
-                            我们将向您的电子邮箱发送验证码进行身份验证
+                    <!-- 步骤3: 认证成功 -->
+                    <div class="step hidden" id="successStep">
+                        <div class="success-message">
+                            <img src="img/success.svg" alt="成功图标" class="success-icon">
+                            <h2 id="successTitle">认证成功！</h2>
+                            <p id="successMessage">欢迎使用AI语音寻物助手</p>
                         </div>
-                    </div>
-                    <button class="register-btn" id="sendCodeBtn">获取验证码</button>
-                </div>
-
-                <!-- 步骤2: 输入验证码 -->
-                <div class="step hidden" id="verifyStep">
-                    <div class="form-group">
-                        <label for="verifyCode">验证码</label>
-                        <div class="verify-code-container_7ree">
-                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="0">
-                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="1">
-                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="2">
-                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="3">
-                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="4">
-                            <input type="text" class="verify-code-input_7ree" maxlength="1" data-index="5">
-                        </div>
-                        <!-- 隐藏的原始输入框，用于保持兼容性 -->
-                        <input type="hidden" id="verifyCode">
-                        <div class="error-message" id="verifyError"></div>
-                        <div class="help-text">
-                            验证码已发送至 <span id="emailDisplay"></span>
-                            <br>
-                            <span id="userTypeHint"></span>
-                        </div>
-                    </div>
-                    <div class="verify-actions">
-                        <button class="register-btn secondary" id="resendBtn" disabled>
-                            <span id="resendText">重新发送</span>
-                            <span id="countdown" class="hidden">(60s)</span>
-                        </button>
-                        <button class="register-btn" id="verifyBtn">验证并登录</button>
+                        <button class="register-btn" id="goToAppBtn">开始使用</button>
                     </div>
                 </div>
 
-                <!-- 步骤3: 认证成功 -->
-                <div class="step hidden" id="successStep">
-                    <div class="success-message">
-                        <img src="img/success.svg" alt="成功图标" class="success-icon">
-                        <h2 id="successTitle">认证成功！</h2>
-                        <p id="successMessage">欢迎使用AI语音寻物助手</p>
-                    </div>
-                    <button class="register-btn" id="goToAppBtn">开始使用</button>
+                <!-- 加载状态 -->
+                <div class="loading hidden" id="loading">
+                    <div class="spinner"></div>
+                    <p id="loadingText">正在处理...</p>
                 </div>
-            </div>
-
-            <!-- 加载状态 -->
-            <div class="loading hidden" id="loading">
-                <div class="spinner"></div>
-                <p id="loadingText">正在处理...</p>
-            </div>
-        </main>
+            </main>
 
             <footer class="register-footer">
                 <p id="serverTime_7ree" class="server-time_7ree">2025-08-20 18:06:55</p>
@@ -160,7 +172,7 @@
     <!-- 预加载底部导航 -->
     <script>
         // 预加载底部导航组件
-        (function() {
+        (function () {
             const preloadNav = async () => {
                 try {
                     const response = await fetch('components/bottom-nav.html');
@@ -207,7 +219,7 @@
             script.onload = function () {
                 console.log('Loaded script:', src);
                 loadedScripts++;
-                
+
                 // 当所有脚本加载完成后，初始化UnifiedAuthManager
                 if (loadedScripts === totalScripts) {
                     console.log('All scripts loaded, initializing UnifiedAuthManager...');

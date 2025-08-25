@@ -48,6 +48,7 @@ class UIController_7ree {
         
         // 表单元素
         this.emailInput = document.getElementById('email');
+        this.emailClearBtn = document.getElementById('emailClearBtn');
         this.emailDisplay = document.getElementById('emailDisplay');
         this.userTypeHint = document.getElementById('userTypeHint');
         this.emailError = document.getElementById('emailError');
@@ -66,6 +67,9 @@ class UIController_7ree {
         // 启动服务器时间更新（_7ree）
         this.startServerTimeUpdate_7ree();
         
+        // 初始化邮箱自动填充
+        this.initializeEmailAutofill();
+        
         // 初始化时刷新进度（_7ree）
         this.authManager.progressManager_7ree.updateProgressBar_7ree(this.currentStep);
     }
@@ -79,10 +83,16 @@ class UIController_7ree {
         this.goToAppBtn.addEventListener('click', () => this.authManager.goToApp());
 
         // 输入框事件
-        this.emailInput.addEventListener('input', () => this.clearEmailError());
+        this.emailInput.addEventListener('input', () => {
+            this.clearEmailError();
+            this.updateEmailClearButton();
+        });
         this.emailInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.authManager.sendVerificationCode();
         });
+        
+        // 清空按钮事件
+        this.emailClearBtn.addEventListener('click', () => this.clearEmailInput());
     }
 
     // 显示加载状态
@@ -238,6 +248,43 @@ class UIController_7ree {
     // 聚焦验证码输入框
     focusVerifyCodeInput() {
         this.authManager.verificationManager_7ree.verifyCodeInput.focus();
+    }
+
+    // 初始化邮箱自动填充
+    initializeEmailAutofill() {
+        const savedEmail = localStorage.getItem('userEmail');
+        if (savedEmail && this.emailInput) {
+            this.emailInput.value = savedEmail;
+            this.updateEmailClearButton();
+        }
+    }
+
+    // 保存邮箱到本地存储
+    saveEmailToStorage(email) {
+        if (email && email.trim()) {
+            localStorage.setItem('userEmail', email.trim());
+        }
+    }
+
+    // 清空邮箱输入框
+    clearEmailInput() {
+        if (this.emailInput) {
+            this.emailInput.value = '';
+            this.emailInput.focus();
+            this.updateEmailClearButton();
+            this.clearEmailError();
+        }
+    }
+
+    // 更新清空按钮显示状态
+    updateEmailClearButton() {
+        if (this.emailClearBtn && this.emailInput) {
+            if (this.emailInput.value.trim()) {
+                this.emailClearBtn.classList.remove('hidden');
+            } else {
+                this.emailClearBtn.classList.add('hidden');
+            }
+        }
     }
 }
 

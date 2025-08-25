@@ -139,3 +139,51 @@
     padding: 0.5rem 0.5rem;
     text-align: right;
 }
+
+/* 邮箱输入框容器样式 */
+.email-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.email-input-container input[type="email"] {
+    width: 100%;
+    padding-right: 2.5rem; /* 为清空按钮留出空间 */
+}
+
+.email-clear-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.email-clear-btn:hover {
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.email-clear-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.email-clear-btn.hidden {
+    display: none;
+}
+
+.email-clear-btn svg {
+    width: 16px;
+    height: 16px;
+}

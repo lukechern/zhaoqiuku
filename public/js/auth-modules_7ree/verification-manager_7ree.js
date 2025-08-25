@@ -135,6 +135,9 @@ class VerificationManager_7ree {
                     console.log('认证成功，已自动登录');
                 }
                 
+                // 保存邮箱地址到本地存储
+                this.authManager.uiController_7ree.saveEmailToStorage(this.authManager.email);
+                
                 // 使用 UI 控制器设置成功页面信息（_7ree）
                 this.authManager.uiController_7ree.setSuccessInfo(result.userType, result.user, this.authManager.returnUrl);
                 
