@@ -5,7 +5,7 @@
 # 找秋裤 - AI语音寻物助手
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="Version 2.0.0"/>
+  <img src="https://img.shields.io/badge/version-2.1.0-blue.svg" alt="Version 2.1.0"/>
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"/>
   <img src="https://img.shields.io/badge/platform-Android%20%7C%20Web-orange.svg" alt="Platform"/>
   <img src="https://img.shields.io/badge/Node.js-18+-green.svg" alt="Node.js"/>
@@ -181,7 +181,7 @@ zhaoqiuku-v2/
 ### 🔧 API配置
 修改 `config/apiConfig.js` 顶部的配置：
 
-```javascript
+```
 // API端点配置
 export const API_ENDPOINTS = {
     GEMINI: {
@@ -195,7 +195,7 @@ export const API_ENDPOINTS = {
 ### 📧 邮件配置
 修改 `config/emailConfig.js` 中的邮件设置：
 
-```javascript
+```
 // 发件人配置
 export const EMAIL_SENDER = {
     FROM: 'noreply@yourdomain.com',  // 修改为你的域名
@@ -215,7 +215,7 @@ export const EMAIL_TEMPLATES = {
 ### 🐛 调试级别配置
 修改 `config/debugConfig.js` 和 `public/js/debug-config.js` 顶部：
 
-```javascript
+```
 // 可选值: 'normal', 'debug', 'full_debug'
 const CURRENT_DEBUG_LEVEL = 'full_debug';
 ```
@@ -223,7 +223,7 @@ const CURRENT_DEBUG_LEVEL = 'full_debug';
 ### � TTS配置i
 修改 `config/ttsConfig.js` 中的TTS设置：
 
-```javascript
+```
 const ttsConfig = {
     // 功能开关
     enabled: true,
@@ -258,7 +258,7 @@ const ttsConfig = {
 ### 📱 Android WebView配置
 修改 `android/app/src/main/assets/webViewConfig.json`：
 
-```json
+```
 {
     "webViewUrl": "https://zhaoqiuku.com/",
     "userAgent": "ZhaoQiuKu/1.0",
@@ -313,7 +313,7 @@ const ttsConfig = {
 #### 2. 创建数据表
 在 Supabase 控制台的 SQL Editor 中执行以下 SQL：
 
-```sql
+```
 -- 创建用户表
 CREATE TABLE IF NOT EXISTS users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -429,7 +429,7 @@ CREATE TRIGGER update_items_updated_at
 ## 开发调试
 
 ### 浏览器控制台命令
-```javascript
+```
 // 切换调试级别
 setDebugLevel("normal")      // 正常模式
 setDebugLevel("debug")       // 调试模式  
