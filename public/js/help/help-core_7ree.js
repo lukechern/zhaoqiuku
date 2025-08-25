@@ -14,6 +14,12 @@ class HelpSystem {
         this.warmSectionHTML_7ree = null;
         // 新增：避免重复绑定全局事件_7ree
         this.globalEventsBound_7ree = false;
+        // 新增：首次登录自动弹出相关配置
+        this.autoShowConfig = {
+            storageKey: 'zhaoqiuku_help_shown',
+            validityPeriod: 3 * 30 * 24 * 60 * 60 * 1000, // 3个月（毫秒）
+            hasShownForCurrentLogin: false
+        };
         this.init();
     }
 
@@ -21,6 +27,14 @@ class HelpSystem {
         // 按职责拆分：帮助按钮由 help-init_7ree.js 的 createHelpIcon_7ree 负责创建
         // 延迟创建模态框：首次点击时再加载
         this.bindEvents();
+        
+        // 检查当前是否已经登录，如果是则检查是否需要自动弹出
+        setTimeout(() => {
+            if (window.authManager && window.authManager.isAuthenticated && !this.autoShowConfig.hasShownForCurrentLogin) {
+                console.log('初始化时检测到已登录状态，检查是否需要自动弹出帮助');
+                this.checkAndShowFirstTimeHelp();
+            }
+        }, 2000); // 延迟2秒确保所有组件都已加载
     }
 
     // 新增：先创建模态框骨架，立即给用户反馈_7ree
@@ -104,7 +118,7 @@ class HelpSystem {
                         ${helpBodyContent}
                     </div>
                     <div class="help-modal-footer">
-                        <button class="help-footer-btn" id="helpCloseBtn">谢谢，我知道了</button>
+                        <button class="help-footer-btn" id="helpCloseBtn">我知道了</button>
                     </div>
                 `;
 
@@ -140,17 +154,32 @@ class HelpSystem {
         // 点击遮罩层关闭（仅在 overlay 存在时绑定）
         this.overlay?.addEventListener('click', (e) => {
             if (e.target === this.overlay) {
+                // 如果是自动弹出的帮助，记录用户已查看
+                if (this.isAutoShown) {
+                    this.markHelpAsShown();
+                    this.isAutoShown = false;
+                }
                 this.hideModal();
             }
         });
 
         // 关闭按钮（随着内容替换需要重复绑定）
         this.modal?.querySelector('.help-modal-close')?.addEventListener('click', () => {
+            // 如果是自动弹出的帮助，记录用户已查看
+            if (this.isAutoShown) {
+                this.markHelpAsShown();
+                this.isAutoShown = false;
+            }
             this.hideModal();
         });
 
         // Footer关闭按钮（随着内容替换需要重复绑定）
         this.modal?.querySelector('#helpCloseBtn')?.addEventListener('click', () => {
+            // 如果是自动弹出的帮助，记录用户已查看
+            if (this.isAutoShown) {
+                this.markHelpAsShown();
+                this.isAutoShown = false;
+            }
             this.hideModal();
         });
 
@@ -158,6 +187,11 @@ class HelpSystem {
         if (!this.globalEventsBound_7ree) {
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && this.isOpen) {
+                    // 如果是自动弹出的帮助，记录用户已查看
+                    if (this.isAutoShown) {
+                        this.markHelpAsShown();
+                        this.isAutoShown = false;
+                    }
                     this.hideModal();
                 }
             });
@@ -190,6 +224,15 @@ class HelpSystem {
             console.log('用户登出，更新温馨提示内容');
             if (this.isOpen && this.modal) {
                 this.updateWarmTipsInModal();
+            }
+        });
+
+        // 新增：监听认证状态恢复事件（用于首次登录自动弹出）
+        window.addEventListener('authStateChange', (event) => {
+            const { type, isAuthenticated } = event.detail;
+            if ((type === 'login' || type === 'restore') && isAuthenticated && !this.autoShowConfig.hasShownForCurrentLogin) {
+                console.log('检测到用户登录，检查是否需要自动弹出帮助');
+                this.checkAndShowFirstTimeHelp();
             }
         });
     }
@@ -297,7 +340,86 @@ class HelpSystem {
         // 已按需求清空默认帮助内容_7ree（现在帮助内容直接读取外部片段）
         return '';
     }
+
+    // 新增：检查是否需要自动弹出首次帮助
+    checkAndShowFirstTimeHelp() {
+        try {
+            // 检查是否在有效期内已经显示过
+            const lastShownData = localStorage.getItem(this.autoShowConfig.storageKey);
+            const now = Date.now();
+            
+            if (lastShownData) {
+                const { timestamp } = JSON.parse(lastShownData);
+                const timeSinceLastShown = now - timestamp;
+                
+                // 如果在3个月有效期内，不再自动弹出
+                if (timeSinceLastShown < this.autoShowConfig.validityPeriod) {
+                    console.log('帮助卡片在有效期内已显示过，跳过自动弹出');
+                    return;
+                }
+            }
+            
+            // 延迟1秒后自动弹出，确保页面完全加载
+            setTimeout(() => {
+                console.log('首次登录，自动弹出帮助卡片');
+                this.isAutoShown = true; // 标记为自动弹出
+                this.autoShowConfig.hasShownForCurrentLogin = true;
+                this.showModal();
+            }, 1000);
+            
+        } catch (error) {
+            console.error('检查首次帮助弹出失败:', error);
+        }
+    }
+
+    // 新增：标记帮助已显示
+    markHelpAsShown() {
+        try {
+            const data = {
+                timestamp: Date.now(),
+                version: '1.0'
+            };
+            localStorage.setItem(this.autoShowConfig.storageKey, JSON.stringify(data));
+            console.log('已记录帮助卡片显示状态');
+        } catch (error) {
+            console.error('记录帮助显示状态失败:', error);
+        }
+    }
+
+    // 新增：重置帮助显示状态（用于测试或管理员功能）
+    resetHelpShowStatus() {
+        try {
+            localStorage.removeItem(this.autoShowConfig.storageKey);
+            this.autoShowConfig.hasShownForCurrentLogin = false;
+            console.log('已重置帮助显示状态');
+        } catch (error) {
+            console.error('重置帮助显示状态失败:', error);
+        }
+    }
 }
 
 // 暴露到全局，便于其他脚本调用
-try { window.HelpSystem = HelpSystem; } catch (e) { /* ignore */ }
+try { 
+    window.HelpSystem = HelpSystem; 
+    
+    // 开发者工具：重置帮助显示状态（用于测试）
+    window.resetHelpStatus = function() {
+        if (window.helpSystem) {
+            window.helpSystem.resetHelpShowStatus();
+            console.log('✅ 帮助显示状态已重置，下次登录将自动弹出帮助');
+        } else {
+            console.log('❌ 帮助系统未初始化');
+        }
+    };
+    
+    // 开发者工具：手动触发首次帮助检查
+    window.testFirstTimeHelp = function() {
+        if (window.helpSystem) {
+            window.helpSystem.autoShowConfig.hasShownForCurrentLogin = false;
+            window.helpSystem.checkAndShowFirstTimeHelp();
+            console.log('✅ 已触发首次帮助检查');
+        } else {
+            console.log('❌ 帮助系统未初始化');
+        }
+    };
+} catch (e) { /* ignore */ }
