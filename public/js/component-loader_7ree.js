@@ -137,21 +137,21 @@ async function forceLoadMissingComponents_7ree() {
         }
         return false;
     };
-    
+
     const promises = [];
-    
+
     if (!window.preloadedHeaderHtml) {
         promises.push(loadComponent('components/header-top.html', 'preloadedHeaderHtml'));
     }
-    
+
     if (!window.preloadedHistoryHtml) {
         promises.push(loadComponent('components/history-records_7ree.html', 'preloadedHistoryHtml'));
     }
-    
+
     if (!window.preloadedNavHtml) {
         promises.push(loadComponent('components/bottom-nav.html', 'preloadedNavHtml'));
     }
-    
+
     await Promise.all(promises);
 
     // 兜底：仍有缺失则注入占位符，避免WebView白屏
@@ -177,7 +177,7 @@ async function forceLoadMissingComponents_7ree() {
 async function waitForComponents_7ree() {
     let attempts = 0;
     const maxAttempts = 50;
-    
+
     while (attempts < maxAttempts) {
         if (window.preloadedHeaderHtml && window.preloadedMainHtml && window.preloadedNavHtml) {
             await loadComponents_7ree();
@@ -193,7 +193,7 @@ async function waitForComponents_7ree() {
 async function waitForHistoryComponents_7ree() {
     let attempts = 0;
     const maxAttempts = 50;
-    
+
     while (attempts < maxAttempts) {
         if (window.preloadedHeaderHtml && window.preloadedHistoryHtml && window.preloadedNavHtml) {
             await loadHistoryComponents_7ree();
@@ -202,7 +202,7 @@ async function waitForHistoryComponents_7ree() {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
     }
-    
+
     // 超时后尝试强制加载组件
     // console.warn('组件预加载超时，尝试强制加载组件...');
     console.log('预加载状态:', {
@@ -210,7 +210,7 @@ async function waitForHistoryComponents_7ree() {
         history: !!window.preloadedHistoryHtml,
         nav: !!window.preloadedNavHtml
     });
-    
+
     // 强制加载缺失的组件（包含占位符兜底）
     await forceLoadMissingComponents_7ree();
     await loadHistoryComponents_7ree();
@@ -226,13 +226,13 @@ function ensureLogoutButtonHandler() {
             // 移除所有已有的事件监听器
             const newLogoutBtn = logoutBtn.cloneNode(true);
             logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
-            
+
             // 添加新的事件监听器
             newLogoutBtn.addEventListener('click', async (e) => {
                 // console.log('登出按钮被点击(ensureLogoutButtonHandler)');
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 // 调用UserStateManager中的登出处理函数
                 if (window.userStateManager) {
                     await window.userStateManager.handleLogout();
@@ -241,22 +241,22 @@ function ensureLogoutButtonHandler() {
                     try {
                         const userEmail = window.authManager?.user?.email || '当前用户';
                         const confirmMessage = `确定要退出登录吗？\n\n当前登录用户：${userEmail}`;
-                        
+
                         const confirmed = await customConfirm_7ree(confirmMessage, {
                             title: '退出登录',
                             confirmText: '退出',
                             cancelText: '取消',
                             danger: true
                         });
-                        
+
                         if (confirmed) {
                             const success = await window.authManager.logout();
                             if (success) {
-                                alert('已成功退出登录');
+                                // alert('已成功退出登录');
                                 // 刷新页面以更新状态
                                 location.reload();
                             } else {
-                                alert('退出登录失败，请重试');
+                                // alert('退出登录失败，请重试');
                             }
                         }
                     } catch (error) {
@@ -353,19 +353,19 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
                 script.type = 'module';
             }
             script.async = false; // 确保按顺序加载
-            
+
             script.onerror = function () {
                 console.error('Failed to load script:', src);
                 hasError = true;
                 reject(new Error(`Failed to load script: ${src}`));
             };
-            
+
             script.onload = function () {
                 console.log('Loaded script:', src);
                 loadedCount++;
                 resolve();
             };
-            
+
             document.head.appendChild(script);
         });
     });
@@ -374,10 +374,10 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
         // 等待所有脚本加载完成
         await Promise.all(scriptPromises);
         console.log(`所有历史页面脚本加载完成 (${loadedCount}/${scripts.length})`);
-        
+
         // 再次确保登出按钮事件监听器正确绑定
         ensureLogoutButtonHandler();
-        
+
         // 确保HistoryManager正确初始化
         setTimeout(() => {
             if (!window.historyManager) {
@@ -389,7 +389,7 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
                     window.historyManager = new window.HistoryManager();
                 }
             }
-            
+
             // 如果是页面刷新，延迟恢复状态
             if (isPageRefresh) {
                 console.log('页面刷新后恢复用户状态...');
@@ -398,7 +398,7 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
                 }
             }
         }, 100);
-        
+
     } catch (error) {
         console.error('脚本加载失败:', error);
         // 即使有脚本加载失败，也尝试初始化已加载的功能
@@ -420,11 +420,11 @@ async function loadHistoryScripts_7ree(scripts, isPageRefresh = false) {
 function initComponentLoader_7ree(scripts) {
     // 检测是否为页面刷新
     const isPageRefresh = performance.navigation && performance.navigation.type === 1;
-    
+
     // DOM加载完成后开始加载流程
     if (document.readyState === 'loading') {
         // DOM还在加载中，等待DOMContentLoaded事件
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadScripts_7ree(scripts, isPageRefresh);
         });
     } else {
@@ -437,11 +437,11 @@ function initComponentLoader_7ree(scripts) {
 function initHistoryComponentLoader_7ree(scripts) {
     // 检测是否为页面刷新
     const isPageRefresh = performance.navigation && performance.navigation.type === 1;
-    
+
     // DOM加载完成后开始加载流程
     if (document.readyState === 'loading') {
         // DOM还在加载中，等待DOMContentLoaded事件
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadHistoryScripts_7ree(scripts, isPageRefresh);
         });
     } else {

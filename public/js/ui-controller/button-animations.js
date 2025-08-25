@@ -3,7 +3,7 @@
  * 为按钮添加生动的0.3s反馈动画效果
  */
 
-export class ButtonAnimations {
+class ButtonAnimations {
     /**
      * 为按钮触发点击反馈动画
      * @param {HTMLElement} button - 按钮元素

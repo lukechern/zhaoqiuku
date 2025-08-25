@@ -275,7 +275,7 @@ export class UserStateManager {
                 if (this.app.uiController && this.app.uiController.showMessage) {
                     this.app.uiController.showMessage('已成功退出登录', 'success');
                 } else {
-                    alert('已成功退出登录');
+                    // alert('已成功退出登录');
                 }
 
                 // 强制更新用户显示状态
