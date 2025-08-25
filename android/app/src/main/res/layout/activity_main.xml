@@ -17,7 +17,7 @@
         android:background="#FFFFFF"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/app_logo"

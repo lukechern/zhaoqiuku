@@ -34,45 +34,40 @@ function initHelpSystem() {
     setupDOMObserver();
 }
 
-// 新增：DOM监听器作为备用策略
+// 优化：使用轻量级轮询替代MutationObserver，减少性能开销
 function setupDOMObserver() {
     if (window.helpSystemDOMObserver) {
         return; // 已经设置过了
     }
     
-    const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-            if (mutation.type === 'childList') {
-                // 检查是否有新的header元素添加
-                const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
-                if (header && !window.helpSystem) {
-                    console.log('🔍 DOM监听器检测到header，初始化帮助系统');
-                    window.helpSystem = new HelpSystem();
-                    // 迁移：初始化后创建帮助按钮_7ree
-                    try { createHelpIcon_7ree(); } catch (e) { console.warn('创建帮助按钮失败：', e); }
-                    observer.disconnect();
-                    window.helpSystemDOMObserver = null;
-                    break;
-                }
-            }
+    let attempts = 0;
+    const maxAttempts = 20; // 最多尝试20次
+    
+    const checkForHeader = () => {
+        attempts++;
+        const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
+        
+        if (header && !window.helpSystem) {
+            console.log('🔍 轮询检测到header，初始化帮助系统');
+            window.helpSystem = new HelpSystem();
+            // 迁移：初始化后创建帮助按钮_7ree
+            try { createHelpIcon_7ree(); } catch (e) { console.warn('创建帮助按钮失败：', e); }
+            window.helpSystemDOMObserver = null;
+            return;
         }
-    });
-    
-    // 监听整个文档的子节点变化
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-    
-    window.helpSystemDOMObserver = observer;
-    
-    // 10秒后自动断开监听器防止内存泄漏
-    setTimeout(() => {
-        if (window.helpSystemDOMObserver) {
-            window.helpSystemDOMObserver.disconnect();
+        
+        if (attempts < maxAttempts) {
+            // 使用递增延迟，减少CPU占用
+            const delay = Math.min(100 + attempts * 50, 500);
+            setTimeout(checkForHeader, delay);
+        } else {
+            console.warn('⚠️ 帮助系统初始化超时，header未找到');
             window.helpSystemDOMObserver = null;
         }
-    }, 10000);
+    };
+    
+    window.helpSystemDOMObserver = true; // 标记已设置
+    checkForHeader();
 }
 
 // 新增：创建帮助按钮职责迁移至 init 模块_7ree
@@ -125,14 +120,34 @@ function createHelpIcon_7ree() {
     console.log('✅ 帮助按钮创建成功');
 
     // 绑定点击事件（首次点击时再创建模态框并加载外部片段）_7ree
-    helpBtn.addEventListener('click', () => {
+    helpBtn.addEventListener('click', async () => {
+        const startTime = performance.now();
+        console.log('🎯 帮助按钮被点击，开始处理...');
+        
         try {
             if (!window.helpSystem) {
+                console.log('🔧 创建帮助系统实例...');
+                const createStart = performance.now();
                 window.helpSystem = new HelpSystem();
+                console.log(`✅ 帮助系统创建完成，耗时: ${(performance.now() - createStart).toFixed(2)}ms`);
             }
-            window.helpSystem.showModal();
+            
+            console.log('📖 显示帮助模态框...');
+            const showStart = performance.now();
+            await window.helpSystem.showModal();
+            console.log(`✅ 帮助模态框显示完成，耗时: ${(performance.now() - showStart).toFixed(2)}ms`);
+            
+            const totalTime = performance.now() - startTime;
+            console.log(`🎉 帮助按钮处理完成，总耗时: ${totalTime.toFixed(2)}ms`);
+            
+            // 如果耗时超过1秒，记录警告
+            if (totalTime > 1000) {
+                console.warn(`⚠️ 帮助按钮响应较慢: ${totalTime.toFixed(2)}ms`);
+            }
         } catch (e) {
             console.error('❌ 打开帮助失败：', e);
+            const errorTime = performance.now() - startTime;
+            console.error(`❌ 错误发生时间: ${errorTime.toFixed(2)}ms`);
         }
     });
 }

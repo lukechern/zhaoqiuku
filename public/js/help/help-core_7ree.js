@@ -62,18 +62,34 @@ class HelpSystem {
         if (this.modalLoaded_7ree) return; // 已加载过则不必重复
         if (this.modalLoadingPromise_7ree) return this.modalLoadingPromise_7ree; // 防抖
 
+        // 性能监控
+        const startTime = performance.now();
+        console.log('🚀 开始加载帮助内容...');
+
         this.modalLoadingPromise_7ree = (async () => {
             let helpBodyContent = '';
             try {
                 // 优先使用并发预取的内容_7ree
                 if (window.preloadedHelpBodyHtml_7ree) {
+                    console.log('✅ 使用预加载的帮助内容');
                     helpBodyContent = window.preloadedHelpBodyHtml_7ree;
                 } else {
-                    const response = await fetch('components/help-body_7ree.html');
+                    console.log('⚠️ 预加载内容不可用，尝试直接获取');
+                    // 添加超时控制，避免长时间等待
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
+                    
+                    const response = await fetch('components/help-body_7ree.html', {
+                        signal: controller.signal,
+                        cache: 'force-cache' // 优先使用缓存
+                    });
+                    clearTimeout(timeoutId);
+                    
                     if (response.ok) {
                         helpBodyContent = await response.text();
                         // 缓存到全局，供后续直接使用_7ree
                         window.preloadedHelpBodyHtml_7ree = helpBodyContent;
+                        console.log('✅ 直接获取帮助内容成功');
                     } else {
                         console.warn('无法加载帮助内容组件，使用默认内容');
                         helpBodyContent = this.getDefaultHelpContent();
@@ -81,6 +97,9 @@ class HelpSystem {
                 }
             } catch (error) {
                 console.warn('加载帮助内容失败：', error);
+                if (error.name === 'AbortError') {
+                    console.warn('帮助内容加载超时，使用默认内容');
+                }
                 helpBodyContent = this.getDefaultHelpContent();
             }
 
@@ -132,6 +151,10 @@ class HelpSystem {
             }
 
             this.modalLoaded_7ree = true;
+            
+            // 性能监控
+            const endTime = performance.now();
+            console.log(`✅ 帮助内容加载完成，耗时: ${(endTime - startTime).toFixed(2)}ms`);
         })();
 
         try {
@@ -238,20 +261,33 @@ class HelpSystem {
     }
 
     async showModal() {
+        const showStart = performance.now();
+        console.log('📖 showModal开始执行...');
+        
         // 首次打开：立即创建骨架并开始异步加载真实内容_7ree
         if (!this.overlay) {
+            console.log('🔧 创建模态框骨架...');
+            const skeletonStart = performance.now();
             this.createModalSkeleton_7ree();
             this.bindEvents();
+            console.log(`✅ 骨架创建完成，耗时: ${(performance.now() - skeletonStart).toFixed(2)}ms`);
+            
             // 开始异步加载，但不阻塞UI反馈
-            this.loadHelpContentAsync_7ree();
+            console.log('🚀 开始异步加载内容...');
+            this.loadHelpContentAsync_7ree().catch(e => console.error('异步加载失败:', e));
         } else if (!this.modalLoaded_7ree && !this.modalLoadingPromise_7ree) {
             // 已经有骨架但内容未加载，补充启动一次
-            this.loadHelpContentAsync_7ree();
+            console.log('🔄 补充启动内容加载...');
+            this.loadHelpContentAsync_7ree().catch(e => console.error('补充加载失败:', e));
         }
 
-        if (!this.overlay) return;
+        if (!this.overlay) {
+            console.error('❌ overlay创建失败');
+            return;
+        }
 
         // 显示模态框：立即给出视觉反馈
+        console.log('👁️ 显示模态框...');
         this.isOpen = true;
         this.overlay.classList.add('show');
 
@@ -267,7 +303,10 @@ class HelpSystem {
         // 聚焦到模态框
         setTimeout(() => {
             this.modal?.focus();
-        }, 100);
+        }, 50); // 减少延迟
+        
+        const showTime = performance.now() - showStart;
+        console.log(`✅ showModal完成，耗时: ${showTime.toFixed(2)}ms`);
     }
 
     hideModal() {
@@ -337,8 +376,42 @@ class HelpSystem {
 
     // 获取默认帮助内容（fallback）
     getDefaultHelpContent() {
-        // 已按需求清空默认帮助内容_7ree（现在帮助内容直接读取外部片段）
-        return '';
+        return `
+            <div class="help-section">
+                <h4 class="help-section-title">
+                    <span class="help-section-icon">🎤</span>
+                    语音功能
+                </h4>
+                <p class="help-section-content">通过语音指令记录和查找物品存放位置</p>
+                <ul class="help-feature-list">
+                    <li class="help-feature-item">
+                        <span class="help-feature-icon">📍</span>
+                        <span>说"把XX放在XX位置"来记录物品</span>
+                    </li>
+                    <li class="help-feature-item">
+                        <span class="help-feature-icon">🔍</span>
+                        <span>说"找一下XX在哪里"来查找物品位置</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h4 class="help-section-title">
+                    <span class="help-section-icon">📋</span>
+                    历史记录
+                </h4>
+                <p class="help-section-content">查看和管理之前的语音记录</p>
+                <ul class="help-feature-list">
+                    <li class="help-feature-item">
+                        <span class="help-feature-icon">📋</span>
+                        <span>点击底部"记录"查看历史对话</span>
+                    </li>
+                    <li class="help-feature-item">
+                        <span class="help-feature-icon">🔍</span>
+                        <span>使用顶部搜索关键词快速查找记录</span>
+                    </li>
+                </ul>
+            </div>
+        `;
     }
 
     // 新增：检查是否需要自动弹出首次帮助

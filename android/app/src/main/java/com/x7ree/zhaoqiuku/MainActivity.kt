@@ -94,8 +94,10 @@ class MainActivity : AppCompatActivity() {
         loadingScreen = findViewById(R.id.loading_screen)
         appLogo = findViewById(R.id.app_logo)
         
-        // 启动logo旋转动画
-        startLogoAnimation()
+        // 只在首次加载时显示loading screen和启动动画
+        if (isFirstLoad) {
+            showLoadingScreen()
+        }
 
         // 设置返回键处理
         setupBackPressedHandler()
@@ -125,13 +127,17 @@ class MainActivity : AppCompatActivity() {
         webViewSetupHelper.forceRefresh(webView)
     }
     
-    private fun startLogoAnimation() {
-        val pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
-        appLogo.startAnimation(pulseAnimation)
+    fun startLogoAnimation() {
+        if (::appLogo.isInitialized && appLogo.animation == null) {
+            val pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
+            appLogo.startAnimation(pulseAnimation)
+        }
     }
     
     private fun stopLogoAnimation() {
-        appLogo.clearAnimation()
+        if (::appLogo.isInitialized) {
+            appLogo.clearAnimation()
+        }
     }
     
     fun setFirstLoadComplete() {
@@ -140,15 +146,19 @@ class MainActivity : AppCompatActivity() {
     
     fun showLoadingScreen() {
         runOnUiThread {
-            loadingScreen.visibility = View.VISIBLE
-            startLogoAnimation()
+            if (isFirstLoad && loadingScreen.visibility != View.VISIBLE) {
+                loadingScreen.visibility = View.VISIBLE
+                startLogoAnimation()
+            }
         }
     }
     
     fun hideLoadingScreen() {
         runOnUiThread {
-            stopLogoAnimation()
-            loadingScreen.visibility = View.GONE
+            if (loadingScreen.visibility == View.VISIBLE) {
+                stopLogoAnimation()
+                loadingScreen.visibility = View.GONE
+            }
         }
     }
 
@@ -181,6 +191,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        // 清理动画和loading screen
+        stopLogoAnimation()
         webView.destroy()
         // 隐藏调试悬浮球
         debugModeManager.hideDebugFloatingBall()

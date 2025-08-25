@@ -123,9 +123,9 @@
             'js/webview-performance-optimizer.js', // WebView性能优化模块（最高优先级）
             'js/webview-compat_7ree.js', // 优先加载WebView兼容性模块
             'js/confirm-dialog_7ree.js', // 优先加载确认对话框组件
-            // 'js/help-system.js', // 提早加载帮助系统，改善WebView体验
-            'js/help/help-core_7ree.js', // 帮助系统核心_7ree
-            'js/help/help-init_7ree.js', // 初始化与DOM监听_7ree
+            // 帮助系统：先加载核心类，再加载初始化脚本
+            'js/help/help-core_7ree.js', // 帮助系统核心类_7ree
+            'js/help/help-init_7ree.js', // 帮助系统初始化_7ree
             'js/navigation.js', // 优先加载导航组件
             'js/debug-config.js',
             'js/api-config.js',

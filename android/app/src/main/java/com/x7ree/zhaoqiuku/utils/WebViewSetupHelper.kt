@@ -61,7 +61,7 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
             
             override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                Log.d("WebViewSetupHelper", "页面开始加载: $url")
+                Log.d("WebViewSetupHelper", "页面开始加载: $url, isFirstLoad: ${activity.isFirstLoad}")
                 // 只在首次加载时显示loading screen
                 if (activity.isFirstLoad) {
                     activity.showLoadingScreen()
@@ -70,7 +70,7 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
             
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                Log.d("WebViewSetupHelper", "页面加载完成: $url")
+                Log.d("WebViewSetupHelper", "页面加载完成: $url, isFirstLoad: ${activity.isFirstLoad}")
                 // 只在首次加载时隐藏loading screen，并标记首次加载完成
                 if (activity.isFirstLoad) {
                     activity.hideLoadingScreen()

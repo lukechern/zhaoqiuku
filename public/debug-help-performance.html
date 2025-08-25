@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帮助系统性能测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-btn { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>帮助系统性能测试</h1>
+    
+    <button class="test-btn" onclick="testHelpLoad()">测试帮助内容加载</button>
+    <button class="test-btn" onclick="testPreloadStatus()">检查预加载状态</button>
+    <button class="test-btn" onclick="clearCache()">清除缓存</button>
+    <button class="test-btn" onclick="clearLogs()">清除日志</button>
+    
+    <div id="logs" class="log"></div>
+
+    <script>
+        function log(message) {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.textContent += `[${timestamp}] ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        async function testHelpLoad() {
+            log('开始测试帮助内容加载...');
+            const start = performance.now();
+            
+            try {
+                const response = await fetch('components/help-body_7ree.html');
+                const loadTime = performance.now() - start;
+                
+                if (response.ok) {
+                    const content = await response.text();
+                    const totalTime = performance.now() - start;
+                    log(`✅ 加载成功: ${loadTime.toFixed(2)}ms (网络) + ${(totalTime - loadTime).toFixed(2)}ms (解析) = ${totalTime.toFixed(2)}ms (总计)`);
+                    log(`内容大小: ${content.length} 字符`);
+                } else {
+                    log(`❌ 加载失败: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                const errorTime = performance.now() - start;
+                log(`❌ 加载错误 (${errorTime.toFixed(2)}ms): ${error.message}`);
+            }
+        }
+
+        function testPreloadStatus() {
+            log('检查预加载状态...');
+            log(`preloadedHelpBodyHtml_7ree: ${!!window.preloadedHelpBodyHtml_7ree ? '✅ 已预加载' : '❌ 未预加载'}`);
+            if (window.preloadedHelpBodyHtml_7ree) {
+                log(`预加载内容大小: ${window.preloadedHelpBodyHtml_7ree.length} 字符`);
+            }
+        }
+
+        function clearCache() {
+            window.preloadedHelpBodyHtml_7ree = null;
+            log('✅ 缓存已清除');
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').textContent = '';
+        }
+
+        // 页面加载时自动检查状态
+        window.addEventListener('load', () => {
+            log('页面加载完成，开始性能测试...');
+            testPreloadStatus();
+        });
+    </script>
+</body>
+</html>

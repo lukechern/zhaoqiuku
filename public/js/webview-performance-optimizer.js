@@ -91,9 +91,19 @@ class WebViewPerformanceOptimizer {
 
     // 加载非关键资源
     loadNonCriticalResources() {
-        // 这里可以预加载一些非关键的资源
-        // 将 help-body_7ree.html 放入闲时预取，避免阻塞首屏关键路径_7ree
-        fetch('components/help-body_7ree.html').catch(e => console.log('闲时预加载失败:', 'components/help-body_7ree.html'));
+        // 检查是否已经预加载过help-body_7ree.html，避免重复请求
+        if (!window.preloadedHelpBodyHtml_7ree) {
+            // 将 help-body_7ree.html 放入闲时预取，避免阻塞首屏关键路径_7ree
+            fetch('components/help-body_7ree.html')
+                .then(response => response.text())
+                .then(html => {
+                    window.preloadedHelpBodyHtml_7ree = html;
+                    console.log('✅ 闲时预加载help-body_7ree.html成功');
+                })
+                .catch(e => console.log('闲时预加载失败:', 'components/help-body_7ree.html', e));
+        } else {
+            console.log('✅ help-body_7ree.html已预加载，跳过重复请求');
+        }
     }
 
     // 设置快速DOM准备检测
