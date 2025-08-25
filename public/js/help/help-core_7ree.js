@@ -118,7 +118,7 @@ class HelpSystem {
                         ${helpBodyContent}
                     </div>
                     <div class="help-modal-footer">
-                        <button class="help-footer-btn" id="helpCloseBtn">我知道了</button>
+                        <button class="help-footer-btn" id="helpCloseBtn">谢谢，我知道了。</button>
                     </div>
                 `;
 
