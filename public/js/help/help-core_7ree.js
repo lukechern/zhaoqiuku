@@ -10,8 +10,6 @@ class HelpSystem {
         this.isOpen = false;
         this.modalLoadingPromise_7ree = null; // 新增：异步加载中的Promise引用
         this.modalLoaded_7ree = false; // 新增：内容是否已经加载完成
-        // 新增：缓存被剥离的温馨提示片段HTML_7ree
-        this.warmSectionHTML_7ree = null;
         // 新增：避免重复绑定全局事件_7ree
         this.globalEventsBound_7ree = false;
         // 新增：首次登录自动弹出相关配置
@@ -106,20 +104,7 @@ class HelpSystem {
             // 不再进行字符串级 warmTips 替换，改由 DOM 中的 #warmTipsText 动态填充_7ree
             // 已彻底移除 updateWarmTipsContent（历史兼容已不再需要）_7ree
 
-            // 剥离 warmTipsSection，先渲染其余部分，warmTips 后台再插入_7ree
-            try {
-                const wrapper_7ree = document.createElement('div');
-                wrapper_7ree.innerHTML = helpBodyContent;
-                const warmSection_7ree = wrapper_7ree.querySelector('#warmTipsSection');
-                this.warmSectionHTML_7ree = null;
-                if (warmSection_7ree) {
-                    this.warmSectionHTML_7ree = warmSection_7ree.outerHTML;
-                    warmSection_7ree.remove();
-                }
-                helpBodyContent = wrapper_7ree.innerHTML;
-            } catch (e) {
-                console.warn('剥离 warmTipsSection 失败，将继续渲染全部内容：', e);
-            }
+            // 温馨提示已固定在HTML中，不再需要剥离和重新插入逻辑
 
             // 替换为真实内容（此时不包含 warmTipsSection）_7ree
             if (this.modal) {
@@ -144,10 +129,7 @@ class HelpSystem {
                 // 内容替换后，需重新绑定内部关闭按钮事件
                 this.bindEvents();
 
-                // 在后台插入 warmTipsSection（如果有）_7ree
-                if (this.warmSectionHTML_7ree) {
-                    this.scheduleWarmTipsInsert_7ree();
-                }
+                // 温馨提示已固定在HTML中，不再需要动态插入
             }
 
             this.modalLoaded_7ree = true;
@@ -334,40 +316,7 @@ class HelpSystem {
         }
     }
 
-    // 新增：后台调度插入 warmTipsSection（避免阻塞首次渲染）_7ree
-    scheduleWarmTipsInsert_7ree() {
-        const run_7ree = () => this.insertWarmTipsSection_7ree();
-        try {
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(run_7ree, { timeout: 1000 });
-            } else {
-                setTimeout(run_7ree, 0);
-            }
-        } catch (e) {
-            setTimeout(run_7ree, 0);
-        }
-    }
-
-    // 新增：真正插入 warmTipsSection 并填充动态/静态提示文案_7ree
-    insertWarmTipsSection_7ree() {
-        try {
-            if (!this.modal || !this.warmSectionHTML_7ree) return;
-            const contentEl_7ree = this.modal.querySelector('.help-modal-content');
-            if (!contentEl_7ree) return;
-
-            const tmp_7ree = document.createElement('div');
-            tmp_7ree.innerHTML = this.warmSectionHTML_7ree;
-            const section_7ree = tmp_7ree.firstElementChild;
-            if (!section_7ree) return;
-
-            contentEl_7ree.insertBefore(section_7ree, contentEl_7ree.firstChild);
-
-            // 插入后立即填充欢迎文案
-            this.updateWelcomeInModal();
-        } catch (e) {
-            console.warn('插入 warmTipsSection 失败：', e);
-        }
-    }
+    // 已移除：温馨提示相关的动态插入逻辑，现在固定在HTML中
 
     // 在模态框中更新欢迎内容（由 init 模块托管）_7ree
      updateWelcomeInModal() {
