@@ -5,13 +5,98 @@
  */
 
 .register-content {
-    width:90vw;
+    width: 100%;
     max-width: 400px;
     margin: 2rem auto;
     padding: 0 1rem;
     min-height: 500px; /* 固定最小高度，避免跳动 */
     display: flex;
     flex-direction: column;
+}
+
+/* PC端样式调整 */
+@media (min-width: 769px) {
+    /* 背景样式与 index.html 保持一致 */
+    body[data-page="auth"] {
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 20px 0;
+    }
+    
+    body[data-page="auth"]::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    /* 手机框架样式与 index.html 保持一致 */
+    body[data-page="auth"] .mobile-frame {
+        width: 375px;
+        max-width: 375px;
+        height: calc(100vh - 40px);
+        background: var(--surface);
+        border-radius: 25px;
+        box-shadow:
+            0 0 0 8px rgba(255, 255, 255, 0.1),
+            0 0 0 12px rgba(0, 0, 0, 0.2),
+            0 20px 60px rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+    
+    /* 手机顶部刘海 */
+    body[data-page="auth"] .mobile-frame::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        z-index: 10;
+    }
+    
+    /* 手机底部Home指示器 */
+    body[data-page="auth"] .mobile-frame::after {
+        content: '';
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+        z-index: 10;
+    }
+    
+    /* 容器样式调整 */
+    body[data-page="auth"] .container {
+        min-height: calc(100vh - 40px);
+        max-width: 375px;
+        width: 100%;
+    }
+
+    .register-content {
+        width: 100%;
+        max-width: 335px; /* 适配375px手机框架，减去左右padding */
+        margin: 1rem auto;
+        padding: 0 20px;
+    }
 }
 
 .register-content h1{

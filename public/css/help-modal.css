@@ -163,7 +163,7 @@
     margin-bottom: 10px;
 }
 
-.help-app-description{
+.help-app-description {
     color: var(--text-secondary);
     padding: 10px 0;
     font-size: 0.9rem;
@@ -276,15 +276,15 @@
         max-width: 95%;
         margin: 20px;
     }
-    
+
     .help-modal-header {
         padding: 16px;
     }
-    
+
     .help-modal-footer {
         padding: 16px;
     }
-    
+
     .help-section {
         margin-bottom: 20px;
     }
