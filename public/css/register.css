@@ -379,7 +379,9 @@
     align-items: flex-start;
     margin-bottom: 2rem;
     padding: 1rem 0;
-    gap: 2.5rem; /* 增大25%：2rem * 1.25 = 2.5rem */
+    /*
+    gap: 2.5rem;
+     */
     position: relative;
     width: 100%; /* 确保容器占满可用宽度，连线与箭头定位准确（_7ree） */
 }
