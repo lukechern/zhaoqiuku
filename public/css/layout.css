@@ -40,7 +40,7 @@ body {
         pointer-events: none;
         z-index: -1;
     }
-    
+
     .mobile-frame {
         width: 375px;
         max-width: 375px;
@@ -58,7 +58,7 @@ body {
         /* 为index和history页面预留header-top组件的高度 */
         /* padding-top: 60px; */
     }
-    
+
     .mobile-frame::before {
         content: '';
         position: absolute;
@@ -120,7 +120,7 @@ body {
         max-width: 375px;
         width: 100%;
     }
-    
+
 }
 
 .main-content {
@@ -131,8 +131,8 @@ body {
     align-items: center;
     position: relative;
     overflow: visible;
-    margin-bottom:30px;
-    padding:36px 0;
+    margin-bottom: 30px;
+    padding: 36px 0;
 }
 
 /* WebView环境优化 */
