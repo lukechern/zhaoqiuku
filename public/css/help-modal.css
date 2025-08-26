@@ -163,6 +163,12 @@
     margin-bottom: 10px;
 }
 
+.help-app-description{
+    color: var(--text-secondary);
+    padding: 10px 0;
+    font-size: 0.9rem;
+}
+
 .help-feature-list {
     list-style: none;
     padding: 0;
