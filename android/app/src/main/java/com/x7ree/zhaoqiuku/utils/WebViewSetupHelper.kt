@@ -13,6 +13,69 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
     private val PERMISSION_REQUEST_CODE = 1001
     private var pendingPermissionRequest: PermissionRequest? = null
 
+    // 根据不同URL返回合适MIME类型的空响应，避免阻塞与类型不匹配导致的额外开销
+    private fun getEmptyResponseForUrl_7ree(url: String): WebResourceResponse {
+        val lower = url.lowercase()
+        val mime = when {
+            lower.contains("fonts.googleapis.com") || lower.endsWith(".css") -> "text/css"
+            lower.endsWith(".woff2") -> "font/woff2"
+            lower.endsWith(".woff") -> "font/woff"
+            lower.endsWith(".ttf") -> "font/ttf"
+            lower.endsWith(".otf") -> "font/otf"
+            else -> "text/plain"
+        }
+        return WebResourceResponse(mime, "utf-8", java.io.ByteArrayInputStream(ByteArray(0)))
+    }
+
+    // 提前注入阻断Google字体的脚本：
+    // 1) 设置统一系统字体 2) 移除 fonts.* 的 link/style/@import 3) 使用 MutationObserver 持续监听并移除
+    private fun buildFontBlockerJs_7ree(): String {
+        return """
+            javascript:(function(){
+                try{
+                    var systemFontCss_7ree = '*{font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;}';
+                    var injectStyle_7ree = function(){
+                        try{
+                            var st = document.createElement('style');
+                            st.setAttribute('data-font-override','_7ree');
+                            st.textContent = systemFontCss_7ree;
+                            (document.head || document.documentElement).appendChild(st);
+                        }catch(e){}
+                    };
+                    var removeFontsNodes_7ree = function(root){
+                        try{
+                            if(!root || !root.querySelectorAll) return;
+                            var q = 'link[href*="fonts.googleapis.com"],link[href*="fonts.gstatic.com"],link[rel="preconnect"][href*="fonts"],link[rel="dns-prefetch"][href*="fonts"],link[as="font"],link[rel="preload"][as="font"]';
+                            root.querySelectorAll(q).forEach(function(n){ try{ n.parentNode && n.parentNode.removeChild(n);}catch(e){} });
+                            root.querySelectorAll('style').forEach(function(s){
+                                try{
+                                    var t = s.textContent || '';
+                                    if(/fonts\\.googleapis\\.com|fonts\\.gstatic\\.com/i.test(t)){
+                                        s.parentNode && s.parentNode.removeChild(s);
+                                    }
+                                }catch(e){}
+                            });
+                        }catch(e){}
+                    };
+                    var mo_7ree = new MutationObserver(function(muts){
+                        try{
+                            for(var i=0;i<muts.length;i++){
+                                var m = muts[i];
+                                if(m.type === 'childList' && m.addedNodes){
+                                    m.addedNodes.forEach(function(n){ if(n && n.nodeType===1) removeFontsNodes_7ree(n); });
+                                }
+                            }
+                        }catch(e){}
+                    });
+                    document.addEventListener('DOMContentLoaded', function(){ injectStyle_7ree(); removeFontsNodes_7ree(document); }, {once:true});
+                    injectStyle_7ree();
+                    removeFontsNodes_7ree(document);
+                    mo_7ree.observe(document.documentElement, { childList:true, subtree:true });
+                }catch(e){}
+            })();
+        """.trimIndent()
+    }
+
     fun setupWebView(webView: WebView) {
         Log.d("WebViewSetupHelper", "设置WebView")
         
@@ -81,16 +144,14 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
                                    url.contains("gms/fonts") ||
                                    url.contains("google.com/fonts") ||
                                    url.contains("googlefonts") ||
-                                   url.contains(".woff") ||
-                                   url.contains(".woff2") ||
-                                   url.contains(".ttf") ||
-                                   url.contains(".otf") ||
+                                   url.endsWith(".woff") ||
+                                   url.endsWith(".woff2") ||
+                                   url.endsWith(".ttf") ||
+                                   url.endsWith(".otf") ||
                                    url.contains("font-face") ||
                                    url.contains("webfont"))) {
                     Log.d("WebViewSetupHelper", "拦截字体请求: $url")
-                    // 返回空的CSS响应，避免网络请求阻塞
-                    return WebResourceResponse("text/css", "utf-8", 
-                        java.io.ByteArrayInputStream("/* font blocked */".toByteArray()))
+                    return getEmptyResponseForUrl_7ree(url)
                 }
                 
                 return super.shouldInterceptRequest(view, request)
@@ -103,13 +164,15 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
                 if (activity.isFirstLoad) {
                     activity.showLoadingScreen()
                 }
+                // 提前注入阻断Google字体的脚本（含MutationObserver），在尽可能早的阶段生效
+                view?.evaluateJavascript(buildFontBlockerJs_7ree(), null)
             }
             
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 Log.d("WebViewSetupHelper", "页面加载完成: $url, isFirstLoad: ${activity.isFirstLoad}")
                 
-                // 注入CSS强制使用系统字体，避免Google字体加载
+                // 注入CSS强制使用系统字体，避免Google字体加载（兜底再执行一次）
                 val fontOverrideCSS = """
                     javascript:(function(){
                         var style = document.createElement('style');
