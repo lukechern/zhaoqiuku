@@ -104,10 +104,11 @@ class MainActivity : AppCompatActivity() {
 
         // 先检查权限，再设置WebView
         if (permissionHelper.checkAndRequestPermissions()) {
-            webViewSetupHelper.setupWebView(webView)
-            webViewSetupHelper.loadWebPage(webView)
-            // 初始化调试模式悬浮球
-            debugHelper.initializeDebugMode()
+            // 权限已获得，立即设置WebView
+            initializeWebViewWithPermissions()
+        } else {
+            // 权限未获得，显示loading screen等待权限授予
+            showLoadingScreen()
         }
         
         // 刷新快捷方式图标（强制更新）
@@ -120,6 +121,22 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        
+        // 处理权限结果
+        val allGranted = grantResults.isNotEmpty() && 
+            grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        
+        if (allGranted) {
+            // 权限获得后初始化WebView
+            initializeWebViewWithPermissions()
+        } else {
+            // 权限被拒绝，显示说明对话框
+            permissionHelper.showPermissionDeniedDialog()
+            // 隐藏loading screen
+            hideLoadingScreen()
+        }
+        
+        // 同时调用WebViewSetupHelper的权限处理
         webViewSetupHelper.handlePermissionResult(requestCode, permissions, grantResults, webView)
     }
     
@@ -158,6 +175,31 @@ class MainActivity : AppCompatActivity() {
             if (loadingScreen.visibility == View.VISIBLE) {
                 stopLogoAnimation()
                 loadingScreen.visibility = View.GONE
+            }
+        }
+    }
+    
+    private fun initializeWebViewWithPermissions() {
+        Log.d("MainActivity", "权限已获得，初始化WebView")
+        
+        // 确保在主线程中执行
+        runOnUiThread {
+            try {
+                // 设置WebView
+                webViewSetupHelper.setupWebView(webView)
+                
+                // 延迟加载网页，确保WebView完全初始化
+                webView.post {
+                    webViewSetupHelper.loadWebPage(webView)
+                }
+                
+                // 初始化调试模式悬浮球
+                debugHelper.initializeDebugMode()
+                
+            } catch (e: Exception) {
+                Log.e("MainActivity", "WebView初始化失败: ${e.message}")
+                // 出错时隐藏loading screen
+                hideLoadingScreen()
             }
         }
     }

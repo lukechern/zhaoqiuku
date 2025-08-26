@@ -160,10 +160,12 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
             override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 Log.d("WebViewSetupHelper", "页面开始加载: $url, isFirstLoad: ${activity.isFirstLoad}")
+                
                 // 只在首次加载时显示loading screen
                 if (activity.isFirstLoad) {
                     activity.showLoadingScreen()
                 }
+                
                 // 提前注入阻断Google字体的脚本（含MutationObserver），在尽可能早的阶段生效
                 view?.evaluateJavascript(buildFontBlockerJs_7ree(), null)
             }
@@ -195,10 +197,12 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
                 
                 view?.evaluateJavascript(fontOverrideCSS, null)
                 
-                // 只在首次加载时隐藏loading screen，并标记首次加载完成
+                // 延迟隐藏loading screen，确保页面内容已渲染
                 if (activity.isFirstLoad) {
-                    activity.hideLoadingScreen()
-                    activity.setFirstLoadComplete()
+                    view?.postDelayed({
+                        activity.hideLoadingScreen()
+                        activity.setFirstLoadComplete()
+                    }, 500) // 延迟500ms确保页面完全加载
                 }
             }
             
@@ -335,6 +339,18 @@ class WebViewSetupHelper(private val activity: MainActivity, private val config:
         }
         
         Log.d("WebViewSetupHelper", "加载网页: $finalUrl")
+        
+        // 设置超时机制，防止loading screen永远不消失
+        if (activity.isFirstLoad) {
+            webView.postDelayed({
+                if (activity.isFirstLoad) {
+                    Log.w("WebViewSetupHelper", "页面加载超时，强制隐藏loading screen")
+                    activity.hideLoadingScreen()
+                    activity.setFirstLoadComplete()
+                }
+            }, 10000) // 10秒超时
+        }
+        
         webView.loadUrl(finalUrl)
     }
     

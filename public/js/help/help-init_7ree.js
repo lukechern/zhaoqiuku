@@ -2,15 +2,15 @@
 // 添加帮助按钮样式到页面（已迁移至外部CSS: css/help-modal.css）。原函数 addHelpButtonStyles 已移除，避免重复注入与样式闪烁。
 function initHelpSystem() {
     // 只在index页面初始化帮助系统
-    const isIndexPage = window.location.pathname.includes('index.html') || 
-                       window.location.pathname === '/' || 
-                       window.location.pathname.endsWith('/');
-    
+    const isIndexPage = window.location.pathname.includes('index.html') ||
+        window.location.pathname === '/' ||
+        window.location.pathname.endsWith('/');
+
     if (!isIndexPage) return;
 
     // 删除：样式注入调用，改为外部CSS提供样式
     // addHelpButtonStyles();
-    
+
     // 优化初始化策略：减少等待时间，提高WebView性能
     const initHelp = () => {
         const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
@@ -29,7 +29,7 @@ function initHelpSystem() {
     if (initHelp()) {
         return;
     }
-    
+
     // 简化：移除快速轮询，仅使用 MutationObserver 监听 DOM 变化
     setupDOMObserver();
 }
@@ -39,14 +39,14 @@ function setupDOMObserver() {
     if (window.helpSystemDOMObserver) {
         return; // 已经设置过了
     }
-    
+
     let attempts = 0;
     const maxAttempts = 20; // 最多尝试20次
-    
+
     const checkForHeader = () => {
         attempts++;
         const header = document.querySelector('#headerTopContainer_7ree .header-top') || document.querySelector('.header-top');
-        
+
         if (header && !window.helpSystem) {
             console.log('🔍 轮询检测到header，初始化帮助系统');
             window.helpSystem = new HelpSystem();
@@ -55,7 +55,7 @@ function setupDOMObserver() {
             window.helpSystemDOMObserver = null;
             return;
         }
-        
+
         if (attempts < maxAttempts) {
             // 使用递增延迟，减少CPU占用
             const delay = Math.min(100 + attempts * 50, 500);
@@ -65,7 +65,7 @@ function setupDOMObserver() {
             window.helpSystemDOMObserver = null;
         }
     };
-    
+
     window.helpSystemDOMObserver = true; // 标记已设置
     checkForHeader();
 }
@@ -83,7 +83,7 @@ function createHelpIcon_7ree() {
     if (!functionContainer) {
         functionContainer = header.querySelector('#functionButtons');
     }
-    
+
     // 如果未找到容器，尝试创建一个
     if (!functionContainer) {
         console.log('🔧 未找到功能按钮容器，尝试创建...');
@@ -111,11 +111,11 @@ function createHelpIcon_7ree() {
     helpBtn.className = 'help-toggle-btn';
     helpBtn.setAttribute('aria-label', '帮助信息');
     helpBtn.innerHTML = '<img src="img/help.svg" alt="帮助" class="help-icon">';
-    
+
     // 优化：直接显示按钮，避免额外的可见性延迟
     helpBtn.style.opacity = '1';
     helpBtn.style.visibility = 'visible';
-    
+
     functionContainer.appendChild(helpBtn);
     console.log('✅ 帮助按钮创建成功');
 
@@ -123,7 +123,7 @@ function createHelpIcon_7ree() {
     helpBtn.addEventListener('click', async () => {
         const startTime = performance.now();
         console.log('🎯 帮助按钮被点击，开始处理...');
-        
+
         try {
             if (!window.helpSystem) {
                 console.log('🔧 创建帮助系统实例...');
@@ -131,15 +131,15 @@ function createHelpIcon_7ree() {
                 window.helpSystem = new HelpSystem();
                 console.log(`✅ 帮助系统创建完成，耗时: ${(performance.now() - createStart).toFixed(2)}ms`);
             }
-            
+
             console.log('📖 显示帮助模态框...');
             const showStart = performance.now();
             await window.helpSystem.showModal();
             console.log(`✅ 帮助模态框显示完成，耗时: ${(performance.now() - showStart).toFixed(2)}ms`);
-            
+
             const totalTime = performance.now() - startTime;
             console.log(`🎉 帮助按钮处理完成，总耗时: ${totalTime.toFixed(2)}ms`);
-            
+
             // 如果耗时超过1秒，记录警告
             if (totalTime > 1000) {
                 console.warn(`⚠️ 帮助按钮响应较慢: ${totalTime.toFixed(2)}ms`);
@@ -174,11 +174,11 @@ window.createHelpIcon_7ree = createHelpIcon_7ree;
 
 // 温馨提示更新模块（从 HelpSystem 拆分便于后续扩展 AB 实验等）_7ree
 // 兼容：将更新方法挂到原型，便于按需替换
-(function attachWarmTipsUpdater_7ree(){
+(function attachWarmTipsUpdater_7ree() {
     if (!window.HelpSystem || !window.HelpSystem.prototype) return;
 
     // updateWarmTipsContent 已移除（历史兼容不再需要）_7ree
-    window.HelpSystem.prototype.updateWelcomeInModal = function(){
+    window.HelpSystem.prototype.updateWelcomeInModal = function () {
         try {
             // 只更新欢迎语区块，温馨提示已固定在HTML中
             const welcomeText = this.modal?.querySelector('#welcomeText');
@@ -197,7 +197,7 @@ window.createHelpIcon_7ree = createHelpIcon_7ree;
                         const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="登录">登录</a>';
                         welcomeHtml = `欢迎您，请${loginLink}后使用。`;
                     }
-                    welcomeHtml += `<br><strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具。`;
+                    welcomeHtml += `<p><strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具。</p>`;
                     welcomeText.innerHTML = welcomeHtml;
                 }
             }
