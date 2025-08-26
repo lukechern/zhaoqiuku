@@ -227,26 +227,26 @@ class HelpSystem {
     bindAuthEvents() {
         // 监听认证状态变化事件
         document.addEventListener('authStateChanged', (event) => {
-            console.log('检测到认证状态变化，更新温馨提示内容');
+            console.log('检测到认证状态变化，更新欢迎内容');
             // 如果模态框已打开，实时更新内容
             if (this.isOpen && this.modal) {
-                this.updateWarmTipsInModal();
+                this.updateWelcomeInModal();
             }
         });
 
         // 监听用户登录事件
         document.addEventListener('userLoggedIn', (event) => {
-            console.log('用户登录，更新温馨提示内容');
+            console.log('用户登录，更新欢迎内容');
             if (this.isOpen && this.modal) {
-                this.updateWarmTipsInModal();
+                this.updateWelcomeInModal();
             }
         });
 
         // 监听用户登出事件
         document.addEventListener('userLoggedOut', (event) => {
-            console.log('用户登出，更新温馨提示内容');
+            console.log('用户登出，更新欢迎内容');
             if (this.isOpen && this.modal) {
-                this.updateWarmTipsInModal();
+                this.updateWelcomeInModal();
             }
         });
 
@@ -291,10 +291,10 @@ class HelpSystem {
         this.isOpen = true;
         this.overlay.classList.add('show');
 
-        // 每次打开时更新温馨提示内容（如果已存在对应元素）
-        const warmTipsText = this.modal?.querySelector('#warmTipsText');
-        if (warmTipsText) {
-            this.updateWarmTipsInModal();
+        // 每次打开时更新欢迎内容（温馨提示已固定在HTML中）
+        const welcomeText = this.modal?.querySelector('#welcomeText');
+        if (welcomeText) {
+            this.updateWelcomeInModal();
         }
 
         // 阻止背景滚动
@@ -362,16 +362,16 @@ class HelpSystem {
 
             contentEl_7ree.insertBefore(section_7ree, contentEl_7ree.firstChild);
 
-            // 插入后立即填充文案
-            this.updateWarmTipsInModal();
+            // 插入后立即填充欢迎文案
+            this.updateWelcomeInModal();
         } catch (e) {
             console.warn('插入 warmTipsSection 失败：', e);
         }
     }
 
-    // 在模态框中更新温馨提示内容（由 warmer 模块托管）_7ree
-     updateWarmTipsInModal() {
-        // 具体实现由 js/help/help-warmer_7ree.js 动态挂载到原型_7ree
+    // 在模态框中更新欢迎内容（由 init 模块托管）_7ree
+     updateWelcomeInModal() {
+        // 具体实现由 js/help/help-init_7ree.js 动态挂载到原型_7ree
     }
 
     // 获取默认帮助内容（fallback）

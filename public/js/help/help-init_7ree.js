@@ -178,31 +178,31 @@ window.createHelpIcon_7ree = createHelpIcon_7ree;
     if (!window.HelpSystem || !window.HelpSystem.prototype) return;
 
     // updateWarmTipsContent 已移除（历史兼容不再需要）_7ree
-    window.HelpSystem.prototype.updateWarmTipsInModal = function(){
+    window.HelpSystem.prototype.updateWelcomeInModal = function(){
         try {
-            const warmTipsText = this.modal?.querySelector('#warmTipsText');
-            if (!warmTipsText) return;
+            // 只更新欢迎语区块，温馨提示已固定在HTML中
+            const welcomeText = this.modal?.querySelector('#welcomeText');
+            if (welcomeText) {
+                if (window.disableWarmTipsEmail_7ree === true) {
+                    // 使用静态文案，不读取邮箱信息_7ree
+                    welcomeText.innerHTML = `欢迎使用 <strong>找秋裤</strong>。<br><strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具。`;
+                } else {
+                    const isAuthenticated = !!window.authManager?.isAuthenticated;
+                    const userEmail = window.authManager?.user?.email;
+                    let welcomeHtml = '';
 
-            if (window.disableWarmTipsEmail_7ree === true) {
-                // 使用静态文案，不读取邮箱信息_7ree
-                warmTipsText.innerHTML = `欢迎使用 <strong>找秋裤</strong>。请注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
-                return;
+                    if (isAuthenticated && userEmail) {
+                        welcomeHtml = `欢迎您，<strong>${userEmail}</strong>。`;
+                    } else {
+                        const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="登录">登录</a>';
+                        welcomeHtml = `欢迎您，请${loginLink}后使用。`;
+                    }
+                    welcomeHtml += `<br><strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具。`;
+                    welcomeText.innerHTML = welcomeHtml;
+                }
             }
-
-            const isAuthenticated = !!window.authManager?.isAuthenticated;
-            const userEmail = window.authManager?.user?.email;
-            let warmTipsHtml_7ree = '';
-
-            if (isAuthenticated && userEmail) {
-                warmTipsHtml_7ree = `欢迎您，<strong>${userEmail}</strong>。`;
-            } else {
-                const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="登录">登录</a>';
-                warmTipsHtml_7ree = `欢迎您，请${loginLink}后使用。`;
-            }
-            warmTipsHtml_7ree = warmTipsHtml_7ree + `<br><strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具。<br>请特别注意涉及<strong>机密、隐私、贵重</strong>等物品不要使用本工具记录哦。`;
-            warmTipsText.innerHTML = warmTipsHtml_7ree;
         } catch (error) {
-            console.warn('在模态框中更新温馨提示内容失败:', error);
+            console.warn('在模态框中更新欢迎内容失败:', error);
         }
     };
 })();

@@ -284,6 +284,15 @@
     }
 }
 
+/* 欢迎语区块样式 */
+.help-welcome {
+    margin-bottom: 16px;
+}
+
+.help-welcome .help-section-content {
+    margin-bottom: 0;
+}
+
 /* 温馨提示样式 */
 .help-warm-tips {
     background: linear-gradient(135deg, #faf7ed 0%, #fff8e3 100%);
