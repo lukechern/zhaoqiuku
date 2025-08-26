@@ -197,7 +197,7 @@ window.createHelpIcon_7ree = createHelpIcon_7ree;
                         const loginLink = '<a href="/auth.html" class="help-login-btn_7ree" aria-label="登录">登录</a>';
                         welcomeHtml = `欢迎您，请${loginLink}后使用。`;
                     }
-                    welcomeHtml += `<p><strong>找秋裤</strong>是一款AI驱动的自然语音记录和查找日常物品存放位置的小工具。</p>`;
+
                     welcomeText.innerHTML = welcomeHtml;
                 }
             }
