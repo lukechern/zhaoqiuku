@@ -171,10 +171,11 @@
     color: var(--text-muted);
     font-size: 0.8rem;
     margin-top: 0.5rem;
+    text-align: center;
 }
 
 .help-text span {
-    font-weight: 600;
+    font-weight: 300;
     color: #007AFF;
 }
 
@@ -456,8 +457,8 @@
 
 /* 已完成步骤的文字显示绿色 */
 .progress-step_7ree.completed_7ree .progress-text_7ree {
-    color: #4CAF50;
-    font-weight: 600;
+    color: #016801;
+    font-weight: 300;
 }
 
 /* 服务器时间样式 (_7ree) */
@@ -581,6 +582,7 @@ body[data-page="auth"] .mobile-frame {
 }
 
 .verify-code-input_7ree.filled {
+    color:#0056CC !important;
     background: rgba(102, 126, 234, 0.1) !important;
     border-color: var(--primary-color) !important;
 }
