@@ -263,6 +263,11 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 3rem 2rem;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px var(--shadow);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
 }
 
 .loading.hidden {
@@ -333,7 +338,8 @@
 
 /* 深色模式支持 */
 @media (prefers-color-scheme: dark) {
-    .register-form {
+    .register-form,
+    .loading {
         background: rgba(28, 28, 30, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
